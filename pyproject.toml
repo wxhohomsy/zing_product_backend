@@ -1,0 +1,32 @@
+[tool.poetry]
+name = "zing-product-backend"
+version = "0.1.0"
+description = ""
+authors = ["E00963 <xun.wang@zingsemi.com>"]
+readme = "README.md"
+packages = [{include = "zing_product_backend"}]
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.13"
+fastapi = {extras = ["all"], version = "^0.104.0"}
+fastapi-users = {extras = ["sqlalchemy"], version = "^12.1.2"}
+pandas = "^2.1.1"
+httpx = "^0.25.0"
+celery = {extras = ["auth", "librabbitmq", "msgpack", "redis"], version = "^5.3.4"}
+pyarrow = "^13.0.0"
+oracledb = "^1.4.2"
+psycopg2 = "^2.9.9"
+asyncpg = "^0.28.0"
+alembic = {extras = ["tz"], version = "^1.12.1"}
+python-dotenv = "^1.0.0"
+sqlalchemy = "^2.0.22"
+pymongo = "^4.5.0"
+pytz = "^2023.3.post1"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.3"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
