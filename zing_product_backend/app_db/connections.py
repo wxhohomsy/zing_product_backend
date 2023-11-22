@@ -1,11 +1,15 @@
 import asyncio
-
+from typing import AsyncGenerator
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
 from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from pymongo import MongoClient
 import os
 from dotenv import load_dotenv
+import oracledb
+
+
+oracledb.init_oracle_client()
 load_dotenv()
 from sqlalchemy.ext.asyncio import AsyncAttrs
 l1w_db_engine = create_engine(os.environ.get('L1W_MESDB_URL'), pool_size=2)
@@ -20,38 +24,34 @@ AppSession = sessionmaker(app_db_engine, expire_on_commit=False)
 AsyncAppSession = async_sessionmaker(app_async_engine, expire_on_commit=False)
 
 
+async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
+    async with AsyncAppSession() as session:
+        yield session
+
+
 class Base(DeclarativeBase):
     __table_args__ = {"schema": "test"}
     pass
 
 
-from sqlalchemy import text
-sql = text(rf"""
-SELECT * FROM prod.wafer_oper_history
- where 1 = 1
- and sublot_id = 'D41470050210'
-""")
-
-
-async def f():
-    async with AsyncAppSession() as s:
-        a = await s.execute(sql)
-        print(a.scalars().fetchall())
-        print(123)
-
 if __name__ == "__main__":
+    import asyncio
     import time
     from sqlalchemy import text
+    import pandas as pd
 
-    start_time = time.time()
+    sql = text(rf"""select * from prod.wafer_oper_history
+        where sublot_id = 'D42210J50214'
+    """)
 
-    with AppSession() as session:
-        con = session.connection()
-    #
-        result = con.execute(sql)
-        print(result.fetchall())
-    #
-    # asyncio.run(f())
+    def select_data(session):
+        with session.connection() as conn:
+            df = pd.read_sql(sql, conn)
+            print(df)
 
-
-    print(f"--- {time.time() - start_time} seconds ---")
+    async def main():
+        async for s in get_async_session():
+            # r = await s.execute(sql)
+            # print(r.fetchall())
+            await s.run_sync(select_data)
+    asyncio.run(main())

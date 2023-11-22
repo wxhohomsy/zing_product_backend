@@ -7,12 +7,13 @@ readme = "README.md"
 packages = [{include = "zing_product_backend"}]
 
 [tool.poetry.dependencies]
-python = ">=3.11,<3.13"
+python = ">=3.11,<3.12"
+# 3.12 is not supported for fastapi-users https://github.com/fastapi-users/fastapi-users/issues/1301
 fastapi = {extras = ["all"], version = "^0.104.0"}
 fastapi-users = {extras = ["sqlalchemy"], version = "^12.1.2"}
 pandas = "^2.1.1"
 httpx = "^0.25.0"
-celery = {extras = ["auth", "librabbitmq", "msgpack", "redis"], version = "^5.3.4"}
+celery = {extras = ["all"], version = "^5.3.6"}
 pyarrow = "^13.0.0"
 oracledb = "^1.4.2"
 psycopg2 = "^2.9.9"

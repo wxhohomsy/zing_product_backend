@@ -6,7 +6,9 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config, create_async_engine
 from alembic import context
 import dotenv
-from zing_product_backend.models.users import *
+from zing_product_backend.models.auth import *
+from zing_product_backend.models.product_allocate import *
+from zing_product_backend.models.material_setting import *
 from zing_product_backend.app_db.connections import Base
 
 dotenv.load_dotenv()
@@ -26,10 +28,18 @@ if config.config_file_name is not None:
 # target_metadata = mymodel.Base.metadata
 target_metadata = Base.metadata
 target_schema = Base.__table_args__['schema']
+version_table_name = 'alembic_version_product'
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
+
+
+def include_name(name, type_, parent_names):
+    if type_ == 'table' and name.startswith('alembic_version'):
+        return False
+    else:
+        return True
 
 
 def run_migrations_offline() -> None:
@@ -49,6 +59,7 @@ def run_migrations_offline() -> None:
         url=url,
         target_metadata=target_metadata,
         target_schema=target_schema,
+        include_name=include_name,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
     )
@@ -60,7 +71,9 @@ def run_migrations_offline() -> None:
 def do_run_migrations(connection: Connection) -> None:
     context.configure(connection=connection, target_metadata=target_metadata,
                       target_schema=target_schema,
-                      version_table_schema=target_schema)
+                      include_name=include_name,
+                      version_table_name=version_table_name,
+              )
 
     with context.begin_transaction():
         context.run_migrations()
@@ -73,7 +86,6 @@ async def run_async_migrations() -> None:
     """
 
     connectable = create_async_engine(os.getenv('APP_ASYNC_DATABASE_URL'), poolclass=pool.NullPool)
-
     async with connectable.connect() as connection:
         await connection.run_sync(do_run_migrations)
 

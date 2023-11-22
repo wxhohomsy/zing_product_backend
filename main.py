@@ -1,65 +1,46 @@
+from typing import AsyncGenerator, Annotated
 import time
-from typing import Annotated, Dict, List, Union
-from fastapi import FastAPI, WebSocket, Depends
-from fastapi.responses import HTMLResponse
-import random
-import asyncio
-app = FastAPI()
-
-html = """
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Chat</title>
-    </head>
-    <body>
-        <h1>WebSocket Chat</h1>
-        <form action="" onsubmit="sendMessage(event)">
-            <input type="text" id="messageText" autocomplete="off"/>
-            <button>Send</button>
-        </form>
-        <ul id='messages'>
-        </ul>
-        <script>
-            var ws = new WebSocket("ws://10.9.16.19:12345/ws");
-            ws.onmessage = function(event) {
-                var messages = document.getElementById('messages')
-                var message = document.createElement('li')
-                var content = document.createTextNode(event.data)
-                message.appendChild(content)
-                messages.appendChild(message)
-            };
-            function sendMessage(event) {
-                var input = document.getElementById("messageText")
-                ws.send(input.value)
-                input.value = ''
-                event.preventDefault()
-            }
-        </script>
-    </body>
-</html>
-"""
+from fastapi import Depends, FastAPI, Request, HTTPException
+from zing_product_backend.api.v1 import router_v1
+from zing_product_backend.core import app
+from enum import Enum
+from zing_product_backend.models import auth
+app.include_router(router_v1)
 
 
 @app.get("/")
-async def get():
-    return HTMLResponse(html)
+async def hello():
+    return {"message": "Hello World"}
+
+fake_items_db = [{"item_name": "Foo"}, {"item_name": "Bar"}, {"item_name": "Baz"}]
 
 
-@app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket):
-    await websocket.accept()
-    while True:
-        await asyncio.sleep(random.random() * 5)
-        await websocket.send_text(f"{int(random.random() * 100)}")
+class ModelName(str, Enum):
+    alexnet = "alexnet"
+    resnet = "resnet"
+    lenet = "lenet"
 
 
-async def common_parameters():
-    print(123)
-    return {'a': 1}
+@app.get("/models/{model_name}")
+async def get_model(model_name: ModelName):
+    if model_name is ModelName.alexnet:
+        return {"model_name": model_name, "message": "Deep Learning FTW!"}
+
+    if model_name.value == "lenet":
+        return {"model_name": model_name, "message": "LeCNN all the images"}
 
 
-@app.get("/items/")
-async def read_items(commons = Depends(common_parameters)) -> Dict:
-    return commons
+@app.middleware("http")
+async def log_request_time(request: Request, call_next):
+    start_time = time.time()
+    response = await call_next(request)
+    process_time = time.time() - start_time
+    print(f"{request.client.host} Request: {request.method} {request.url.path} - Handled in {process_time:.4f} secs")
+    return response
 
+
+if __name__ == "__main__":
+    from fastapi_users import password
+    a = password.PasswordHelper().hash('admin')
+    a = '$2b$12$UdPtLXtM6.ictXZQ/EIhtOpDZBr8nkAwRV72EMjaGyt/EK4BXxBuW'
+    print(password.PasswordHelper().verify_and_update('admin', a))

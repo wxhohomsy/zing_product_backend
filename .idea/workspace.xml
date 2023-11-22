@@ -4,8 +4,47 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="52819bf6-056f-49bc-a60c-b094fa485125" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="52819bf6-056f-49bc-a60c-b094fa485125" name="Changes" comment="temp save">
+      <change afterPath="$PROJECT_DIR$/zing_product_backend/app_db/mes_db_query.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/zing_product_backend/core/celery_app.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/zing_product_backend/core/celery_config.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/zing_product_backend/core/common_type.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/zing_product_backend/core/product_containment/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/zing_product_backend/core/product_containment/containment_main.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/zing_product_backend/core/product_containment/m1_fdc_catch.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/zing_product_backend/core/product_containment/schemas.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/zing_product_backend/core/product_containment/spc_catch/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/zing_product_backend/models/product_allocate.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/zing_product_backend/services/product_settings/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/zing_product_backend/services/product_settings/crud.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/zing_product_backend/services/product_settings/dependents.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/zing_product_backend/services/product_settings/product_setting_api.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/zing_product_backend/services/product_settings/schemas.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/zing_product_backend/services/product_settings/util_functions.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/zing_product_backend/tasks/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/zing_product_backend/tasks/mes_data_update/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/zing_product_backend/tasks/product_auto_allocate/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/zing_product_backend/tasks/product_auto_allocate/tasks.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/alembic/env.py" beforeDir="false" afterPath="$PROJECT_DIR$/alembic/env.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/db_init.py" beforeDir="false" afterPath="$PROJECT_DIR$/db_init.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/poetry.lock" beforeDir="false" afterPath="$PROJECT_DIR$/poetry.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/zing_product_backend/api/v1/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/zing_product_backend/api/v1/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/zing_product_backend/api/v1/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/zing_product_backend/api/v1/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/zing_product_backend/app_db/connections.py" beforeDir="false" afterPath="$PROJECT_DIR$/zing_product_backend/app_db/connections.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/zing_product_backend/core/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/zing_product_backend/core/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/zing_product_backend/core/common.py" beforeDir="false" afterPath="$PROJECT_DIR$/zing_product_backend/core/common.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/zing_product_backend/core/security/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/zing_product_backend/core/security/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/zing_product_backend/core/security/crud.py" beforeDir="false" afterPath="$PROJECT_DIR$/zing_product_backend/core/security/crud.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/zing_product_backend/core/security/schema.py" beforeDir="false" afterPath="$PROJECT_DIR$/zing_product_backend/core/security/schema.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/zing_product_backend/core/security/security_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/zing_product_backend/core/security/security_api.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/zing_product_backend/core/security/user_init.py" beforeDir="false" afterPath="$PROJECT_DIR$/zing_product_backend/core/security/user_init.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/zing_product_backend/core/security/users.py" beforeDir="false" afterPath="$PROJECT_DIR$/zing_product_backend/core/security/users.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/zing_product_backend/models/auth.py" beforeDir="false" afterPath="$PROJECT_DIR$/zing_product_backend/models/auth.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/zing_product_backend/models/containment.py" beforeDir="false" afterPath="$PROJECT_DIR$/zing_product_backend/models/containment.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/zing_product_backend/models/material_setting.py" beforeDir="false" afterPath="$PROJECT_DIR$/zing_product_backend/models/material_setting.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -24,26 +63,31 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 8
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 8
+}</component>
   <component name="ProjectId" id="2XHoozO0oYql0FiBBy0ojH1nsPq" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "true",
-    "git-widget-placeholder": "master",
-    "last_opened_file_path": "C:/core_package/zing_product_backend",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "settings.editor.selected.configurable": "http.proxy",
-    "vue.rearranger.settings.migration": "true"
+  <component name="ProjectViewState">
+    <option name="autoscrollToSource" value="true" />
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/core_package/zing_product_backend&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;http.proxy&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\core_package\zing_product_backend" />
@@ -68,6 +112,28 @@
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="" />
       <option name="PARAMETERS" value="-m alembic revision --autogenerate -m &quot;test&quot;" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="auth" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="zing_product_backend" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/zing_product_backend/models" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/zing_product_backend/models/auth.py" />
+      <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
@@ -141,8 +207,31 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="test_2" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="zing_product_backend" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/zing_product_backend/services/tp_auto_sample" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/zing_product_backend/services/tp_auto_sample/test_2.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="zing_product_backend" type="Python.FastAPI">
       <option name="additionalOptions" value="--reload --port 12345 --host 10.9.16.19" />
+      <option name="appName" value="app" />
       <option name="file" value="$PROJECT_DIR$/main.py" />
       <module name="zing_product_backend" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -160,15 +249,19 @@
     <list>
       <item itemvalue="FastAPI.zing_product_backend" />
       <item itemvalue="Python.alembic" />
+      <item itemvalue="Python.test_2" />
+      <item itemvalue="Python.auth" />
       <item itemvalue="Python.env" />
       <item itemvalue="Python.connections" />
       <item itemvalue="Python.main" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.test_2" />
+        <item itemvalue="Python.main" />
+        <item itemvalue="Python.auth" />
         <item itemvalue="Python.env" />
         <item itemvalue="Python.connections" />
-        <item itemvalue="Python.main" />
       </list>
     </recent_temporary>
   </component>
@@ -181,7 +274,31 @@
       <option name="presentableId" value="Default" />
       <updated>1698295545612</updated>
       <workItem from="1698295555868" duration="34858000" />
+      <workItem from="1698421919970" duration="2029000" />
+      <workItem from="1699596226958" duration="590000" />
+      <workItem from="1699597649621" duration="605000" />
+      <workItem from="1700201072337" duration="81495000" />
+      <workItem from="1701045733414" duration="36362000" />
+      <workItem from="1701733317073" duration="9417000" />
+      <workItem from="1701819603290" duration="26604000" />
     </task>
+    <task id="LOCAL-00001" summary="temp save">
+      <option name="closed" value="true" />
+      <created>1700631628735</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1700631628735</updated>
+    </task>
+    <task id="LOCAL-00002" summary="temp save">
+      <option name="closed" value="true" />
+      <created>1701740566548</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1701740566548</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -198,11 +315,67 @@
       </map>
     </option>
   </component>
+  <component name="VcsManagerConfiguration">
+    <ignored-roots>
+      <path value="$PROJECT_DIR$" />
+    </ignored-roots>
+    <MESSAGE value="init from local" />
+    <MESSAGE value="temp save" />
+    <option name="LAST_COMMIT_MESSAGE" value="temp save" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/zing_product_backend/core/security/crud.py</url>
+          <line>72</line>
+          <option name="timeStamp" value="7" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/zing_product_backend/core/security/crud.py</url>
+          <line>138</line>
+          <option name="timeStamp" value="14" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/zing_product_backend/core/security/crud.py</url>
+          <line>140</line>
+          <option name="timeStamp" value="15" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/zing_product_backend/core/security/crud.py</url>
+          <line>142</line>
+          <option name="timeStamp" value="16" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/zing_product_backend/core/security/crud.py</url>
+          <line>147</line>
+          <option name="timeStamp" value="17" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/zing_product_backend/core/security/crud.py</url>
+          <line>85</line>
+          <option name="timeStamp" value="23" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/zing_product_backend/core/security/crud.py</url>
+          <line>86</line>
+          <option name="timeStamp" value="24" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/zing_product_backend/core/security/security_utils.py</url>
+          <line>18</line>
+          <option name="timeStamp" value="25" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/zing_product_backend$zing_product_backend.coverage" NAME="zing_product_backend Coverage Results" MODIFIED="1698390483208" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/zing_product_backend$zing_product_backend.coverage" NAME="zing_product_backend Coverage Results" MODIFIED="1701855960053" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/zing_product_backend$auth.coverage" NAME="auth Coverage Results" MODIFIED="1700627342785" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/zing_product_backend/models" />
     <SUITE FILE_PATH="coverage/zing_product_backend$connections.coverage" NAME="connections Coverage Results" MODIFIED="1698313787885" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/zing_product_backend/app_db" />
     <SUITE FILE_PATH="coverage/zing_product_backend$alemvic.coverage" NAME="alembic Coverage Results" MODIFIED="1698384243483" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="C:\core_package\zing_product_backend" />
     <SUITE FILE_PATH="coverage/zing_product_backend$env.coverage" NAME="env Coverage Results" MODIFIED="1698387766275" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/alembic" />
-    <SUITE FILE_PATH="coverage/zing_product_backend$main.coverage" NAME="main Coverage Results" MODIFIED="1698302903408" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/zing_product_backend$main.coverage" NAME="main Coverage Results" MODIFIED="1701229921895" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/zing_product_backend$test_2.coverage" NAME="test_2 Coverage Results" MODIFIED="1701320555948" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/zing_product_backend/services/tp_auto_sample" />
   </component>
 </project>

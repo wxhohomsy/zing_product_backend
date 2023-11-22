@@ -1,0 +1,1 @@
+from zing_product_backend.app_db.connections import AppSession, AsyncAppSession
