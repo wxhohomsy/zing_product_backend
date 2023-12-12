@@ -9,9 +9,9 @@ class MatInfoByGroupType(BaseModel):
     id: int
     mat_id: str
     mat_description: str
-    group_name: str
-    group_id: int
-    group_type: common.MatGroupType
+    group_name: Union[str, None]
+    group_id: Union[int, None]
+    group_type: Union[common.MatGroupType, None]
     mat_base_type: common.MatBaseType
     mat_type: str
     mat_grp_1: str

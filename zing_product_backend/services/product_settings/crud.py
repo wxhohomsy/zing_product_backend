@@ -42,7 +42,17 @@ class SettingsDataBase:
                 mat_base_type=mat_orm.mat_base_type,
                 created_time=mat_orm.created_time,
                 updated_time=mat_orm.updated_time,
-                updated_by=mat_orm.updated_by
+                updated_by=mat_orm.updated_by,
+                mat_type=mat_orm.mat_type,
+                mat_grp_1=mat_orm.mat_grp_1,
+                mat_grp_2=mat_orm.mat_grp_2,
+                mat_grp_3=mat_orm.mat_grp_3,
+                mat_grp_4=mat_orm.mat_grp_4,
+                mat_grp_5=mat_orm.mat_grp_5,
+                mat_grp_6=mat_orm.mat_grp_6,
+                mat_grp_7=mat_orm.mat_grp_7,
+                mat_grp_8=mat_orm.mat_grp_8,
+                first_flow=mat_orm.first_flow,
             )
             mat_info_list.append(mat_info)
         return mat_info_list
@@ -198,7 +208,8 @@ class SettingsDataBase:
                 description=mat_group_orm.group_description,
                 mat_info_list=mat_info_list,
                 updated_by=mat_group_orm.updated_by,
-                updated_time=mat_group_orm.updated_time
+                updated_time=mat_group_orm.updated_time,
+                id=mat_group_orm.id
             )
             mat_group_list.append(mat_group_info)
         return mat_group_list
@@ -275,13 +286,12 @@ class SettingsDataBase:
             id=group_orm.id
         )
 
-    async def delete_group(self, to_delete_group: schemas.DeleteMatGroup, group_type: common.MatGroupType) \
+    async def delete_group(self, to_delete_group: schemas.DeleteMatGroup) \
             -> schemas.MatGroupDetail:
         group_id = to_delete_group.group_id
         stmt = select(material_setting.MatGroupDef).where(
             and_(
                 material_setting.MatGroupDef.id == group_id,
-                material_setting.MatGroupDef.group_type == group_type
             )
         )
         group_orm = (await self.session.execute(stmt)).scalars().first()
