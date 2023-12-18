@@ -1,31 +1,40 @@
 import pandas as pd
-from typing import Dict
+from typing import Dict, Union
 from sqlalchemy import text
 from sqlalchemy.engine.row import RowMapping
 from cachetools import cached, TTLCache
 from zing_product_backend.app_db.connections import l1w_db_engine, l2w_db_engine
 from zing_product_backend.core.common_type import *
-from zing_product_backend.core import settings
+from zing_product_backend.core import common, settings
 
 
 STS_TTL_CACHE = TTLCache(maxsize=10000, ttl=settings.MES_STS_CACHE_TIME)
 SPC_TTL_CACHE = TTLCache(maxsize=10000, ttl=settings.SPC_DATA_CACHE_TIME)
+
+t_mapping_or_none = Union[RowMapping, None]
+t_float_or_none = Union[float, None]
 
 
 class NotFindInDBError(Exception):
     pass
 
 
-def get_cdb_engine(factory: t_virtual_factory):
-    assert factory in ['WE1', 'L2W'], f'factory {factory} is not supported.'
-    if factory == 'WE1':
+def create_sql_tuple(str_list: List[str]):
+    return tuple([f"{item}" for item in str_list])
+
+
+def get_cdb_engine(virtual_factory: common.VirtualFactory):
+    if virtual_factory == common.VirtualFactory.L1W:
         return l1w_db_engine
-    else:
+    elif virtual_factory == common.VirtualFactory.L2W:
         return l2w_db_engine
+    else:
+        raise ValueError(f"factory {virtual_factory} is not supported")
 
 
-def get_sublot_sts(sublot_id: str, factory: t_virtual_factory):
-    cdb_engine = get_cdb_engine(factory)
+@cached(cache=STS_TTL_CACHE, info=settings.DEBUG)
+def get_sublot_sts(sublot_id: str, virtual_factory: common.VirtualFactory) -> RowMapping:
+    cdb_engine = get_cdb_engine(virtual_factory)
     with cdb_engine.connect() as c:
         sql = text(f"select * from MESMGR.MWIPSLTSTS where SUBLOT_ID = '{sublot_id}'")
         data = c.execute(sql).fetchone()
@@ -35,8 +44,9 @@ def get_sublot_sts(sublot_id: str, factory: t_virtual_factory):
             return data._mapping
 
 
-def get_lot_sts(lot_id: str, factory: t_virtual_factory):
-    cdb_engine = get_cdb_engine(factory)
+@cached(cache=STS_TTL_CACHE, info=settings.DEBUG)
+def get_lot_sts(lot_id: str, virtual_factory: common.VirtualFactory) -> RowMapping:
+    cdb_engine = get_cdb_engine(virtual_factory)
     with cdb_engine.connect() as c:
         sql = text(f"select * from MESMGR.MWIPLOTSTS where LOT_ID = '{lot_id}'")
         data = c.execute(sql).fetchone()
@@ -46,21 +56,91 @@ def get_lot_sts(lot_id: str, factory: t_virtual_factory):
             return data._mapping
 
 
+@cached(cache=SPC_TTL_CACHE, info=settings.DEBUG)
+def get_segment_sample_data_by_char_id(segment_like_id: str, char_id: str,
+                                       virtual_factory: common.VirtualFactory) -> (
+        t_mapping_or_none):
+    assert len(segment_like_id) in settings.SEGMENT_ID_PERMIT_LENGTH, \
+        (f"segment_like_id  {segment_like_id}'s length"
+            f" is not in {settings.SEGMENT_ID_PERMIT_LENGTH}")
+    cdb_engine = get_cdb_engine(virtual_factory)
+    with cdb_engine.connect() as c:
+        sql = text(f"""
+        SELECT AVG_DATA, CMF_20  FROM MESMGR.CSAMSPCDAT A
+          WHERE A.CHAR_ID = '{char_id}'
+          AND A.SEGMENT_LOT_ID = '{segment_like_id}'
+          order by CMF_20 desc
+        """)
+        data = c.execute(sql).fetchone()
+        if data is None:
+            return None
+        else:
+            return data._mapping
 
-def create_sql_tuple(str_list: List[str]):
-    return tuple([f"'{item}'" for item in str_list])
+
+@cached(cache=SPC_TTL_CACHE, info=settings.DEBUG)
+def get_segment_sample_data_by_operation_id_list(segment_id: str, oper_id_list: List[str],
+                                         virtual_factory: common.VirtualFactory) -> pd.DataFrame:
+    assert len(segment_id) in settings.SEGMENT_ID_PERMIT_LENGTH, \
+        (f"segment_like_id  {segment_id}'s length"
+            f" is not in {settings.SEGMENT_ID_PERMIT_LENGTH}")
+    cdb_engine = get_cdb_engine(virtual_factory)
+    with cdb_engine.connect() as c:
+        sql = text(f"""
+        SELECT AVG_DATA, CHAR_ID, CMF_20  FROM MESMGR.CSAMSPCDAT A
+          WHERE A.OPER in {create_sql_tuple(oper_id_list)}
+          AND A.SEGMENT_LOT_ID = '{segment_id}'
+          order by CMF_20 desc
+        """)
+        df = pd.read_sql(sql, c)
+        df = df.drop_duplicates(subset=['char_id'], keep='first')
+        return df
+
+
+@cached(cache=SPC_TTL_CACHE, info=settings.DEBUG)
+def get_unit_latest_spc_data_by_spec_id(unit_id, spec_id, virtual_factory: common.VirtualFactory) -> t_float_or_none:
+    # spc data means data from tqs_summary_data
+    sql = text(f"""
+      SELECT ext_mv from spcmgr.tqs_summary_data
+      where 1 = 1
+      and usr_cmf_07 = '{unit_id}'
+      and spec_id = '{spec_id}'
+      order by system_time desc
+    """)
+    with get_cdb_engine(virtual_factory).connect() as c:
+        data = c.execute(sql).fetchone()
+        if data is None:
+            return None
+        else:
+            return data[0]
+
+
+@cached(cache=SPC_TTL_CACHE, info=settings.DEBUG)
+def get_unit_latest_spc_data_by_operation_id_list(unit_id, operation_id_list,
+                                                  virtual_factory: common.VirtualFactory) -> pd.DataFrame:
+    sql = text(f"""
+        SELECT ext_mv, spec_id, sys_time, tran_time from spcmgr.tqs_summary_data
+        where 1 = 1
+        and usr_cmf_07 = '{unit_id}'
+        and oper in {create_sql_tuple(operation_id_list)}
+        order by system_time desc
+    """)
+    with get_cdb_engine(virtual_factory).connect() as c:
+        df = pd.read_sql(sql, c)
+        df = df.drop_duplicates(subset=['spec_id'], keep='first')
+        return df
 
 
 def get_lot_wip_information(lot_id: str, factory: t_virtual_factory):
-    pass
+    print(f"get_lot_wip_information {lot_id} {factory}")
 
 
 def get_mat_info(mat_id: str) -> Dict:
-    with get_cdb_engine('L2W').connect() as c:
+    with get_cdb_engine(common.VirtualFactory.L2W).connect() as c:
         df = pd.read_sql(text(f"select * from MESMGR.MWIPMATDEF where MAT_ID = '{mat_id}'"), c)
 
     if len(df) == 0:
-        with get_cdb_engine('WE1').connect() as c:
+        with get_cdb_engine(common.VirtualFactory.L1W).connect() as c:
             df = pd.read_sql(text(f"select * from MESMGR.MWIPMATDEF where MAT_ID = '{mat_id}'"), c)
 
     assert len(df) == 1, rf"mat_id {mat_id} is not unique or not none"

@@ -1,12 +1,14 @@
 from abc import ABC, abstractmethod, abstractproperty
-from zing_product_backend.core import common
 from typing import Union, List, Set, Dict
+from zing_product_backend.core import common
+from zing_product_backend.app_db import mes_db_query
 
 
 class Product(ABC):
     def __init__(self, _id: str, product_type: common.ProductObjectType, virtual_factory: common.VirtualFactory):
         self.id = _id
         self.product_type = product_type
+        self.virtual_factory = virtual_factory
 
     def __repr__(self):
         return f'{self.__class__.__name__}({self.id})'
@@ -15,7 +17,8 @@ class Product(ABC):
 class SublotProduct(Product):
 
     def get_mwipsltsts_data(self, attr_name: str):
-        return self.fetched_data.get(attr_name, None)
+        assert attr_name.lower()
+        data_mapping = mes_db_query.get_sublot_sts(self.id, self.virtual_factory)
 
 
 class LotProduct(Product):
