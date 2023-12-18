@@ -1,8 +1,19 @@
 import pandas as pd
 from typing import Dict
 from sqlalchemy import text
+from sqlalchemy.engine.row import RowMapping
+from cachetools import cached, TTLCache
 from zing_product_backend.app_db.connections import l1w_db_engine, l2w_db_engine
 from zing_product_backend.core.common_type import *
+from zing_product_backend.core import settings
+
+
+STS_TTL_CACHE = TTLCache(maxsize=10000, ttl=settings.MES_STS_CACHE_TIME)
+SPC_TTL_CACHE = TTLCache(maxsize=10000, ttl=settings.SPC_DATA_CACHE_TIME)
+
+
+class NotFindInDBError(Exception):
+    pass
 
 
 def get_cdb_engine(factory: t_virtual_factory):
@@ -11,6 +22,29 @@ def get_cdb_engine(factory: t_virtual_factory):
         return l1w_db_engine
     else:
         return l2w_db_engine
+
+
+def get_sublot_sts(sublot_id: str, factory: t_virtual_factory):
+    cdb_engine = get_cdb_engine(factory)
+    with cdb_engine.connect() as c:
+        sql = text(f"select * from MESMGR.MWIPSLTSTS where SUBLOT_ID = '{sublot_id}'")
+        data = c.execute(sql).fetchone()
+        if data is None:
+            raise NotFindInDBError(sql)
+        else:
+            return data._mapping
+
+
+def get_lot_sts(lot_id: str, factory: t_virtual_factory):
+    cdb_engine = get_cdb_engine(factory)
+    with cdb_engine.connect() as c:
+        sql = text(f"select * from MESMGR.MWIPLOTSTS where LOT_ID = '{lot_id}'")
+        data = c.execute(sql).fetchone()
+        if data is None:
+            raise NotFindInDBError(sql)
+        else:
+            return data._mapping
+
 
 
 def create_sql_tuple(str_list: List[str]):

@@ -3,7 +3,8 @@ from zing_product_backend.core.product_containment.containment_constants import 
 
 
 class BaseRuleParas(BaseModel):
-    pass
+    name = 'BaseRuleParas'
+    para_type = BaseRuleParaType
 
 
 class BaseRule(BaseModel):

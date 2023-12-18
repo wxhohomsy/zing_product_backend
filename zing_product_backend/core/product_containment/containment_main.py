@@ -1,17 +1,7 @@
 from zing_product_backend.core import common
+from zing_product_backend.core.product_containment.containment_structure import *
+from zing_product_backend.core.product_containment.containment_constants import *
 
 
-def containment_lot(containment_rule_json):
-    pass
-
-
-def containment_wafer(containment_rule_json):
-    pass
-
-
-def containment_lot_wafer(containment_rule_json):
-    pass
-
-
-def containment_object(object_type: common.ProductObjectType, containment_rule_json):
+def check_product_containment(product: Product, containment_rule: ContainmentRule) -> ContainmentStatus:
     pass

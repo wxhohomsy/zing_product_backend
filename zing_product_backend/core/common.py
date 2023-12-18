@@ -3,6 +3,11 @@ from pydantic import BaseModel
 from typing import Union, List, Optional, Any
 
 
+class VirtualFactory(str, Enum):
+    L1W = 'WE1'
+    L2W = 'L2W'
+
+
 class RuleName(str, Enum):
     ADMIN = "admin"
     IMS_DEV = "ims_dev"
@@ -43,7 +48,7 @@ class ContainmentCustomRuleName(str, Enum):
 
 
 class ProductObjectType(str, Enum):
-    WAFER = 'wafer'
+    SUBLOT = 'sublot'
     LOT = 'lot'
     SEGMENT = 'segment'
     INGOT = 'ingot'
@@ -53,6 +58,7 @@ class ProductStatus(str, Enum):
     NORMAL = 'NORMAL'
     HOLD = 'HOLD'
     START = 'START'
+
 
 
 class ProductionTransaction(str, Enum):

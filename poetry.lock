@@ -164,6 +164,17 @@ files = [
 ]
 
 [[package]]
+name = "cachetools"
+version = "5.3.2"
+description = "Extensible memoizing collections and decorators"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "cachetools-5.3.2-py3-none-any.whl", hash = "sha256:861f35a13a451f94e301ce2bec7cac63e881232ccce7ed67fab9b5df4d3beaa1"},
+    {file = "cachetools-5.3.2.tar.gz", hash = "sha256:086ee420196f7b2ab9ca2db2520aca326318b68fe5ba8bc4d49cca91add450f2"},
+]
+
+[[package]]
 name = "celery"
 version = "5.3.6"
 description = "Distributed Task Queue."
@@ -2096,4 +2107,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.11,<3.12"
-content-hash = "dffb4d2d86f8a3642cf90b7dcc0ebc4767a84fa4287eaf9d590fc4ff7d566a16"
+content-hash = "f016d121f4f1d3fd43ec870dd0dfe752a751916d6325be9d7f2570aa43bb346e"

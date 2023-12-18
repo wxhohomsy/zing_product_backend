@@ -1,3 +1,5 @@
+import datetime
+import time
 from typing import AsyncGenerator, Annotated
 import time
 from fastapi import Depends, FastAPI, Request, HTTPException
@@ -8,26 +10,15 @@ from zing_product_backend.models import auth
 app.include_router(router_v1)
 
 
-@app.get("/")
-async def hello():
-    return {"message": "Hello World"}
-
-fake_items_db = [{"item_name": "Foo"}, {"item_name": "Bar"}, {"item_name": "Baz"}]
-
-
-class ModelName(str, Enum):
-    alexnet = "alexnet"
-    resnet = "resnet"
-    lenet = "lenet"
+@app.get("/test/getTime")
+async def get_model():
+    time.sleep(3)
+    return {'current_time': datetime.datetime.now()}
 
 
-@app.get("/models/{model_name}")
-async def get_model(model_name: ModelName):
-    if model_name is ModelName.alexnet:
-        return {"model_name": model_name, "message": "Deep Learning FTW!"}
-
-    if model_name.value == "lenet":
-        return {"model_name": model_name, "message": "LeCNN all the images"}
+@app.get("/test/nothing")
+async def get_model():
+    return {'data': 'nothing'}
 
 
 @app.middleware("http")
