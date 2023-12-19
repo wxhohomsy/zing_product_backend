@@ -46,7 +46,7 @@ async def get_privilege_groups(admin_user=Depends(current_admin_user)) -> Privil
     async with AsyncAppSession() as session:
         privilege_db = crud.PrivilegeDataBase(session)
         privilege_groups_list = await privilege_db.get_privilege_groups()
-    data_list: List[schema.PrivilegeRule] = []
+    data_list: List[schema.PrivilegeGroupWithRules] = []
     for privilege_group in privilege_groups_list:
         group_rule_name_list = []
         for rule in privilege_group.privilege_rules:
@@ -120,7 +120,7 @@ async def create_privilege_groups(privilege_group: schema.PrivilegeGroupCreate,
             group_description=data.group_description,
             created_by=data.created_by,
             created_time=data.created_time,
-            group_deleted=data.group_deleted,
+            group_deleted=bool(data.group_deleted),
             privilege_rules=[]
         )
     ],

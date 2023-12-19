@@ -31,7 +31,11 @@ async def log_request_time(request: Request, call_next):
 
 
 if __name__ == "__main__":
-    from fastapi_users import password
-    a = password.PasswordHelper().hash('admin')
-    a = '$2b$12$UdPtLXtM6.ictXZQ/EIhtOpDZBr8nkAwRV72EMjaGyt/EK4BXxBuW'
-    print(password.PasswordHelper().verify_and_update('admin', a))
+    from zing_product_backend.app_db import mes_db_query
+    from zing_product_backend.core import common
+    # df = mes_db_query.get_unit_latest_spc_data_by_operation_id_tuple(
+    #     'D31520G41008', ('6700', '6200'), common.VirtualFactory.L1W)
+    # df.to_csv(r'p:\e00963\test.csv')
+    df = mes_db_query.get_wafering_spec_by_material_and_operation(
+'3T38XPR331D', ('2920', '6700', '6200'), common.VirtualFactory.L1W)
+    df.to_excel(r'p:\e00963\test_3.xlsx')

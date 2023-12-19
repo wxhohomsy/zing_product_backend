@@ -1,6 +1,6 @@
 from enum import Enum, auto
 from pydantic import BaseModel
-from typing import Union, List, Optional, Any
+from typing import Union, List, Optional, Any, Dict
 
 
 class VirtualFactory(str, Enum):
@@ -18,6 +18,7 @@ class RuleName(str, Enum):
 
 class ErrorMessages(str, Enum):
     INSUFFICIENT_PRIVILEGE = "Insufficient privilege"
+    NOT_AUTHENTICATED = "Not authenticated"
     DATA_NOT_FOUND = "Data not found"
     DUPLICATE_DATA = "Duplicate data"
     DATABASE_ERROR = "Database error"
@@ -27,7 +28,7 @@ class ResponseModel(BaseModel):
     success: bool
     error_message: Union[ErrorMessages, None] = ''
     success_message: str = ''
-    data: None
+    data: Union[None, Any] = None
     detail: Optional[str] = None
 
 
@@ -60,7 +61,6 @@ class ProductStatus(str, Enum):
     START = 'START'
 
 
-
 class ProductionTransaction(str, Enum):
     HOLD = 'HOLD'
     RELEASE = 'RELEASE'
@@ -78,13 +78,21 @@ class MatBaseType(str, Enum):
 
 
 # ------------------------------- RESPONSE ---------------------------------
-GENERAL_RESPONSE = {
-             403: {
-                 "description": "Forbidden",
-                 "content": {
-                     "application/json": {
-                         "example": {"detail": ErrorMessages.INSUFFICIENT_PRIVILEGE}
-                     }
-                 }
-             }
-         }
+GENERAL_RESPONSE: Dict[Union[int, str], Dict[str, Any]] = {
+    403: {
+        "description": "Forbidden",
+        "content": {
+            "application/json": {
+                "example": {"detail": ErrorMessages.INSUFFICIENT_PRIVILEGE}
+            }
+        }
+    },
+    401: {
+        "description": "Not authenticated",
+        "content": {
+            "application/json": {
+                "example": {"detail": ErrorMessages.NOT_AUTHENTICATED}
+            }
+        }
+    },
+}

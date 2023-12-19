@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, and_, or_
 from fastapi_users.db import SQLAlchemyUserDatabase
 from fastapi_users.password import PasswordHelper
-from typing import Optional, Dict, Any, Union, List
+from typing import Optional, Dict, Any, Union, List, Sequence
 from zing_product_backend.models import auth
 from zing_product_backend.reporting import system_log
 from zing_product_backend.core.security import schema
@@ -62,17 +62,17 @@ class PrivilegeDataBase:
     def __init__(self, async_session: AsyncSession):
         self.session = async_session
 
-    async def get_privilege_rules(self) -> List[auth.PrivilegeRules]:
+    async def get_privilege_rules(self) -> Sequence[auth.PrivilegeRules]:
         stmt = select(auth.PrivilegeRules)
         data = await self.session.execute(stmt)
         return data.scalars().all()
 
-    async def get_privilege_groups(self) -> list[auth.PrivilegeGroup]:
+    async def get_privilege_groups(self) -> Sequence[auth.PrivilegeGroup]:
         stmt = select(auth.PrivilegeGroup)
         data = await self.session.execute(stmt)
         return data.scalars().all()
 
-    async def get_active_privilege_group_by_name(self, group_name: str) -> auth.PrivilegeGroup:
+    async def get_active_privilege_group_by_name(self, group_name: str) -> Union[auth.PrivilegeGroup, None]:
         stmt = select(auth.PrivilegeGroup).where(and_(auth.PrivilegeGroup.group_name == group_name,
                                                       auth.PrivilegeGroup.group_deleted == False))
         data = await self.session.execute(stmt)
@@ -89,10 +89,10 @@ class PrivilegeDataBase:
         await self.session.refresh(group_orm)
         return group_orm
 
-    async def get_privilege_rule_by_id(self, rule_id: uuid.UUID, need_active=False) -> auth.PrivilegeGroup:
+    async def get_privilege_rule_by_id(self, rule_id: uuid.UUID, need_active=False) -> auth.PrivilegeRules:
         stmt = select(auth.PrivilegeRules).where(auth.PrivilegeRules.id == rule_id)
         if need_active is True:
-            stmt = stmt.where(auth.PrivilegeRules.rule_active == False)
+            stmt = stmt.where(auth.PrivilegeRules.is_active == False)
         data = await self.session.execute(stmt)
         rule_orm = data.scalar()
         await self.session.refresh(rule_orm)

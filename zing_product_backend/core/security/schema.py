@@ -96,8 +96,8 @@ class PrivilegeRuleUpdate(BaseModel):
 
 
 class PrivilegeRuleCreate(BaseModel):
-    group_name: str
-    group_description: Union[str, None]
+    rule_name: str
+    rule_description: Union[str, None]
 
 
 class PrivilegeRuleAssign(BaseModel):

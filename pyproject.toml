@@ -24,10 +24,13 @@ sqlalchemy = "^2.0.22"
 pymongo = "^4.5.0"
 pytz = "^2023.3.post1"
 cachetools = "^5.3.2"
+passlib = "^1.7.4"
+openpyxl = "^3.1.2"
 
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.3"
+mypy = "^1.7.1"
 
 [build-system]
 requires = ["poetry-core"]

@@ -86,7 +86,7 @@ class UserManager(UUIDIDMixin, BaseUserManager[schema.User, uuid.UUID]):
 
         return created_user
 
-    async def get_by_username(self, username: str) -> models.UP:
+    async def get_by_username(self, username: str) -> schema.User:
         """
         Get a user by e-mail.
 

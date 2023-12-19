@@ -7,13 +7,14 @@ from pymongo import MongoClient
 import os
 from dotenv import load_dotenv
 import oracledb
+from zing_product_backend.core import settings
 
 
 oracledb.init_oracle_client()
 load_dotenv()
 from sqlalchemy.ext.asyncio import AsyncAttrs
-l1w_db_engine = create_engine(os.environ.get('L1W_MESDB_URL'), pool_size=2)
-l2w_db_engine = create_engine(os.environ.get('L2W_MESDB_URL'), pool_size=2)
+l1w_db_engine = create_engine(os.environ.get('L1W_MESDB_URL'), pool_size=2, echo=settings.DEBUG)
+l2w_db_engine = create_engine(os.environ.get('L2W_MESDB_URL'), pool_size=2, echo=settings.DEBUG)
 app_db_engine = create_engine(os.environ.get('APP_DATABASE_URL'), pool_size=2)
 app_async_engine = create_async_engine(os.environ.get('APP_ASYNC_DATABASE_URL'), pool_size=2)
 shaiapp02_client = MongoClient(os.environ.get('KLARF_DATABASE_URL'))

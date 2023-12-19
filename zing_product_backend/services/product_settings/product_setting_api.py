@@ -16,11 +16,11 @@ product_settings_router = APIRouter()
 
 
 class MatInfoListResponse(ResponseModel):
-    data: List[schemas.MatInfoByGroupType]
+    data: List[schemas.MatGroupInfo]
 
 
 class MatInfoResponse(ResponseModel):
-    data: Union[schemas.MatInfoByGroupType, None]
+    data: Union[schemas.MatGroupInfo, None]
 
 
 class MatGroupDetailListResponse(ResponseModel):
@@ -111,28 +111,6 @@ async def get_all_mat_group_info(group_type: MatGroupType, usr: UserInfo = Depen
             )
 
 
-@product_settings_router.get("/allMatGroupInfo/{group_type}",
-                             response_model=MatGroupInfoListResponse, responses=GENERAL_RESPONSE, )
-async def get_all_mat_group_info(group_type: MatGroupType, usr: UserInfo = Depends(current_active_user)):
-    async with AsyncAppSession() as s:
-        setting_database = crud.SettingsDataBase(s)
-        try:
-            mat_group_info_list = await setting_database.get_all_mat_group_info(group_type)
-            return MatGroupInfoListResponse(
-                data=mat_group_info_list,
-                success=True,
-                success_message='get mat group success'
-            )
-        except crud.DatabaseError as e:
-            system_log.server_logger.error(traceback.format_exc())
-            return MatGroupInfoListResponse(
-                data=[],
-                success=False,
-                success_message='error',
-                detail=str(e),
-                error_message=ErrorMessages.DATABASE_ERROR
-            )
-
 
 @product_settings_router.get("/matGroupDetail/{group_type}/{group_id}",
                              response_model=MatGroupDetailResponse, responses=GENERAL_RESPONSE, )
@@ -216,7 +194,7 @@ async def update_mat_group(update_info_body: schemas.UpdateMatGroup,
         except crud.DatabaseError as e:
             system_log.server_logger.error(traceback.format_exc())
             return MatGroupInfoResponse(
-                data=[],
+                data=None,
                 success=False,
                 detail=str(e),
                 error_message=ErrorMessages.DATABASE_ERROR
@@ -226,7 +204,7 @@ async def update_mat_group(update_info_body: schemas.UpdateMatGroup,
 @product_settings_router.post(
     "/createMatGroup/{group_type}", response_model=MatGroupInfoResponse, responses=GENERAL_RESPONSE)
 async def create_mat_group(group_type: common.MatGroupType, create_info_body: schemas.CreateMatGroup,
-                           usr=Depends(dependents.current_setting_change_user)) -> schemas.MatInfoByGroupType:
+                           usr=Depends(dependents.current_setting_change_user)) -> MatGroupInfoResponse:
     async with AsyncAppSession() as s:
         setting_database = crud.SettingsDataBase(s)
         try:

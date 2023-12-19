@@ -1,11 +1,12 @@
 import pandas as pd
-from typing import Dict, Union
+from typing import Dict, Union, Tuple
 from sqlalchemy import text
 from sqlalchemy.engine.row import RowMapping
 from cachetools import cached, TTLCache
 from zing_product_backend.app_db.connections import l1w_db_engine, l2w_db_engine
 from zing_product_backend.core.common_type import *
 from zing_product_backend.core import common, settings
+from zing_product_backend.global_utils import mes_db_utils
 
 
 STS_TTL_CACHE = TTLCache(maxsize=10000, ttl=settings.MES_STS_CACHE_TIME)
@@ -19,8 +20,10 @@ class NotFindInDBError(Exception):
     pass
 
 
-def create_sql_tuple(str_list: List[str]):
-    return tuple([f"{item}" for item in str_list])
+def generate_spec_like_query(spec_col_name: str, oper_id_tuple: Tuple[str]):
+    query_parts = [f"{spec_col_name} like '{oper_id}-%'" for oper_id in oper_id_tuple]
+    query = " or ".join(query_parts)
+    return f"({query})"
 
 
 def get_cdb_engine(virtual_factory: common.VirtualFactory):
@@ -79,8 +82,8 @@ def get_segment_sample_data_by_char_id(segment_like_id: str, char_id: str,
 
 
 @cached(cache=SPC_TTL_CACHE, info=settings.DEBUG)
-def get_segment_sample_data_by_operation_id_list(segment_id: str, oper_id_list: List[str],
-                                         virtual_factory: common.VirtualFactory) -> pd.DataFrame:
+def get_segment_sample_data_by_operation_id_list(segment_id: str, oper_id_tuple: List[str],
+                                                 virtual_factory: common.VirtualFactory) -> pd.DataFrame:
     assert len(segment_id) in settings.SEGMENT_ID_PERMIT_LENGTH, \
         (f"segment_like_id  {segment_id}'s length"
             f" is not in {settings.SEGMENT_ID_PERMIT_LENGTH}")
@@ -88,7 +91,8 @@ def get_segment_sample_data_by_operation_id_list(segment_id: str, oper_id_list: 
     with cdb_engine.connect() as c:
         sql = text(f"""
         SELECT AVG_DATA, CHAR_ID, CMF_20  FROM MESMGR.CSAMSPCDAT A
-          WHERE A.OPER in {create_sql_tuple(oper_id_list)}
+          WHERE 1 = 1
+          AND {generate_spec_like_query('A.CHAR_ID', oper_id_tuple)}
           AND A.SEGMENT_LOT_ID = '{segment_id}'
           order by CMF_20 desc
         """)
@@ -98,14 +102,15 @@ def get_segment_sample_data_by_operation_id_list(segment_id: str, oper_id_list: 
 
 
 @cached(cache=SPC_TTL_CACHE, info=settings.DEBUG)
-def get_unit_latest_spc_data_by_spec_id(unit_id, spec_id, virtual_factory: common.VirtualFactory) -> t_float_or_none:
+def get_unit_latest_spc_data_by_spec_id(unit_id: str, spec_id: str, virtual_factory: common.VirtualFactory) \
+        -> t_float_or_none:
     # spc data means data from tqs_summary_data
     sql = text(f"""
       SELECT ext_mv from spcmgr.tqs_summary_data
       where 1 = 1
       and usr_cmf_07 = '{unit_id}'
       and spec_id = '{spec_id}'
-      order by system_time desc
+      order by sys_time desc
     """)
     with get_cdb_engine(virtual_factory).connect() as c:
         data = c.execute(sql).fetchone()
@@ -116,15 +121,16 @@ def get_unit_latest_spc_data_by_spec_id(unit_id, spec_id, virtual_factory: commo
 
 
 @cached(cache=SPC_TTL_CACHE, info=settings.DEBUG)
-def get_unit_latest_spc_data_by_operation_id_list(unit_id, operation_id_list,
-                                                  virtual_factory: common.VirtualFactory) -> pd.DataFrame:
+def get_unit_latest_spc_data_by_operation_id_tuple(unit_id, operation_id_tuple: Tuple[str],
+                                                   virtual_factory: common.VirtualFactory) -> pd.DataFrame:
     sql = text(f"""
-        SELECT ext_mv, spec_id, sys_time, tran_time from spcmgr.tqs_summary_data
+        SELECT usr_cmf_07, ext_mv, spec_id, sys_time, tran_time from spcmgr.tqs_summary_data
         where 1 = 1
         and usr_cmf_07 = '{unit_id}'
-        and oper in {create_sql_tuple(operation_id_list)}
-        order by system_time desc
+        and ({generate_spec_like_query('spec_id', operation_id_tuple)})
+        order by sys_time desc
     """)
+
     with get_cdb_engine(virtual_factory).connect() as c:
         df = pd.read_sql(sql, c)
         df = df.drop_duplicates(subset=['spec_id'], keep='first')
@@ -148,15 +154,20 @@ def get_mat_info(mat_id: str) -> Dict:
     return df.iloc[0, :].to_dict()
 
 
-def get_spec_by_material_and_operation(mat_id, operation_id_list, virtual_facotry: t_virtual_factory):
-    cdb_engine = get_cdb_engine(mat_id[:3])
+def get_wafering_spec_by_material_and_operation(mat_id: str, operation_id_tuple: Tuple[str],
+                                                virtual_factory: common.VirtualFactory) -> pd.DataFrame:
+    cdb_engine = get_cdb_engine(virtual_factory)
+    if virtual_factory == common.VirtualFactory.L1W:
+        factory = 'WE1'
+    else:
+        factory = 'L2W'
     sql = text(f"""
-    WITH MAT_LIST AS
+WITH MAT_LIST AS
  (SELECT A.MAT_CMF_1, A.MAT_ID, A.MAT_VER, B.FLOW, C.OPER
     FROM MESMGR.MWIPMATDEF A, MESMGR.MWIPMATFLW B, MESMGR.MWIPFLWOPR C
-   WHERE 1 = 1
-     AND A.MAT_ID = '3P21XPR246R'
-     AND C.OPER IN 
+   WHERE A.FACTORY = '{factory}'
+     AND A.MAT_ID = '{mat_id}'
+     AND C.OPER IN {operation_id_tuple}
 --      AND A.DEACTIVE_FLAG <> 'Y'
      AND A.DELETE_FLAG <> 'Y'
      AND A.MAT_ID = B.MAT_ID(+)
@@ -223,4 +234,17 @@ CHAR_ATTR AS
                      'IE2_AUDIT_FLAG' "IE2_AUDIT_FLAG"))
    ORDER BY MAT_ID, MAT_VER, FLOW, OPER)
 SELECT * FROM CHAR_ATTR WHERE 1 = 1
+AND CHAR_ID is not null 
     """)
+    with cdb_engine.connect() as c:
+        df = pd.read_sql(sql, c)
+        df['lower_spec_limit'] = df.apply(lambda x: mes_db_utils.change_limit_to_float(x['lower_spec_limit'],
+                                                                                       'lower'), axis=1)
+        df['upper_spec_limit'] = df.apply(lambda x: mes_db_utils.change_limit_to_float(x['upper_spec_limit'],
+                                                                                       'upper'), axis=1)
+        df['ie2_audit_flag'] = df.apply(
+            lambda x: mes_db_utils.change_str_to_boolean(x['ie2_audit_flag']), axis=1)
+        df['qa_audit_flag'] = df.apply(
+            lambda x: mes_db_utils.change_str_to_boolean(x['qa_audit_flag']), axis=1)
+
+        return df
