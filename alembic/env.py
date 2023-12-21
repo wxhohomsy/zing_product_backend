@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import async_engine_from_config, create_async_engine
 from alembic import context
 import dotenv
 from zing_product_backend.models.auth import *
-from zing_product_backend.models.product_allocate import *
+from zing_product_backend.models.containment import *
 from zing_product_backend.models.material_setting import *
 from zing_product_backend.app_db.connections import Base
 
@@ -34,13 +34,14 @@ version_table_name = 'alembic_version_product'
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 
-
+print(target_schema)
 def include_name(name, type_, parent_names):
     if type_ == 'table' and name.startswith('alembic_version'):
         return False
+    elif type_ == 'schema' and name not in [target_schema]:
+        return False
     else:
         return True
-
 
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
@@ -59,6 +60,7 @@ def run_migrations_offline() -> None:
         url=url,
         target_metadata=target_metadata,
         target_schema=target_schema,
+        include_schemas=True,
         include_name=include_name,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
@@ -72,6 +74,7 @@ def do_run_migrations(connection: Connection) -> None:
     context.configure(connection=connection, target_metadata=target_metadata,
                       target_schema=target_schema,
                       include_name=include_name,
+                      include_schemas=True,
                       version_table_name=version_table_name,
               )
 

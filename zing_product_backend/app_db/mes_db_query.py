@@ -153,7 +153,7 @@ def get_mat_info(mat_id: str) -> Dict:
 
     return df.iloc[0, :].to_dict()
 
-
+# ---------------------------------mat & spec -------------------------
 def get_wafering_spec_by_material_and_operation(mat_id: str, operation_id_tuple: Tuple[str],
                                                 virtual_factory: common.VirtualFactory) -> pd.DataFrame:
     cdb_engine = get_cdb_engine(virtual_factory)
@@ -248,3 +248,5 @@ AND CHAR_ID is not null
             lambda x: mes_db_utils.change_str_to_boolean(x['qa_audit_flag']), axis=1)
 
         return df
+
+

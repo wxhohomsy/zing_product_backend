@@ -33,19 +33,27 @@ class ResponseModel(BaseModel):
 
 
 class ContainmentBaseRuleType(str, Enum):
-    LOT_TABLE = 'lot_sts_table'
-    SUBLOT_TABLE = 'sublot_sts_table'
+    SQL_TABLE = 'sql_table'
     CUSTOM_FUNCTION = 'custom_function'
 
 
-class ContainmentCustomRuleName(str, Enum):
+class ContainmentBaseRuleClass(str, Enum):
     DATA_OOS = 'data_oos'
     DATA_OOC = 'data_ooc'
     PULLER_ID = 'puller_id'
-    CURRENT_DATETIME = 'current_datetime'
+    END_TIME = 'end_time'
     HC_REDUCE_RULE = 'hc_reduce_rule'
     DELTA_PS_2H_MOVING_AVG = 'delta_ps_2h_moving_avg'
     DELTA_PS_2H_TO_TARGET = 'delta_ps_2h_to_target'
+    MWIPSLTSTS = 'mwipsltsts'
+    MWIPLOTSTS = 'mwiplotsts'
+    MWIPMATDEF = 'mwipmatdef'
+
+
+class ContainmentTableName(str, Enum):
+    MWIPSLTSTS = 'mwipsltsts'
+    MWIPLOTSTS = 'mwiplotsts'
+    MWIPMATDEF = 'mwipmatdef'
 
 
 class ProductObjectType(str, Enum):

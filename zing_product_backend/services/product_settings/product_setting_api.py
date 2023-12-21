@@ -16,11 +16,11 @@ product_settings_router = APIRouter()
 
 
 class MatInfoListResponse(ResponseModel):
-    data: List[schemas.MatGroupInfo]
+    data: List[schemas.MatInfoByGroupType]
 
 
 class MatInfoResponse(ResponseModel):
-    data: Union[schemas.MatGroupInfo, None]
+    data: Union[schemas.MatInfoByGroupType, None]
 
 
 class MatGroupDetailListResponse(ResponseModel):
