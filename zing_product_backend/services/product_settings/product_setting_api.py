@@ -111,6 +111,28 @@ async def get_all_mat_group_info(group_type: MatGroupType, usr: UserInfo = Depen
             )
 
 
+@product_settings_router.get("/allMatGroupInfo/{group_type}",
+                             response_model=MatGroupInfoListResponse, responses=GENERAL_RESPONSE, )
+async def get_all_mat_group_info(group_type: MatGroupType, usr: UserInfo = Depends(current_active_user)):
+    async with AsyncAppSession() as s:
+        setting_database = crud.SettingsDataBase(s)
+        try:
+            mat_group_info_list = await setting_database.get_all_mat_group_info(group_type)
+            return MatGroupInfoListResponse(
+                data=mat_group_info_list,
+                success=True,
+                success_message='get mat group success'
+            )
+        except crud.DatabaseError as e:
+            system_log.server_logger.error(traceback.format_exc())
+            return MatGroupInfoListResponse(
+                data=[],
+                success=False,
+                success_message='error',
+                detail=str(e),
+                error_message=ErrorMessages.DATABASE_ERROR
+            )
+
 
 @product_settings_router.get("/matGroupDetail/{group_type}/{group_id}",
                              response_model=MatGroupDetailResponse, responses=GENERAL_RESPONSE, )

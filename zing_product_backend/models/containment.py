@@ -66,7 +66,8 @@ class ContainmentRule(Base):
     __tablename__ = "containment_rule"
     id = Column(Integer, primary_key=True, autoincrement=True)
     rule_description = Column(VARCHAR(), nullable=False)
-    changeable  = Column(Boolean(), default=True)
+    containment_object_type: common.ProductObjectType = Column(VARCHAR(), nullable=False)
+    changeable = Column(Boolean(), default=True)
     rule_data = Column(JSON(), nullable=False)
     created_by = Column(VARCHAR, ForeignKey(auth.User.user_name), nullable=False, default='admin')
     created_time = Column(DateTime(), nullable=False, default=func.now())

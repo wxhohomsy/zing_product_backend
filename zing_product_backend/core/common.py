@@ -84,6 +84,17 @@ class MatBaseType(str, Enum):
     GROWING = 'growing'
     WAFERING = 'wafering'
 
+# ---------------------------------TP AUTO ASSIGN---------------------------------
+
+
+class TpFrequencyType(str, Enum):
+    # segment_seed_tail/frequency/custom/ingot_tail/ingot_seed
+    SEGMENT_SEED_TAIL = 'segment_seed_tail'
+    FREQUENCY = 'frequency'
+    CUSTOM = 'custom'
+    INGOT_TAIL = 'ingot_tail'
+    INGOT_SEED = 'ingot_seed'
+
 
 # ------------------------------- RESPONSE ---------------------------------
 GENERAL_RESPONSE: Dict[Union[int, str], Dict[str, Any]] = {
