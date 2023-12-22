@@ -8,6 +8,15 @@ class ContainmentBaseRuleClassInfo(BaseModel):
     class_name: common.ContainmentBaseRuleClass
     class_type: common.ContainmentBaseRuleType
 
+class FieldOperator(BaseModel):
+    name : str
+    label : str
+
+class QueryField(BaseModel):
+    name: str
+    label: str
+    operators: Union[None|]
+
 
 # export type AllContainmentBaseRuleInfo = {
 #     "success": boolean,
