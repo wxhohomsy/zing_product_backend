@@ -1,6 +1,6 @@
 DEBUG = True
-MES_STS_CACHE_TIME = 100   # seconds
-SPC_DATA_CACHE_TIME = 100  # SECONDS
+MES_STS_CACHE_TIME = 30   # seconds
+SPC_DATA_CACHE_TIME = 60  # SECONDS
 
 
 # -----------------MES TABLE SETTING -----------------------------------------------------

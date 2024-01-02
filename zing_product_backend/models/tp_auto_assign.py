@@ -9,7 +9,7 @@ from zing_product_backend.app_db.connections import Base
 from zing_product_backend.core import common
 
 
-class BaseSamplePlan(Base):
+class SamplePlan(Base):
     __tablename__ = "sample_plan"
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     sample_plan_name: Mapped[str] = mapped_column(String(50), nullable=False, index=True, unique=True)
@@ -31,9 +31,10 @@ class AutoSampleLotStats(Base):
     __tablename__ = "auto_sample_lot_stats"
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     last_updated_time: Mapped[datetime.datetime] = mapped_column(DateTime, nullable=False)
-    lot_id: Mapped[str] = mapped_column(VARCHAR(20), nullable=False, index=True)
+    lot_id: Mapped[str] = mapped_column(VARCHAR(20), nullable=False, index=True, unique=True)
     oper: Mapped[str] = mapped_column(VARCHAR(10), nullable=False, index=True)
     tp_list: Mapped[List['AutoSampleTpStats']]
+    virtual_factory: Mapped[str] = mapped_column(VARCHAR(10), nullable=False)
 
 
 class AutoSampleTpStats(Base):
@@ -44,7 +45,9 @@ class AutoSampleTpStats(Base):
     oper: Mapped[str] = mapped_column(VARCHAR(10), nullable=False, index=True)
     picked: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     pick_time: Mapped[datetime.datetime] = mapped_column(DateTime, nullable=True)
-    from_lot_id: Mapped[str] = mapped_column(VARCHAR(20), nullable=False, index=True, )
-
+    from_lot_id: Mapped[str] = mapped_column(VARCHAR(20), ForeignKey(AutoSampleLotStats.lot_id),
+                                             nullable=False, index=True)
+    from_sample_plan_id: Mapped[int] = mapped_column(Integer, ForeignKey(SamplePlan.id),
+                                                     nullable=False, index=True)
     from_lot = relationship(AutoSampleLotStats, back_populates='tp_list')
-    sample_plan = relationship(BaseSamplePlan, back_populates='sample_tp_list')
+    sample_plan = relationship(SamplePlan, back_populates='sample_tp_list')

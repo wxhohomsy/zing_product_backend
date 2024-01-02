@@ -1,6 +1,7 @@
 from typing import Any, List, Optional, Literal
 from pydantic import BaseModel, Field, model_validator
 from zing_product_backend.core.product_containment.containment_constants import *
+from zing_product_backend.core import common
 
 
 class BaseRuleBase(BaseModel):
@@ -9,10 +10,11 @@ class BaseRuleBase(BaseModel):
     operator: Optional[BaseRuleOperator] = None
 
 
-
 class BaseRule(BaseRuleBase):
     base_rules: List[BaseRuleBase]
     rule_name: BaseRuleName
+    rule_class: common.ContainmentBaseRuleClass
+    rule_name: common.ContainmentBaseRuleType
 
 
 # ------------ spc ooc oos rule -------------

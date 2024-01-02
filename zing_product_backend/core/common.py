@@ -14,6 +14,8 @@ class RuleName(str, Enum):
     PRODUCT_ASSIGN_VIEW = "product_assign_view"
     PRODUCT_ASSIGN_CHANGE = "product_assign_change"
     PRODUCT_SETTINGS_CHANGE = "product_settings_change"
+    CONTAINMENT_RULE_SETTINGS_CHANGE = "containment_rule_settings_change"
+    TP_AUTO_SAMPLE_SETTINGS_CHANGE = "tp_auto_sample_settings_change"
 
 
 class ErrorMessages(str, Enum):
@@ -45,6 +47,7 @@ class ContainmentBaseRuleClass(str, Enum):
     HC_REDUCE_RULE = 'hc_reduce_rule'
     DELTA_PS_2H_MOVING_AVG = 'delta_ps_2h_moving_avg'
     DELTA_PS_2H_TO_TARGET = 'delta_ps_2h_to_target'
+    MESDB_CUSTOM_SQL = 'mesdb_custom_sql'
     MWIPSLTSTS = 'mwipsltsts'
     MWIPLOTSTS = 'mwiplotsts'
     MWIPMATDEF = 'mwipmatdef'
@@ -59,7 +62,8 @@ class ContainmentTableName(str, Enum):
 class ProductObjectType(str, Enum):
     SUBLOT = 'sublot'
     LOT = 'lot'
-    SEGMENT = 'segment'
+    WAFERING_SEGMENT = 'wafering_segment'
+    GROWING_SEGMENT = 'growing_segment'
     INGOT = 'ingot'
 
 

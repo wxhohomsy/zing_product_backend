@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, DateTime, and_, \
     or_, INT, VARCHAR, UniqueConstraint, Boolean, Numeric, BigInteger, ForeignKey, func, Table, Index
 from sqlalchemy.dialects.postgresql import JSON
 from sqlalchemy.orm import relationship, Mapped
+from sqlalchemy import Enum
 from zing_product_backend.models import auth
 from zing_product_backend.app_db.connections import Base
 from zing_product_backend.core import common
@@ -42,9 +43,12 @@ containment_base_rule_user_table = Table(
 class ContainmentBaseRule(Base):
     __tablename__ = "containment_base_rule"
     id = Column(Integer, primary_key=True, autoincrement=True)
-    rule_class: common.ContainmentBaseRuleType = Column(VARCHAR(), nullable=False, index=True)
-    rule_name: common.ContainmentBaseRuleClass = Column(VARCHAR(), nullable=False, index=True)
+    rule_class: common.ContainmentBaseRuleType = Column(VARCHAR(), Enum(common.ContainmentBaseRuleClass),
+                                                        nullable=False, index=True)
+    rule_name: common.ContainmentBaseRuleClass = Column(VARCHAR(), Enum(common.ContainmentBaseRuleClass),
+                                                        nullable=False, index=True)
     rule_data = Column(JSON(), nullable=False)
+    rule_sql = Column(VARCHAR(), nullable=True)
     changeable = Column(Boolean(), default=True)
     created_by = Column(VARCHAR, ForeignKey(auth.User.user_name), nullable=False, default='admin', index=True)
     created_time = Column(DateTime(), nullable=False, default=func.now())

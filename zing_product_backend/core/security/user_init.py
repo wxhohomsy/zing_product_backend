@@ -54,6 +54,9 @@ async def create_default_user(admin_user, session: AsyncSession):
                                                 rule_description='product_assign_change')
     product_setting_change = auth.PrivilegeRules(rule_name=RuleName.PRODUCT_SETTINGS_CHANGE,
                                                  rule_description='product_setting_change')
+    tp_sample_settings_change = auth.PrivilegeRules(rule_name=RuleName.TP_AUTO_SAMPLE_SETTINGS_CHANGE,
+                                                    rule_description='tp_sample_setting_change')
+    containment_rule_setting_change = auth.PrivilegeRules(rule_name=RuleName.CONTAINMENT_RULE_SETTINGS_CHANGE)
 
     pc_group = auth.PrivilegeGroup(group_name='product_control', created_by=admin_user.id, created_time=func.now())
     pc_group.privilege_rules.append(product_assign_view)
@@ -64,6 +67,8 @@ async def create_default_user(admin_user, session: AsyncSession):
     ims_dev_group.privilege_rules.append(product_assign_view)
     ims_dev_group.privilege_rules.append(product_assign_change)
     ims_dev_group.privilege_rules.append(product_setting_change)
+    ims_dev_group.privilege_rules.append(tp_sample_settings_change)
+    ims_dev_group.privilege_rules.append(containment_rule_setting_change)
 
     m1_group = auth.PrivilegeGroup(group_name='m1', created_by=admin_user.id, created_time=func.now())
     m1_group.privilege_rules.append(product_assign_view)
@@ -73,6 +78,7 @@ async def create_default_user(admin_user, session: AsyncSession):
     m1_key_user_group.privilege_rules.append(product_assign_view)
     m1_key_user_group.privilege_rules.append(product_assign_change)
     m1_key_user_group.privilege_rules.append(product_setting_change)
+    m1_key_user_group.privilege_rules.append(tp_sample_settings_change)
 
     for (user_name, user_email) in user_info_list_m1:
         user_create_dict = {

@@ -8,41 +8,12 @@ class ContainmentBaseRuleClassInfo(BaseModel):
     class_name: common.ContainmentBaseRuleClass
     class_type: common.ContainmentBaseRuleType
 
-class FieldOperator(BaseModel):
-    name : str
-    label : str
-
-class QueryField(BaseModel):
-    name: str
-    label: str
-    operators: Union[None|]
-
-
-# export type AllContainmentBaseRuleInfo = {
-#     "success": boolean,
-#     "error_message": string,
-#     "success_message": string,
-#     "data": {
-#         "id": number,
-#         "affected_rule_group_id_list": number[],  //rule group that will be affected if this rule is changed
-#         "rule_class": string,
-#         "rule_name": string,
-#         "rule_data": string,
-#         "changeable": boolean,
-#         "created_by": string,
-#         "created_time": string,
-#         "updated_by": string,
-#         "updated_time": string,
-#     }[],
-#     "detail": string
-# }
-
 
 class ContainmentBaseRuleInfo(BaseModel):
     id: int
     affected_rule_group_id_list: List[int]
-    rule_class: common.ContainmentBaseRuleClass
-    rule_name: common.ContainmentBaseRuleType
+    rule_class: common.ContainmentBaseRuleClass  # DATA_OOS, DATA_OOC, PULLER_ID, END_TIME, HC_REDUCE_RULE ...
+    rule_name: common.ContainmentBaseRuleType  # SQL_TABLE or CUSTOM_FUNCTION
     rule_data: Json
     changeable: bool
     created_by: str

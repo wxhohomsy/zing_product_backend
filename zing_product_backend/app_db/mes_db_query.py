@@ -36,6 +36,16 @@ def get_cdb_engine(virtual_factory: common.VirtualFactory):
 
 
 @cached(cache=STS_TTL_CACHE, info=settings.DEBUG)
+def get_available_oper_id_list(start_oper: str, end_oper_str: str, virtual_factory: common.VirtualFactory) -> List[str]:
+    cdb_engine = get_cdb_engine(virtual_factory)
+    with cdb_engine.connect() as c:
+        sql = text(f"select distinct oper from MESMGR.MWIPFLWOPR where oper >= '{start_oper}' "
+                   f"and oper <= '{end_oper_str}'")
+        data = c.execute(sql).fetchall()
+        return [d[0] for d in data]
+
+
+@cached(cache=STS_TTL_CACHE, info=settings.DEBUG)
 def get_sublot_sts(sublot_id: str, virtual_factory: common.VirtualFactory) -> RowMapping:
     cdb_engine = get_cdb_engine(virtual_factory)
     with cdb_engine.connect() as c:
@@ -57,6 +67,29 @@ def get_lot_sts(lot_id: str, virtual_factory: common.VirtualFactory) -> RowMappi
             raise NotFindInDBError(sql)
         else:
             return data._mapping
+
+
+@cached(cache=STS_TTL_CACHE, info=settings.DEBUG)
+def get_lot_sts_by_oper_id( oper_id: str, virtual_factory: common.VirtualFactory) -> pd.DataFrame:
+    cdb_engine = get_cdb_engine(virtual_factory)
+    with cdb_engine.connect() as c:
+        sql = text(f"select lot_id, oper, qty_1, mat_id, flow, oper_in_time, last_tran_time"
+                   f" from MESMGR.MWIPLOTSTS where OPER = '{oper_id}'"
+                   f"and lot_del_flag != 'Y'")
+        df = pd.read_sql(sql, c)
+    return df
+
+
+@cached(cache=STS_TTL_CACHE, info=settings.DEBUG)
+def get_lot_sts_by_oper_range( start_oper_id: str,  end_oper_id: str, virtual_factory: common.VirtualFactory
+                               ) -> pd.DataFrame:
+    cdb_engine = get_cdb_engine(virtual_factory)
+    with cdb_engine.connect() as c:
+        sql = text(f"select lot_id, oper, qty_1, mat_id, flow, oper_in_time, last_tran_time"
+                   f" from MESMGR.MWIPLOTSTS where OPER >= '{start_oper_id}' and OPER <= '{end_oper_id}'"
+                   f"and lot_del_flag != 'Y'")
+        df = pd.read_sql(sql, c)
+    return df
 
 
 @cached(cache=SPC_TTL_CACHE, info=settings.DEBUG)

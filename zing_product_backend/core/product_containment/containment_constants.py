@@ -4,10 +4,15 @@ from typing import Union, Literal, List
 t_value_source = Literal['field', 'value']
 
 
+class RuleGroupType(Enum):
+    RULE = 'rule'
+    RULE_GROUP = 'rule_group'
+
+
 class ContainmentStatus(Enum):
-    PASS = 'PASS'
-    CATCH = 'CATCH'
-    FAILED = 'FAILED'
+    PASS = 'pass'
+    CATCH = 'catch'
+    ERROR = 'error'
 
 
 class BaseRuleType(str, Enum):
@@ -18,15 +23,20 @@ class BaseRuleType(str, Enum):
 class BaseRuleName(Enum):
     SPC_OOS = 'spc_oos'
     SPC_OOC = 'spc_ooc'
+    SPC_VALUE = 'spc_value'
     MWIPSLTSTS = 'mwipsltsts'
     MWIPLOTSTS = 'mwiplotsts'
     MWIPMATDEF = 'mwipmatdef'
-    PS_DELTA_TO_TARGET = 'ps_delta_to_target'
-    PS_DELTA_TO_MOVING_AVG = 'ps_delta_to_moving_avg'
+    INGOT_FDC = 'ingot_fdc'
     YIELD_MAT_GROUP = 'yield_mat_group'
 
 
-class BaseRuleParaType(Enum):
+class BaseRuleInputType(Enum):
+    QUERY_BUILDER = 'query'
+    TREE_SELECT = 'tree_select'
+
+
+class BaseRuleFieldType(Enum):
     FLOAT = 'float'
     INT = 'int'
     STRING = 'string'
@@ -46,6 +56,19 @@ class BaseRuleOperator(Enum):
     NOT_BETWEEN = 'not_between'
     IN = 'in'
     NOT_IN = 'not_in'
+
+
+# -------------------------------- rule config related -------------------------------
+RULE_INPUT_TYPE_DICT = {
+    BaseRuleName.SPC_OOS: BaseRuleInputType.TREE_SELECT,
+    BaseRuleName.SPC_OOC: BaseRuleInputType.TREE_SELECT,
+    BaseRuleName.SPC_value: BaseRuleInputType.QUERY_BUILDER,
+    BaseRuleName.MWIPSLTSTS: BaseRuleInputType.QUERY_BUILDER,
+    BaseRuleName.MWIPLOTSTS: BaseRuleInputType.QUERY_BUILDER,
+    BaseRuleName.MWIPMATDEF: BaseRuleInputType.QUERY_BUILDER,
+    BaseRuleName.INGOT_FDC: BaseRuleInputType.QUERY_BUILDER,
+    BaseRuleName.YIELD_MAT_GROUP: BaseRuleInputType.QUERY_BUILDER,
+}
 
 
 # ------------------ growing FDC related -----------------------------------------
