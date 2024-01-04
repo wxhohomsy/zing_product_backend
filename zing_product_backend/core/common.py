@@ -39,26 +39,6 @@ class ContainmentBaseRuleType(str, Enum):
     CUSTOM_FUNCTION = 'custom_function'
 
 
-class ContainmentBaseRuleClass(str, Enum):
-    DATA_OOS = 'data_oos'
-    DATA_OOC = 'data_ooc'
-    PULLER_ID = 'puller_id'
-    END_TIME = 'end_time'
-    HC_REDUCE_RULE = 'hc_reduce_rule'
-    DELTA_PS_2H_MOVING_AVG = 'delta_ps_2h_moving_avg'
-    DELTA_PS_2H_TO_TARGET = 'delta_ps_2h_to_target'
-    MESDB_CUSTOM_SQL = 'mesdb_custom_sql'
-    MWIPSLTSTS = 'mwipsltsts'
-    MWIPLOTSTS = 'mwiplotsts'
-    MWIPMATDEF = 'mwipmatdef'
-
-
-class ContainmentTableName(str, Enum):
-    MWIPSLTSTS = 'mwipsltsts'
-    MWIPLOTSTS = 'mwiplotsts'
-    MWIPMATDEF = 'mwipmatdef'
-
-
 class ProductObjectType(str, Enum):
     SUBLOT = 'sublot'
     LOT = 'lot'

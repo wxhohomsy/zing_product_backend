@@ -1,26 +1,11 @@
-from enum import Enum
 from typing import TYPE_CHECKING
-from .containment_constants import *
-from zing_product_backend.core import common
+from zing_product_backend.core.product_containment.containment_constants import *
+
 if TYPE_CHECKING:
-    from .product_structure import *
-    from .containment_structure import *
+    from zing_product_backend.core.product_containment.parser_core.product_structure import *
+    from zing_product_backend.core.product_containment.parser_core.containment_structure import *
 
 
-class Result:
-    def __init__(self, result_status: ContainmentStatus, dealt_base_rule_data_list: List['ContainmentBaseRule']):
-        self.dealt_base_rule_data_list = dealt_base_rule_data_list
-        if type(result_status) is not ContainmentStatus:
-            raise TypeError("result_status must be ContainmentStatus")
-        else:
-            self.result_status = result_status
-
-    def invert(self):
-        if self.result_status is ContainmentStatus.PASS:
-            self.result_status = ContainmentStatus.CATCH
-        elif self.result_status is ContainmentStatus.CATCH:
-            self.result_status = ContainmentStatus.PASS
-        return self
 
 
 def combine_results(results: List[Result], combinator):
@@ -97,8 +82,7 @@ def parse_rule(rule_dict: dict) -> 'ContainmentRule':
         results = [parse_rule(sub_rule) for sub_rule in rule_dict['rules']]
         combined_result = combine_results(results, combinator)
     else:
-        value = rule_dict.get('value')
-
+        result = parse
         combined_result = Result(result, {rule_dict['rule_name']: rule_dict})
 
     return combined_result.invert() if not_flag else combined_result

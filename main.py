@@ -45,6 +45,6 @@ if __name__ == "__main__":
     from sqlalchemy.orm import IdentityMap
     from zing_product_backend.app_db.external_tables import mwiplotsts_l1w
     # print(type(mwiplotsts_l1w))
-    print(issubclass(auth.PrivilegeRules, DeclarativeBase))
-    for col in inspect(auth.PrivilegeGroup).columns:
+    # print(issubclass(auth.PrivilegeRules, DeclarativeBase))
+    for col in inspect(mwiplotsts_l1w).columns:
         print(col.name, issubclass(col.type.python_type, datetime.datetime))

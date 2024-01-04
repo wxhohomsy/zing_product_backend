@@ -7,14 +7,13 @@ from zing_product_backend.core import common
 class BaseRuleBase(BaseModel):
     field: Optional[str] = None
     value: Optional[Any] = None
-    operator: Optional[BaseRuleOperator] = None
+    operator: Optional[RuleOperator] = None
 
 
 class BaseRule(BaseRuleBase):
     base_rules: List[BaseRuleBase]
-    rule_name: BaseRuleName
-    rule_class: common.ContainmentBaseRuleClass
-    rule_name: common.ContainmentBaseRuleType
+    rule_name: str
+    rule_class: ContainmentBaseRuleClass
 
 
 # ------------ spc ooc oos rule -------------
@@ -34,11 +33,6 @@ class SpcBaseRule(BaseModel):
     ie2_audit_flag_enable: bool = True
     qa_audit_flag_enable: bool = True
 
-
-# --------------------- growing fdc rule ------------------------------------
-class FdcBaseRule(BaseRuleBase):
-    rule_name: FdcBaseRuleName
-    rules:  Optional[List['FdcBaseRule']]
 
 
 

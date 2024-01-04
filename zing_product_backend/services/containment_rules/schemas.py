@@ -1,19 +1,19 @@
 from pydantic import BaseModel, Json
 from typing import List, Union, Dict, Set, Literal
 from zing_product_backend.core import common
+from zing_product_backend.core.product_containment.containment_constants import *
+from zing_product_backend.core.product_containment.frontend_fields import fields_schema
 
 
 class ContainmentBaseRuleClassInfo(BaseModel):
-    id: int
-    class_name: common.ContainmentBaseRuleClass
-    class_type: common.ContainmentBaseRuleType
+    is_sql: bool
+    fields: List[fields_schema.Field]
 
 
 class ContainmentBaseRuleInfo(BaseModel):
     id: int
     affected_rule_group_id_list: List[int]
-    rule_class: common.ContainmentBaseRuleClass  # DATA_OOS, DATA_OOC, PULLER_ID, END_TIME, HC_REDUCE_RULE ...
-    rule_name: common.ContainmentBaseRuleType  # SQL_TABLE or CUSTOM_FUNCTION
+    rule_class: ContainmentBaseRuleClass  # DATA_OOS, DATA_OOC, PULLER_ID, END_TIME, HC_REDUCE_RULE ...
     rule_data: Json
     changeable: bool
     created_by: str

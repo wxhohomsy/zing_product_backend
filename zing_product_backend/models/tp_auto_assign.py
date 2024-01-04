@@ -4,7 +4,6 @@ from sqlalchemy.orm import DeclarativeBase, mapped_column, Mapped, declared_attr
 from sqlalchemy import VARCHAR, ForeignKey, DateTime, Boolean, Integer, String, Table
 from sqlalchemy import Column, VARCHAR, ForeignKey
 from sqlalchemy.orm import relationship
-from sqlalchemy.dialects.postgresql import UUID, BIGINT
 from zing_product_backend.app_db.connections import Base
 from zing_product_backend.core import common
 
@@ -13,18 +12,21 @@ class SamplePlan(Base):
     __tablename__ = "sample_plan"
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     sample_plan_name: Mapped[str] = mapped_column(String(50), nullable=False, index=True, unique=True)
-
     key_1: Mapped[str] = mapped_column(VARCHAR(), nullable=False, index=True)
     key_2: Mapped[str] = mapped_column(VARCHAR(), nullable=False, index=True)
     key_3: Mapped[str] = mapped_column(VARCHAR(), nullable=False, index=True)
-    frequency_type: Mapped[common.TpFrequencyType] = mapped_column(String(),
-                                                                   comment='by_ingot/by_segment/every_fixed_mm/wafer_direct',
-                                                                   nullable=True)
+    frequency_type: Mapped[common.TpFrequencyType] = mapped_column(
+        String(),
+        comment='by_ingot/by_segment/every_fixed_mm/wafer_direct',
+        nullable=True)
     frequency_value: Mapped[int] = mapped_column(Integer, nullable=True)
     must_include_seed_tail: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     plan_priority: Mapped[int] = mapped_column(Integer, nullable=False, comment='0 is the highest priority')
-    triggered_tp_list: Mapped[List['AutoSampleTpStats']] = relationship('TpAutoAssignTpStats',
-                                                                          back_populates='sample_plan')
+    triggered_tp_list: Mapped[List['AutoSampleTpStats']] = relationship('AutoSampleTpStats',
+                                                                        back_populates='sample_plan')
+    sample_tp_list: Mapped[List['AutoSampleTpStats']] = relationship('AutoSampleTpStats',
+                                                                     back_populates='sample_plan')
+
 
 
 class AutoSampleLotStats(Base):
@@ -33,7 +35,7 @@ class AutoSampleLotStats(Base):
     last_updated_time: Mapped[datetime.datetime] = mapped_column(DateTime, nullable=False)
     lot_id: Mapped[str] = mapped_column(VARCHAR(20), nullable=False, index=True, unique=True)
     oper: Mapped[str] = mapped_column(VARCHAR(10), nullable=False, index=True)
-    tp_list: Mapped[List['AutoSampleTpStats']]
+    tp_list: Mapped[List['AutoSampleTpStats']] = relationship('AutoSampleTpStats', back_populates='from_lot')
     virtual_factory: Mapped[str] = mapped_column(VARCHAR(10), nullable=False)
 
 

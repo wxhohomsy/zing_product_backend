@@ -5,7 +5,9 @@ from sqlalchemy.orm import relationship, Mapped
 from sqlalchemy import Enum
 from zing_product_backend.models import auth
 from zing_product_backend.app_db.connections import Base
+from zing_product_backend.core.product_containment import containment_constants
 from zing_product_backend.core import common
+
 
 db_schema = Base.__table_args__['schema']
 
@@ -43,10 +45,13 @@ containment_base_rule_user_table = Table(
 class ContainmentBaseRule(Base):
     __tablename__ = "containment_base_rule"
     id = Column(Integer, primary_key=True, autoincrement=True)
-    rule_class: common.ContainmentBaseRuleType = Column(VARCHAR(), Enum(common.ContainmentBaseRuleClass),
-                                                        nullable=False, index=True)
-    rule_name: common.ContainmentBaseRuleClass = Column(VARCHAR(), Enum(common.ContainmentBaseRuleClass),
-                                                        nullable=False, index=True)
+    rule_class: containment_constants.ContainmentBaseRuleClass = Column(
+        VARCHAR(),
+        Enum(
+            containment_constants.ContainmentBaseRuleClass),
+        nullable=False, index=True)
+    rule_name: str = Column(VARCHAR(), nullable=False, index=True)
+    is_sql_rule = Column(Boolean(), default=False)
     rule_data = Column(JSON(), nullable=False)
     rule_sql = Column(VARCHAR(), nullable=True)
     changeable = Column(Boolean(), default=True)
@@ -54,21 +59,22 @@ class ContainmentBaseRule(Base):
     created_time = Column(DateTime(), nullable=False, default=func.now())
     updated_by = Column(VARCHAR, ForeignKey(auth.User.user_name), nullable=False, default='admin', index=True)
     updated_time = Column(DateTime(), nullable=False, default=func.now(), onupdate=func.now())
-    rules = relationship('ContainmentRule', secondary='containment_rule_base_rule',
+    rules = relationship('ContainmentRule', secondary=containment_rule_base_rule_table,
                          back_populates='base_rules', lazy='selectin'
                          )
-    create_users: Mapped[auth.User] = relationship(
+    created_user: Mapped[auth.User] = relationship(
         foreign_keys=[created_by],
-        back_populates='ContainmentBaseRule', lazy='selectin', )
-    update_users: Mapped[auth.User] = relationship(
+        back_populates='created_containment_base_rules', lazy='selectin', )
+    updated_user: Mapped[auth.User] = relationship(
         foreign_keys=[updated_by],
-        back_populates='ContainmentBaseRule', lazy='selectin',
+        back_populates='updated_containment_base_rules', lazy='selectin',
     )
 
 
 class ContainmentRule(Base):
     __tablename__ = "containment_rule"
     id = Column(Integer, primary_key=True, autoincrement=True)
+    rule_name = Column(VARCHAR(), nullable=False, index=True)
     rule_description = Column(VARCHAR(), nullable=False)
     containment_object_type: common.ProductObjectType = Column(VARCHAR(), nullable=False)
     changeable = Column(Boolean(), default=True)
@@ -77,14 +83,15 @@ class ContainmentRule(Base):
     created_time = Column(DateTime(), nullable=False, default=func.now())
     updated_by = Column(VARCHAR, ForeignKey(auth.User.user_name), nullable=False, default='admin')
     updated_time = Column(DateTime(), nullable=False, default=func.now(), onupdate=func.now())
-    base_rules = relationship('ContainmentBaseRule', secondary='containment_rule_base_rule',
+
+    base_rules = relationship('ContainmentBaseRule', secondary=containment_rule_base_rule_table,
                               back_populates='rules', lazy='selectin')
-    create_users: Mapped[auth.User] = relationship(
+    created_user: Mapped[auth.User] = relationship(
         foreign_keys=[created_by],
-        back_populates='ContainmentRule', lazy='selectin', )
-    update_users: Mapped[auth.User] = relationship(
+        back_populates='created_containment_rules', lazy='selectin', )
+    updated_user: Mapped[auth.User] = relationship(
         foreign_keys=[updated_by],
-        back_populates='ContainmentBaseRule', lazy='selectin',
+        back_populates='updated_containment_rules', lazy='selectin',
     )
 
 

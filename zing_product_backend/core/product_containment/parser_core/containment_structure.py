@@ -1,22 +1,15 @@
 from abc import ABC, abstractmethod
-from typing import List, Optional, Tuple
 from zing_product_backend.core import common
 from zing_product_backend.models import containment_model
-from .containment_constants import *
-from . import product_structure
-
-
-
-class ContainmentRuleResult:
-    pass
-
+from zing_product_backend.core.product_containment.containment_constants import *
+from zing_product_backend.core.product_containment.parser_core import product_structure
+from zing_product_backend.core.product_containment.parser_core import result_structure
 
 
 class ContainmentRule:
     def __init__(self, containment_rule_orm: containment_model.ContainmentRule):
         self.containment_object_type = containment_rule_orm.containment_object_type
         self.rule_data = containment_rule_orm.rule_data
-        parse_result_tuple: Tuple['ContainmentBaseRuleResult'] =
 
 
 class ContainmentBaseRule(ABC):
@@ -24,7 +17,7 @@ class ContainmentBaseRule(ABC):
         self.rule_name = rule_name
         self.rule_input_type = RULE_INPUT_TYPE_DICT[rule_name]
 
-    def containment_product(self, product: product_structure.Product) -> ContainmentResult:
+    def containment_product(self, product: product_structure.Product) -> result_structure.ContainmentResult:
         if product.product_type == common.ProductObjectType.LOT:
             return self.containment_lot(product)
         elif product.product_type == common.ProductObjectType.SUBLOT:
@@ -37,18 +30,21 @@ class ContainmentBaseRule(ABC):
             return self.containment_ingot(product)
 
     @abstractmethod
-    def containment_sublot(self, product: product_structure.Sublot) -> ContainmentResult:
-        pass
-
-    def containment_lot(self, product: product_structure.Lot) -> ContainmentResult:
+    def containment_sublot(self, product: product_structure.Sublot) -> result_structure.ContainmentResult:
         pass
 
     @abstractmethod
-    def containment_wafering_segment(self, product: product_structure.WaferingSegment) -> ContainmentResult:
+    def containment_lot(self, product: product_structure.Lot) -> result_structure.ContainmentResult:
         pass
 
     @abstractmethod
-    def containment_growing_segment(self, product: product_structure.GrowingSegment) -> ContainmentResult:
+    def containment_wafering_segment(self, product: product_structure.WaferingSegment) -> \
+            result_structure.ContainmentResult:
+        pass
+
+    @abstractmethod
+    def containment_growing_segment(self, product: product_structure.GrowingSegment) -> (
+            result_structure.ContainmentResult):
         pass
 
     @abstractmethod

@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING, List
+import uuid
 from fastapi_users_db_sqlalchemy.access_token import (
     SQLAlchemyAccessTokenDatabase,
     SQLAlchemyBaseAccessTokenTableUUID,
@@ -10,20 +12,11 @@ from zing_product_backend.app_db.connections import Base
 from sqlalchemy import Column, VARCHAR, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID, BIGINT
-import uuid
+
+if TYPE_CHECKING:
+    from zing_product_backend.models.containment_model import ContainmentBaseRule, ContainmentRule
 
 db_schema = Base.__table_args__['schema']
-
-# class UserGroup(Base):
-#     __tablename__ = "user_group"
-#     schema = Base.__table_args__['schema']
-#     id = Column(BIGINT(), autoincrement=True, primary_key=True)
-#     user_id = Column(UUID(as_uuid=True), ForeignKey(f'{schema}.user.id'))
-#     group_id = Column(Integer(), ForeignKey(f'{schema}.privilege_group.id'))
-#     group_name = Column(VARCHAR(), nullable=False)
-#     user_name = Column(VARCHAR(), nullable=False)
-#     created_by = Column(UUID(as_uuid=True), ForeignKey(f'{schema}.user.id'), nullable=False)
-
 
 user_group_table = Table(
     "user_group",
@@ -59,6 +52,16 @@ class User(Base):
     hashed_password: Mapped[str] = mapped_column(
         String(length=1024), nullable=False
     )
+    created_containment_base_rules: Mapped[List['ContainmentBaseRule']] = relationship(
+        back_populates='created_user',
+        foreign_keys='ContainmentBaseRule.created_by')
+    updated_containment_base_rules: Mapped[List['ContainmentBaseRule']] = relationship(
+        back_populates='updated_user',
+        foreign_keys='ContainmentBaseRule.updated_by')
+    created_containment_rules: Mapped[List['ContainmentRule']] = relationship(
+        back_populates='created_user', foreign_keys='ContainmentRule.created_by')
+    updated_containment_rules: Mapped[List['ContainmentRule']] = relationship(
+        back_populates='updated_user', foreign_keys='ContainmentRule.updated_by')
 
 
 class PrivilegeGroup(Base):
@@ -100,6 +103,7 @@ class AccessToken(SQLAlchemyBaseAccessTokenTableUUID, Base):
 
 if __name__ == "__main__":
     from zing_product_backend.app_db.connections import AppSession
+
     with AppSession() as s:
         user = User(user_name='admin', email='dasda@dsad.com', hashed_password='dasdasd')
         s.add(user)

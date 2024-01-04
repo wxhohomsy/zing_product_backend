@@ -15,7 +15,6 @@ class Product(ABC):
 
 
 class SublotProduct(Product):
-
     def get_mwipsltsts_data(self, attr_name: str):
         assert attr_name.lower()
         data_mapping = mes_db_query.get_sublot_sts(self.id, self.virtual_factory)

@@ -1,8 +1,9 @@
 import pymongo
 import pandas as pd
 from sqlalchemy.ext.asyncio import AsyncSession
-from zing_product_backend.models import material_setting
+from zing_product_backend.models import material_setting, tp_auto_assign, containment_model
 from zing_product_backend.core import common
+from zing_product_backend.core.product_containment import containment_constants
 from zing_product_backend.app_db.mes_db_query import get_mat_info
 mongo_client_ai02 = pymongo.MongoClient(
     'mongodb://10.10.19.185:27017/?readPreference=primary&appname=MongoDB%20Compass&ssl=false')
@@ -64,3 +65,9 @@ async def load_mat_info(usr, session: AsyncSession):
     await session.commit()
 
 
+async def init_containment_base_rule(usr, session: AsyncSession):
+    for entry in containment_constants.BaseRuleName:
+        rule_orm = containment_model.ContainmentBaseRule(
+            rule_name=entry.value, rule_type=entry.name, created_by=usr.user_name, updated_by=usr.user_name
+        )
+        session.add(rule_orm)

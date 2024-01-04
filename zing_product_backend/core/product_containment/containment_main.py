@@ -1,5 +1,4 @@
-from zing_product_backend.core import common
-from zing_product_backend.core.product_containment.product_structure import *
+from zing_product_backend.core.product_containment.parser_core.product_structure import *
 from zing_product_backend.core.product_containment.containment_constants import *
 
 
