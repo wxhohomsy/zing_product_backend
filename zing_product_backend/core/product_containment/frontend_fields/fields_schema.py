@@ -12,7 +12,7 @@ class RuleOperator(BaseModel):
     arity: int
 
 
-class Values(BaseModel):
+class RuleValues(BaseModel):
     name: str
     label: str
 
@@ -23,7 +23,7 @@ class Field(BaseModel):
     placeholder: Union[str, None] = None
     operators: Union[list[RuleOperator], None] = None
     valueSources: Union[list[type_value_source], None] = None
-    values: Union[List[Values], None] = None
+    values: Union[List[RuleValues], None] = None
     valueEditorType: Union[RuleValueEditor, None] = None
     inputType: Union[RuleInputType, None] = None
     defaultValue: Union[str, None] = None

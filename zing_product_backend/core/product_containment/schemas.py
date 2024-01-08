@@ -7,7 +7,7 @@ from zing_product_backend.core import common
 class BaseRuleBase(BaseModel):
     field: Optional[str] = None
     value: Optional[Any] = None
-    operator: Optional[RuleOperator] = None
+    operator: Optional[RuleOperatorName] = None
 
 
 class BaseRule(BaseRuleBase):

@@ -8,15 +8,8 @@ from zing_product_backend.models import auth
 from zing_product_backend.reporting import system_log
 from zing_product_backend.core.security import schema
 from zing_product_backend.core.security import user_init
+from zing_product_backend.core.exceptions import NotFoundError, DuplicateError
 import db_init
-
-
-class DuplicateError(Exception):
-    pass
-
-
-class NotFoundError(Exception):
-    pass
 
 
 class ZingUserDatabase(SQLAlchemyUserDatabase):
@@ -152,12 +145,12 @@ class PrivilegeDataBase:
         group_id = privilege_rule_assign.group_id
         group_orm = await self.get_privilege_group_by_id(group_id)
         if group_orm is None:
-            raise NotFoundError('group not found')
+            raise NotFoundError(rf'group not found for group id {group_id}')
         rule_orm_list = []
         for rule_id in privilege_rule_assign.rule_id_list:
             rule_orm = await self.get_privilege_rule_by_id(rule_id)
             if group_orm is None:
-                raise NotFoundError('Group not found')
+                raise NotFoundError(rf'Rule not found for rule id {rule_id}')
             rule_orm_list.append(rule_orm)
         group_orm.privilege_rules = rule_orm_list
         await self.session.commit()

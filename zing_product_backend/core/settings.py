@@ -1,7 +1,7 @@
 DEBUG = True
 MES_STS_CACHE_TIME = 30   # seconds
 SPC_DATA_CACHE_TIME = 60  # SECONDS
-
+SPEC_DATA_CACHE_TIME = 1800  # SECONDS
 
 # -----------------MES TABLE SETTING -----------------------------------------------------
 USE_GROUP_OPERATIONS = ['2900']

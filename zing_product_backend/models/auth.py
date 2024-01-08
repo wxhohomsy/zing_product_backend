@@ -52,16 +52,6 @@ class User(Base):
     hashed_password: Mapped[str] = mapped_column(
         String(length=1024), nullable=False
     )
-    created_containment_base_rules: Mapped[List['ContainmentBaseRule']] = relationship(
-        back_populates='created_user',
-        foreign_keys='ContainmentBaseRule.created_by')
-    updated_containment_base_rules: Mapped[List['ContainmentBaseRule']] = relationship(
-        back_populates='updated_user',
-        foreign_keys='ContainmentBaseRule.updated_by')
-    created_containment_rules: Mapped[List['ContainmentRule']] = relationship(
-        back_populates='created_user', foreign_keys='ContainmentRule.created_by')
-    updated_containment_rules: Mapped[List['ContainmentRule']] = relationship(
-        back_populates='updated_user', foreign_keys='ContainmentRule.updated_by')
 
 
 class PrivilegeGroup(Base):

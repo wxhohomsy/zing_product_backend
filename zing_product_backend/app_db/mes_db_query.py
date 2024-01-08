@@ -10,6 +10,7 @@ from zing_product_backend.global_utils import mes_db_utils
 
 
 STS_TTL_CACHE = TTLCache(maxsize=10000, ttl=settings.MES_STS_CACHE_TIME)
+SPEC_TTL_CACHE = TTLCache(maxsize=10000, ttl=settings.SPEC_DATA_CACHE_TIME)
 SPC_TTL_CACHE = TTLCache(maxsize=10000, ttl=settings.SPC_DATA_CACHE_TIME)
 
 t_mapping_or_none = Union[RowMapping, None]
@@ -42,7 +43,9 @@ def get_available_oper_id_list(start_oper: str, end_oper_str: str, virtual_facto
         sql = text(f"select distinct oper from MESMGR.MWIPFLWOPR where oper >= '{start_oper}' "
                    f"and oper <= '{end_oper_str}'")
         data = c.execute(sql).fetchall()
-        return [d[0] for d in data]
+        oper_id_list = [d[0] for d in data]
+        oper_id_list.sort()
+        return oper_id_list
 
 
 @cached(cache=STS_TTL_CACHE, info=settings.DEBUG)
@@ -187,6 +190,7 @@ def get_mat_info(mat_id: str) -> Dict:
     return df.iloc[0, :].to_dict()
 
 # ---------------------------------mat & spec -------------------------
+@cached(cache=SPEC_TTL_CACHE, info=settings.DEBUG)
 def get_wafering_spec_by_material_and_operation(mat_id: str, operation_id_tuple: Tuple[str],
                                                 virtual_factory: common.VirtualFactory) -> pd.DataFrame:
     cdb_engine = get_cdb_engine(virtual_factory)
@@ -283,3 +287,19 @@ AND CHAR_ID is not null
         return df
 
 
+@cached(cache=SPEC_TTL_CACHE, info=settings.DEBUG)
+def get_spec_id_list_by_oper_id(oper_id, virtual_factory: common.VirtualFactory):
+    sql = text(f"""
+    select distinct (a.char_id) from mesmgr.MSPMRELCHR a join mesmgr.MSPMRELDEF b
+    on a.SPEC_REL_ID = b.SPEC_REL_ID
+    where 1 = 1
+    and oper = '{oper_id}'
+    """)
+    if virtual_factory != common.VirtualFactory.ALL:
+        with get_cdb_engine(virtual_factory).connect() as c:
+            data_list = c.execute(sql).fetchall()
+            return {d[0] for d in data_list}
+    else:
+        l1w_set = get_spec_id_list_by_oper_id(oper_id, common.VirtualFactory.L1W)
+        l2w_set = get_spec_id_list_by_oper_id(oper_id, common.VirtualFactory.L2W)
+        return l1w_set | l2w_set

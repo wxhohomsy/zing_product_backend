@@ -4,8 +4,9 @@ from typing import Union, List, Optional, Any, Dict
 
 
 class VirtualFactory(str, Enum):
-    L1W = 'WE1'
+    L1W = 'L1W'
     L2W = 'L2W'
+    ALL = 'ALL'
 
 
 class RuleName(str, Enum):
@@ -83,10 +84,10 @@ class TpFrequencyType(str, Enum):
 # ------------------------------- RESPONSE ---------------------------------
 GENERAL_RESPONSE: Dict[Union[int, str], Dict[str, Any]] = {
     403: {
-        "description": "Forbidden",
+        "description": "In sufficient privilege",
         "content": {
             "application/json": {
-                "example": {"detail": ErrorMessages.INSUFFICIENT_PRIVILEGE}
+                "example": {"error_message": ErrorMessages.INSUFFICIENT_PRIVILEGE}
             }
         }
     },
@@ -94,8 +95,9 @@ GENERAL_RESPONSE: Dict[Union[int, str], Dict[str, Any]] = {
         "description": "Not authenticated",
         "content": {
             "application/json": {
-                "example": {"detail": ErrorMessages.NOT_AUTHENTICATED}
+                "example": {"error_message": ErrorMessages.NOT_AUTHENTICATED}
             }
         }
     },
+
 }

@@ -1,18 +1,12 @@
-import uuid
-from sqlalchemy.exc import IntegrityError
 from typing import Annotated, Set, List, Union, Optional, Literal
 from pydantic import BaseModel
-from enum import Enum
 from fastapi import APIRouter
 from fastapi import Depends, status, HTTPException
-from zing_product_backend.models import auth
 from zing_product_backend.app_db import AppSession, AsyncAppSession
-from zing_product_backend.core.security.security_utils import get_rules_from_user
 from zing_product_backend.core.security.users import current_active_user, current_admin_user
-
 from zing_product_backend.core.security import schema, users, crud, security_utils
 from zing_product_backend.core.common import GENERAL_RESPONSE, ErrorMessages, ResponseModel
-from zing_product_backend.core.security.users import UserManager
+from zing_product_backend.core.exceptions import NotFoundError, DuplicateError
 privilege_router = APIRouter()
 user_info_router = APIRouter()
 
@@ -110,8 +104,8 @@ async def create_privilege_groups(privilege_group: schema.PrivilegeGroupCreate,
         privilege_db = crud.PrivilegeDataBase(session)
         try:
             data = await privilege_db.create_privilege_group(privilege_group, admin_user)
-        except crud.DuplicateError:
-            return {"success": False, "data": None, "error_message": ErrorMessages.DUPLICATE_DATA}
+        except DuplicateError as e:
+            return {"success": False, "data": None, "error_message": ErrorMessages.DUPLICATE_DATA, "detail": e.detail}
 
     return {"success": True, "data": [
         schema.PrivilegeGroupWithRules(
@@ -136,7 +130,7 @@ async def assign_privilege_group(group_assign: schema.PrivilegeGroupAssign, admi
         try:
             user_orm = await privilege_db.assign_privilege_group(group_assign)
         except crud.NotFoundError as e:
-            return {"success": False, "data": None, "error_message": ErrorMessages.DATA_NOT_FOUND, "detail": str(e)}
+            return {"success": False, "data": None, "error_message": ErrorMessages.DATA_NOT_FOUND, "detail": e.detail}
     return {"success": True, "data": [],
             'success_message': 'assign privilege group successfully'}
 
@@ -149,7 +143,7 @@ async def assign_privilege_rule(rule_assign: schema.PrivilegeRuleAssign, admin_u
         try:
             group_orm = await privilege_db.assign_privilege_rule(rule_assign)
         except crud.NotFoundError as e:
-            return {"success": False, "data": None, "error_message": ErrorMessages.DATA_NOT_FOUND, "detail": str(e)}
+            return {"success": False, "data": None, "error_message": ErrorMessages.DATA_NOT_FOUND, "detail": e.detail}
     return {"success": True, "data": None, "success_message": 'assign privilege rule successfully'}
 
 
@@ -161,7 +155,7 @@ async def update_privilege_rule(rule_update: schema.PrivilegeRuleUpdate, admin_u
         try:
             group_orm = await privilege_db.update_privilege_rule(rule_update, admin_user)
         except crud.NotFoundError as e:
-            return {"success": False, "data": None, "error_message": ErrorMessages.DATA_NOT_FOUND, "detail": str(e)}
+            return {"success": False, "data": None, "error_message": ErrorMessages.DATA_NOT_FOUND, "detail": e.detail}
     return {"success": True, "data": None, "success_message": 'update privilege rule successfully'}
 
 

@@ -32,7 +32,7 @@ class BaseRuleFieldType(Enum):
     REGEX_PATTERN = 'regex_pattern'
 
 
-class RuleOperator(Enum):
+class RuleOperatorName(Enum):
     BETWEEN = 'between'
     GT = '>'
     LT = '<'
@@ -114,6 +114,21 @@ RULE_IS_SQL_DICT = {
     ContainmentBaseRuleClass.MWIPMATDEF: True,
 }
 
+RULE_IS_SPC_DICT = {
+    ContainmentBaseRuleClass.SPC_OOS: True,
+    ContainmentBaseRuleClass.SPC_OOC: True,
+    ContainmentBaseRuleClass.SPC_VALUE: True,
+    ContainmentBaseRuleClass.PULLER_ID: False,
+    ContainmentBaseRuleClass.EXECUTE_DATETIME: False,
+    ContainmentBaseRuleClass.HC_REDUCE_RULE: False,
+    ContainmentBaseRuleClass.INGOT_FDC: False,
+    ContainmentBaseRuleClass.YIELD_MAT_GROUP: False,
+    ContainmentBaseRuleClass.MESDB_CUSTOM_SQL: False,
+    ContainmentBaseRuleClass.MWIPSLTSTS: False,
+    ContainmentBaseRuleClass.MWIPLOTSTS: False,
+    ContainmentBaseRuleClass.MWIPMATDEF: False,
+}
+
 # we focus on columns and type, so l1w table is assumed to be same as l2w table, but bug may still lurks
 RULE_SQL_TABLE_MAPPING = {
     ContainmentBaseRuleClass.MWIPSLTSTS:  mwipsltsts_l1w,
@@ -123,3 +138,19 @@ RULE_SQL_TABLE_MAPPING = {
 
 
 # ------------------ SPC related -----------------------------------------
+ALL_SPEC = 'all_spec'
+
+
+class SpcOosOperators(Enum):
+    OK = 'ok'
+    NG = 'ng'
+    UNKNOWN = 'unknown'
+
+
+class SpcSpecialSpec(Enum):
+    ALL_SPEC = 'all_spec'
+    ANY_SPEC = 'any_spec'
+
+
+SPC_VALUE_OPERATOR_NAMES = [RuleOperatorName.BETWEEN, RuleOperatorName.NOT_BETWEEN, RuleOperatorName.GT,
+                            RuleOperatorName.GTE, RuleOperatorName.LT, RuleOperatorName.LTE]
