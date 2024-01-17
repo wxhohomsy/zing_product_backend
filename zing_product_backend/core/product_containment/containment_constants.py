@@ -4,6 +4,14 @@ from zing_product_backend.app_db.external_tables import mwiplotsts_l1w, mwipslts
 t_value_source = Literal['field', 'value']
 
 
+class ProductObjectType(str, Enum):
+    SUBLOT = 'sublot'
+    LOT = 'lot'
+    WAFERING_SEGMENT = 'wafering_segment'
+    GROWING_SEGMENT = 'growing_segment'
+    INGOT = 'ingot'
+
+
 class RuleGroupType(Enum):
     RULE = 'rule'
     RULE_GROUP = 'rule_group'
@@ -87,11 +95,11 @@ class ContainmentBaseRuleClass(str, Enum):
     SPC_OOS = 'spc_oos'
     SPC_OOC = 'spc_ooc'
     SPC_VALUE = 'spc_value'
-    PULLER_ID = 'puller_id'
-    EXECUTE_DATETIME = 'execute_datetime'
+    CRYSTAL_EQUIP = 'crystal_equip'
+    TIME_RELATED = 'time_related'
     HC_REDUCE_RULE = 'hc_reduce_rule'
     INGOT_FDC = 'ingot_fdc'
-    YIELD_MAT_GROUP = 'yield_mat_group'
+    MAT_GROUP = 'mat_group'
     MESDB_CUSTOM_SQL = 'mesdb_custom_sql'
     MWIPSLTSTS = 'mwipsltsts'
     MWIPLOTSTS = 'mwiplotsts'
@@ -103,11 +111,11 @@ RULE_IS_SQL_DICT = {
     ContainmentBaseRuleClass.SPC_OOS: False,
     ContainmentBaseRuleClass.SPC_OOC: False,
     ContainmentBaseRuleClass.SPC_VALUE: False,
-    ContainmentBaseRuleClass.PULLER_ID: False,
-    ContainmentBaseRuleClass.EXECUTE_DATETIME: False,
+    ContainmentBaseRuleClass.CRYSTAL_EQUIP: False,
+    ContainmentBaseRuleClass.TIME_RELATED: False,
     ContainmentBaseRuleClass.HC_REDUCE_RULE: False,
     ContainmentBaseRuleClass.INGOT_FDC: False,
-    ContainmentBaseRuleClass.YIELD_MAT_GROUP: False,
+    ContainmentBaseRuleClass.MAT_GROUP: False,
     ContainmentBaseRuleClass.MESDB_CUSTOM_SQL: False,
     ContainmentBaseRuleClass.MWIPSLTSTS: True,
     ContainmentBaseRuleClass.MWIPLOTSTS: True,
@@ -118,11 +126,11 @@ RULE_IS_SPC_DICT = {
     ContainmentBaseRuleClass.SPC_OOS: True,
     ContainmentBaseRuleClass.SPC_OOC: True,
     ContainmentBaseRuleClass.SPC_VALUE: True,
-    ContainmentBaseRuleClass.PULLER_ID: False,
-    ContainmentBaseRuleClass.EXECUTE_DATETIME: False,
+    ContainmentBaseRuleClass.CRYSTAL_EQUIP: False,
+    ContainmentBaseRuleClass.TIME_RELATED: False,
     ContainmentBaseRuleClass.HC_REDUCE_RULE: False,
     ContainmentBaseRuleClass.INGOT_FDC: False,
-    ContainmentBaseRuleClass.YIELD_MAT_GROUP: False,
+    ContainmentBaseRuleClass.MAT_GROUP: False,
     ContainmentBaseRuleClass.MESDB_CUSTOM_SQL: False,
     ContainmentBaseRuleClass.MWIPSLTSTS: False,
     ContainmentBaseRuleClass.MWIPLOTSTS: False,
@@ -154,3 +162,56 @@ class SpcSpecialSpec(Enum):
 
 SPC_VALUE_OPERATOR_NAMES = [RuleOperatorName.BETWEEN, RuleOperatorName.NOT_BETWEEN, RuleOperatorName.GT,
                             RuleOperatorName.GTE, RuleOperatorName.LT, RuleOperatorName.LTE]
+
+
+# ------------------------- time related -----------------------------------------------------
+class TimeRelatedField(Enum):
+    EXECUTE_TIME = 'execute_time'
+    CREATE_TIME = 'create_time'
+
+
+class TimeRelatedOperator(Enum):
+    BETWEEN = RuleOperatorName.BETWEEN
+    NOT_BETWEEN = RuleOperatorName.NOT_BETWEEN
+    GT = RuleOperatorName.GT
+    LT = RuleOperatorName.LT
+
+
+# -------------------------- ingot fdc --------------------------------------------------------
+class IngotFdcField(Enum):
+    PS_2H_SHIFT_50MM = 'ps_2h_shift_50mm'
+    DIAMETER = 'diameter'
+    DELTA_PS2H50MM_TO_TARGET = 'delta_ps_2H_50mm_to_target'
+    DELTA_PS2H50MM_TO_MOVING_AVG = 'delta_ps_2H_50mm_to_moving_avg'
+
+
+class IngotFdcOperator(Enum):
+    BETWEEN = RuleOperatorName.BETWEEN
+    NOT_BETWEEN = RuleOperatorName.NOT_BETWEEN
+    GT = RuleOperatorName.GT
+    LT = RuleOperatorName.LT
+
+# -------------------------- crystal_equip  --------------------------------------------------------
+
+
+class CrystalEquipField(Enum):
+    PULLER_NAME = 'puller_name'
+    PULLER_MES_ID = 'puller_mes_id'
+    VIRTUAL_FACTORY = 'virtual_factory'
+
+
+class CrystalEquipOperator(Enum):
+    IN = RuleOperatorName.IN
+    NOT_IN = RuleOperatorName.NOT_IN
+    EQUAL = RuleOperatorName.EQUAL
+    NOT_EQUAL = RuleOperatorName.NOT_EQUAL
+
+
+# -------------------------------------- mat group -----------------------------------------------------
+class MatGroupField(Enum):
+    YIELD_MAT_GROUP = 'yield_mat_group'
+
+
+class MatGroupOperator(Enum):
+    IN = RuleOperatorName.IN
+    NOT_IN = RuleOperatorName.NOT_IN

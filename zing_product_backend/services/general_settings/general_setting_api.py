@@ -12,7 +12,7 @@ from . import schemas
 from . import crud
 from . import dependents
 
-product_settings_router = APIRouter()
+general_settings_router = APIRouter()
 
 
 class MatInfoListResponse(ResponseModel):
@@ -39,7 +39,7 @@ class MatGroupInfoResponse(ResponseModel):
     data: Union[schemas.MatGroupInfo, None]
 
 
-@product_settings_router.get("/matInfo/{group_type}",
+@general_settings_router.get("/matInfo/{group_type}",
                              response_model=MatInfoListResponse, responses=GENERAL_RESPONSE,
                              )
 async def get_mat_info_by_group_type(group_type: MatGroupType, usr: UserInfo = Depends(current_active_user)):
@@ -63,7 +63,7 @@ async def get_mat_info_by_group_type(group_type: MatGroupType, usr: UserInfo = D
             )
 
 
-@product_settings_router.post("/matInfo/{group_type}",
+@general_settings_router.post("/matInfo/{group_type}",
                               response_model=MatInfoListResponse, responses=GENERAL_RESPONSE)
 async def update_mat_info_restrict_with_group_type(
         group_type: MatGroupType, update_info_body: schemas.UpdateMatInfoByGroupType,
@@ -88,7 +88,7 @@ async def update_mat_info_restrict_with_group_type(
             )
 
 
-@product_settings_router.get("/allMatGroupDetail/{group_type}",
+@general_settings_router.get("/allMatGroupDetail/{group_type}",
                              response_model=MatGroupDetailListResponse, responses=GENERAL_RESPONSE, )
 async def get_all_mat_group_info(group_type: MatGroupType, usr: UserInfo = Depends(current_active_user)):
     async with AsyncAppSession() as s:
@@ -111,7 +111,7 @@ async def get_all_mat_group_info(group_type: MatGroupType, usr: UserInfo = Depen
             )
 
 
-@product_settings_router.get("/allMatGroupInfo/{group_type}",
+@general_settings_router.get("/allMatGroupInfo/{group_type}",
                              response_model=MatGroupInfoListResponse, responses=GENERAL_RESPONSE, )
 async def get_all_mat_group_info(group_type: MatGroupType, usr: UserInfo = Depends(current_active_user)):
     async with AsyncAppSession() as s:
@@ -134,7 +134,7 @@ async def get_all_mat_group_info(group_type: MatGroupType, usr: UserInfo = Depen
             )
 
 
-@product_settings_router.get("/matGroupDetail/{group_type}/{group_id}",
+@general_settings_router.get("/matGroupDetail/{group_type}/{group_id}",
                              response_model=MatGroupDetailResponse, responses=GENERAL_RESPONSE, )
 async def get_mat_group_detail(group_id: int, group_type: MatGroupType,
                                usr: UserInfo = Depends(current_active_user)):
@@ -158,7 +158,7 @@ async def get_mat_group_detail(group_id: int, group_type: MatGroupType,
             )
 
 
-@product_settings_router.get("/matInfo/{group_type}/{mat_id}",
+@general_settings_router.get("/matInfo/{group_type}/{mat_id}",
                              response_model=MatInfoResponse, responses=GENERAL_RESPONSE, )
 async def get_mat_mat_info(mat_id: int, group_type: MatGroupType,
                            usr: UserInfo = Depends(current_active_user)):
@@ -190,7 +190,7 @@ async def get_mat_mat_info(mat_id: int, group_type: MatGroupType,
             )
 
 
-@product_settings_router.post("/updateMatGroup",
+@general_settings_router.post("/updateMatGroup",
                               response_model=MatGroupInfoResponse, responses=GENERAL_RESPONSE, )
 async def update_mat_group(update_info_body: schemas.UpdateMatGroup,
                            usr: UserInfo = Depends(dependents.current_setting_change_user)):
@@ -223,7 +223,7 @@ async def update_mat_group(update_info_body: schemas.UpdateMatGroup,
             )
 
 
-@product_settings_router.post(
+@general_settings_router.post(
     "/createMatGroup/{group_type}", response_model=MatGroupInfoResponse, responses=GENERAL_RESPONSE)
 async def create_mat_group(group_type: common.MatGroupType, create_info_body: schemas.CreateMatGroup,
                            usr=Depends(dependents.current_setting_change_user)) -> MatGroupInfoResponse:
@@ -246,7 +246,7 @@ async def create_mat_group(group_type: common.MatGroupType, create_info_body: sc
             )
 
 
-@product_settings_router.post("/deleteMatGroup", response_model=MatGroupInfoResponse,
+@general_settings_router.post("/deleteMatGroup", response_model=MatGroupInfoResponse,
                               responses=GENERAL_RESPONSE)
 async def delete_mat_group(delete_info_body: schemas.DeleteMatGroup,
                            usr: UserInfo = Depends(dependents.current_setting_change_user)):

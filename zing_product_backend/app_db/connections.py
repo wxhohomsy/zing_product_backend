@@ -27,7 +27,10 @@ AsyncAppSession = async_sessionmaker(app_async_engine, expire_on_commit=False)
 
 async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
     async with AsyncAppSession() as session:
-        yield session
+        try:
+            yield session
+        finally:
+            await session.close()
 
 
 class Base(DeclarativeBase):

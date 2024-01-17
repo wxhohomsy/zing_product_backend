@@ -48,6 +48,12 @@ class ProductObjectType(str, Enum):
     INGOT = 'ingot'
 
 
+class PullerType(str, Enum):
+    JS = 'js'
+    NAST = 'nast'
+    STECH = 'stech'
+
+
 class ProductStatus(str, Enum):
     NORMAL = 'NORMAL'
     HOLD = 'HOLD'

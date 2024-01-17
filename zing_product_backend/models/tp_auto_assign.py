@@ -22,11 +22,8 @@ class SamplePlan(Base):
     frequency_value: Mapped[int] = mapped_column(Integer, nullable=True)
     must_include_seed_tail: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     plan_priority: Mapped[int] = mapped_column(Integer, nullable=False, comment='0 is the highest priority')
-    triggered_tp_list: Mapped[List['AutoSampleTpStats']] = relationship('AutoSampleTpStats',
-                                                                        back_populates='sample_plan')
     sample_tp_list: Mapped[List['AutoSampleTpStats']] = relationship('AutoSampleTpStats',
-                                                                     back_populates='sample_plan')
-
+                                                                        back_populates='sample_plan')
 
 
 class AutoSampleLotStats(Base):

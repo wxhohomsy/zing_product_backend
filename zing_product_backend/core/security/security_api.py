@@ -174,7 +174,7 @@ async def update_me(user_info_update: schema.UserInfoUpdate, user=Depends(curren
     return {"success": True, "data": user_info, "success_message": 'update user info successfully'}
 
 
-@user_info_router.get("/all_user_info", response_model=UserInfoList, responses=GENERAL_RESPONSE)
+@privilege_router.get("/all_user_info", response_model=UserInfoList, responses=GENERAL_RESPONSE)
 async def all_user_info(user=Depends(current_admin_user)):
     user_info_list = []
 

@@ -3,12 +3,11 @@ from typing import List, Union, Optional, Dict, Any
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, and_, or_
 from sqlalchemy.orm import lazyload
-from zing_product_backend.services.product_settings import schemas
-from zing_product_backend.models import material_setting
+from zing_product_backend.services.general_settings import schemas
+from zing_product_backend.models import general_settings
 from zing_product_backend.core import common
-from zing_product_backend.services.product_settings import util_functions
+from zing_product_backend.services.general_settings import util_functions
 from zing_product_backend.models.auth import User
-
 
 class DatabaseError(Exception):
     pass
@@ -20,9 +19,9 @@ class SettingsDataBase:
 
     async def get_all_mat_info_restrict_by_group_type(self, group_type: common.MatGroupType
                                                       ) -> List[schemas.MatGroupInfo]:
-        stmt = select(material_setting.MatDef).where(material_setting.MatDef.delete_flag == False)
+        stmt = select(general_settings.MatDef).where(general_settings.MatDef.delete_flag == False)
         mat_info_list: List[schemas.MatGroupInfo] = []
-        mat_orm_list: List[material_setting.MatDef] = (await self.session.execute(stmt)).scalars().all()
+        mat_orm_list: List[general_settings.MatDef] = (await self.session.execute(stmt)).scalars().all()
         for mat_orm in mat_orm_list:
             group_name = None
             group_id = None
@@ -58,7 +57,7 @@ class SettingsDataBase:
         return mat_info_list
 
     async def get_mat_group_detail(self, mat_group_id: int):
-        stmt = select(material_setting.MatGroupDef).where(material_setting.MatGroupDef.id == mat_group_id)
+        stmt = select(general_settings.MatGroupDef).where(general_settings.MatGroupDef.id == mat_group_id)
         mat_group_orm = (await self.session.execute(stmt)).scalars().first()
         if mat_group_orm is None:
             raise DatabaseError(f'mat_group_id: {mat_group_id} not found')
@@ -102,7 +101,7 @@ class SettingsDataBase:
 
     async def get_mat_info_restrict_by_group_type(self, mat_id: int, group_type: common.MatGroupType
                                                   ) -> schemas.MatInfoByGroupType:
-        stmt = select(material_setting.MatDef).where(material_setting.MatDef.id == mat_id)
+        stmt = select(general_settings.MatDef).where(general_settings.MatDef.id == mat_id)
         mat_orm = (await self.session.execute(stmt)).scalars().first()
         if mat_orm is None:
             raise DatabaseError(f'mat_id: {mat_id} not found')
@@ -148,15 +147,15 @@ class SettingsDataBase:
             _id = update_mat_info.id
             id_dict[_id] = update_mat_info
 
-        stmt = select(material_setting.MatDef).where(material_setting.MatDef.id.in_(tuple(id_dict.keys())))
-        mat_orm_list: List[material_setting.MatDef] = (await self.session.execute(stmt)).scalars().all()
+        stmt = select(general_settings.MatDef).where(general_settings.MatDef.id.in_(tuple(id_dict.keys())))
+        mat_orm_list: List[general_settings.MatDef] = (await self.session.execute(stmt)).scalars().all()
         for mat_orm in mat_orm_list:
             _id = mat_orm.id
             update_mat_info = id_dict[mat_orm.id]
             group_id = update_mat_info.group_id
             mat_orm.updated_by = usr.user_name
             if group_id is not None:
-                new_group_orm = await self.session.get(material_setting.MatGroupDef, group_id)
+                new_group_orm = await self.session.get(general_settings.MatGroupDef, group_id)
                 exits_group_orm = util_functions.get_mat_group_id_set_from_mat_orm(mat_orm,
                                                                                    group_type)
                 if exits_group_orm is not None:
@@ -172,9 +171,9 @@ class SettingsDataBase:
         return None
 
     async def get_all_mat_group_detail(self, mat_group_type: common.MatGroupType) -> List[schemas.MatGroupDetail]:
-        stmt = select(material_setting.MatGroupDef).where(material_setting.MatGroupDef.group_type == mat_group_type)
+        stmt = select(general_settings.MatGroupDef).where(general_settings.MatGroupDef.group_type == mat_group_type)
         mat_group_list: List[schemas.MatGroupDetail] = []
-        mat_group_orm_list: List[material_setting.MatGroupDef] = (await self.session.execute(stmt)).scalars().all()
+        mat_group_orm_list: List[general_settings.MatGroupDef] = (await self.session.execute(stmt)).scalars().all()
         for mat_group_orm in mat_group_orm_list:
             mat_info_list = []
             for mat_orm in mat_group_orm.materials:
@@ -215,11 +214,11 @@ class SettingsDataBase:
         return mat_group_list
 
     async def get_all_mat_group_info(self, mat_group_type: common.MatGroupType) -> List[schemas.MatGroupInfo]:
-        stmt = select(material_setting.MatGroupDef).where(
-            material_setting.MatGroupDef.group_type == mat_group_type).options(
+        stmt = select(general_settings.MatGroupDef).where(
+            general_settings.MatGroupDef.group_type == mat_group_type).options(
             lazyload('*'))
         mat_group_info_list: List[schemas.MatGroupDetail] = []
-        mat_group_orm_list: List[material_setting.MatGroupDef] = (await self.session.execute(stmt)).scalars().all()
+        mat_group_orm_list: List[general_settings.MatGroupDef] = (await self.session.execute(stmt)).scalars().all()
         for mat_group_orm in mat_group_orm_list:
             mat_group_info_list.append(schemas.MatGroupInfo(
                 group_type=mat_group_type,
@@ -236,14 +235,14 @@ class SettingsDataBase:
         group_name = to_create_group.group_name
         description = to_create_group.description
 
-        stmt = select(material_setting.MatGroupDef).where(
-            and_(material_setting.MatGroupDef.group_name == group_name,
-                 material_setting.MatGroupDef.group_type == group_type)).options(
+        stmt = select(general_settings.MatGroupDef).where(
+            and_(general_settings.MatGroupDef.group_name == group_name,
+                 general_settings.MatGroupDef.group_type == group_type)).options(
             lazyload('*'))
         if (await self.session.execute(stmt)).scalars().first() is not None:
             raise DatabaseError(f'group name: {group_name} for {group_type} already exists')
 
-        group_orm = material_setting.MatGroupDef(group_name=group_name, group_type=group_type,
+        group_orm = general_settings.MatGroupDef(group_name=group_name, group_type=group_type,
                                                  group_description=description,
                                                  created_by=usr.user_name,
                                                  updated_by=usr.user_name
@@ -265,7 +264,7 @@ class SettingsDataBase:
         group_id = to_update_group.group_id
         group_name = to_update_group.group_name
         description = to_update_group.description
-        group_orm = await self.session.get(material_setting.MatGroupDef, group_id, options=[lazyload('*')])
+        group_orm = await self.session.get(general_settings.MatGroupDef, group_id, options=[lazyload('*')])
         if group_orm is None:
             raise DatabaseError(f'group id: {group_id} not found')
         else:
@@ -289,9 +288,9 @@ class SettingsDataBase:
     async def delete_group(self, to_delete_group: schemas.DeleteMatGroup) \
             -> schemas.MatGroupDetail:
         group_id = to_delete_group.group_id
-        stmt = select(material_setting.MatGroupDef).where(
+        stmt = select(general_settings.MatGroupDef).where(
             and_(
-                material_setting.MatGroupDef.id == group_id,
+                general_settings.MatGroupDef.id == group_id,
             )
         )
         group_orm = (await self.session.execute(stmt)).scalars().first()

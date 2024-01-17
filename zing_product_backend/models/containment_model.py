@@ -65,7 +65,6 @@ class ContainmentRule(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     rule_name = Column(VARCHAR(), nullable=False, index=True)
     rule_description = Column(VARCHAR(), nullable=False)
-    containment_object_type: common.ProductObjectType = Column(VARCHAR(), nullable=False)
     changeable = Column(Boolean(), default=True)
     rule_data = Column(JSONB(), nullable=False)
     created_by = Column(UUID(as_uuid=True), ForeignKey(auth.User.id), nullable=False, default='admin')

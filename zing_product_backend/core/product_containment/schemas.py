@@ -4,14 +4,14 @@ from zing_product_backend.core.product_containment.containment_constants import 
 from zing_product_backend.core import common
 
 
-class BaseRuleBase(BaseModel):
+class BaseRuleDataBase(BaseModel):
     field: Optional[str] = None
     value: Optional[Any] = None
     operator: Optional[RuleOperatorName] = None
 
 
-class BaseRule(BaseRuleBase):
-    base_rules: List[BaseRuleBase]
+class BaseRuleData(BaseRuleDataBase):
+    base_rules: List[BaseRuleDataBase]
     rule_name: str
     rule_class: ContainmentBaseRuleClass
 

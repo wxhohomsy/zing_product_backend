@@ -1,12 +1,12 @@
 from typing import List, Union, Literal, Optional, Set
 from sqlalchemy.exc import DatabaseError
 from zing_product_backend.core import common
-from zing_product_backend.models import material_setting
+from zing_product_backend.models import general_settings
 
 
-def get_mat_group_id_set_from_mat_orm(mat_orm: material_setting.MatDef,
+def get_mat_group_id_set_from_mat_orm(mat_orm: general_settings.MatDef,
                                       target_group_type: common.MatGroupType
-                                      ) -> Union[material_setting.MatGroupDef, None]:
+                                      ) -> Union[general_settings.MatGroupDef, None]:
     group_orm = None
     for group in mat_orm.groups:
         if target_group_type == group.group_type:

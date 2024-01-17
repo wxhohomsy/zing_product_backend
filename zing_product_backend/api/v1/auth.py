@@ -31,8 +31,3 @@ router.include_router(
     tags=["auth"],
 )
 
-router.include_router(
-    security_api.privilege_router,
-    prefix="/privilege",
-    tags=["auth"],
-)

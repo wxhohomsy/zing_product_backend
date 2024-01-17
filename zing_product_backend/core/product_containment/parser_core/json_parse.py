@@ -1,16 +1,27 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict, Set
 from zing_product_backend.core.product_containment.containment_constants import *
-
+from zing_product_backend.core.product_containment.parser_core.result_structure import *
 if TYPE_CHECKING:
     from zing_product_backend.core.product_containment.parser_core.product_structure import *
     from zing_product_backend.core.product_containment.parser_core.containment_structure import *
 
 
+def extract_field_names_set(d, key='field', nested_key='rules') -> Set[str]:
+    stack = [d]
+    field_names = []
+    while stack:
+        current_item = stack.pop()
+        if key in current_item:
+            field_names.append(current_item[key])
+        if nested_key in current_item:
+            stack.extend(current_item[nested_key])
+
+    return set(field_names)
 
 
-def combine_results(results: List[Result], combinator):
+def combine_results(results: List[ContainmentResult], combinator):
     if not results:
-        return Result(result_status=ContainmentStatus.PASS, dealt_base_rule_data_list=[])
+        return ContainmentResult(result_status=ContainmentStatus.PASS, dealt_base_rule_data_list=[])
 
     combined_data_record_list = []
     result_statuses = [r.result_status for r in results]
@@ -27,7 +38,7 @@ def combine_results(results: List[Result], combinator):
     for result in results:
         combined_data_record_list.extend(result.dealt_base_rule_data_list)
 
-    return Result(result_status=final_status, dealt_base_rule_data_list=combined_data_record_list)
+    return ContainmentResult(result_status=final_status, dealt_base_rule_data_list=combined_data_record_list)
 
 
 def parse_rule(rule_dict: dict) -> 'ContainmentRule':
@@ -82,8 +93,8 @@ def parse_rule(rule_dict: dict) -> 'ContainmentRule':
         results = [parse_rule(sub_rule) for sub_rule in rule_dict['rules']]
         combined_result = combine_results(results, combinator)
     else:
-        result = parse
-        combined_result = Result(result, {rule_dict['rule_name']: rule_dict})
+        result = 123
+        combined_result = ContainmentResult(result, {rule_dict['rule_name']: rule_dict})
 
     return combined_result.invert() if not_flag else combined_result
 

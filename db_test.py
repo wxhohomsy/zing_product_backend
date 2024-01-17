@@ -1,20 +1,20 @@
 from sqlalchemy import select
 from zing_product_backend.app_db import connections
-from zing_product_backend.models import material_setting
-
-
-async def tool_func(id: int):
-    stmt = select(material_setting.MatDef).filter(
-        material_setting.MatDef.id == id
-    )
-    async for s in connections.get_async_session():
-        data = await s.execute(stmt)
-        yield data.scalars().first().mat_id
+from zing_product_backend.models import general_settings, containment_model
+from zing_product_backend.core.product_containment import crud
+import db_init
 
 
 async def main():
-    async for x in tool_func(3):
-        print(x)
+    async for s in connections.get_async_session():
+        stmt = select(containment_model.ContainmentBaseRule).filter(
+            containment_model.ContainmentBaseRule.rule_name.in_(('nast', ))
+
+        )
+        data_list = (await s.execute(stmt)).scalars().all()
+        for data in data_list:
+            print(data.rule_data)
+
 
 if __name__ == "__main__":
     import asyncio

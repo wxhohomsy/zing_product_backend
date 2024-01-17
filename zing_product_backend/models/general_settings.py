@@ -62,3 +62,17 @@ class MatDef(Base):
     groups = relationship('MatGroupDef', secondary=rf'{db_schema}.mat_group',
                           back_populates='materials', lazy='selectin')
 
+
+class PullerInfo(Base):
+    __tablename__ = 'puller_info'
+    puller_name = Column(VARCHAR(), primary_key=True)
+    puller_mes_id = Column(VARCHAR(), index=True)
+    puller_mes_index = Column(Integer, index=True)
+    virtual_factory: common.VirtualFactory = Column(VARCHAR())
+    owner_name = Column(VARCHAR(), ForeignKey(f'{db_schema}.user.user_name'), nullable=False)
+    puller_type: common.PullerType = Column(VARCHAR(), nullable=False)
+    puller_description = Column(VARCHAR())
+    owner = relationship(
+        "User",  # Replace "User" with the actual class name of the User model
+        lazy='selectin'
+    )
