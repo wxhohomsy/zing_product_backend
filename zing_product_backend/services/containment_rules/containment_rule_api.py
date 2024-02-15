@@ -1,6 +1,8 @@
+import typing
 from typing import Union, Tuple, List
 from fastapi import APIRouter, Depends
 from zing_product_backend.reporting import system_log
+from zing_product_backend.models import auth
 from zing_product_backend.core.security.users import current_active_user
 from zing_product_backend.core.security.schema import UserInfo
 from zing_product_backend.app_db.connections import get_async_session
@@ -10,6 +12,7 @@ from zing_product_backend.core.product_containment.frontend_fields import build_
 from zing_product_backend.services.containment_rules import schemas
 from zing_product_backend.app_db import mes_db_query
 from . import crud
+
 
 containment_rule_router = APIRouter()
 
@@ -125,7 +128,7 @@ async def insert_containment_base_rule(insert_info: schemas.InsertContainmentBas
                               response_model=UpdateContainmentBaseRuleResponse,
                               responses=GENERAL_RESPONSE)
 async def update_containment_base_rule(update_info: schemas.UpdateContainmentBaseRuleInfo,
-                                       usr: UserInfo = Depends(current_active_user)):
+                                       usr: auth.User = Depends(current_active_user)):
     async for s in get_async_session():
         containment_db = crud.ContainmentRuleDataBase(s)
         sql_result = await containment_db.update_base_rule(update_info, user=usr)
@@ -134,7 +137,7 @@ async def update_containment_base_rule(update_info: schemas.UpdateContainmentBas
 
 @containment_rule_router.post("/containmentBaseRule/deleteBaseRule",)
 async def delete_containment_base_rule(delete_base_rule: schemas.DeleteContainmentBaseRule,
-                                       usr: UserInfo = Depends(current_active_user)):
+                                       usr: auth.User = Depends(current_active_user)):
     async for s in get_async_session():
         containment_db = crud.ContainmentRuleDataBase(s)
         sql_result = await containment_db.delete_base_rule(delete_base_rule.id, user=usr)
@@ -145,17 +148,17 @@ async def delete_containment_base_rule(delete_base_rule: schemas.DeleteContainme
 @containment_rule_router.post("/containmentRule/insertRule", response_model=InsertContainmentRuleResponse,
                               responses=GENERAL_RESPONSE)
 async def insert_containment_rule(insert_info: schemas.InsertContainmentRule,
-                                  usr: UserInfo = Depends(current_active_user)):
+                                  usr: auth.User = Depends(current_active_user)):
     async for s in get_async_session():
         containment_db = crud.ContainmentRuleDataBase(s)
-        sresult = await containment_db.insert_rule_info(insert_info, usr=usr)
-        return InsertContainmentRuleResponse(data=sresult, success=True)
+        result = await containment_db.insert_rule_info(insert_info, usr=usr)
+        return InsertContainmentRuleResponse(data=result, success=True, success_message="insert rule success")
 
 
 @containment_rule_router.post("/containmentRule/updateRule", response_model=UpdateContainmentRuleResponse,
                               responses=GENERAL_RESPONSE)
 async def update_containment_rule(update_info: schemas.UpdateContainmentRule,
-                                  usr: UserInfo = Depends(current_active_user)):
+                                  usr: auth.User = Depends(current_active_user)):
     async for s in get_async_session():
         containment_db = crud.ContainmentRuleDataBase(s)
         result = await containment_db.update_rule_info(update_info, usr=usr)
@@ -186,8 +189,8 @@ async def get_all_containment_rule_info():
 @containment_rule_router.post("/containmentRule/deleteRule", response_model=DeleteContainmentRuleResponse,
                                 responses=GENERAL_RESPONSE)
 async def delete_containment_rule(delete_rule: schemas.DeleteContainmentRule,
-                                  usr: UserInfo = Depends(current_active_user)):
+                                  usr=Depends(current_active_user)):
     async for s in get_async_session():
         containment_db = crud.ContainmentRuleDataBase(s)
         sql_result = await containment_db.delete_rule(delete_rule.id, usr=usr)
-        return DeleteContainmentRuleResponse(data=sql_result, success=True)
+        return DeleteContainmentRuleResponse(data=sql_result, success=True, success_message='delete rule success')

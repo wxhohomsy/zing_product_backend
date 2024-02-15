@@ -1,6 +1,9 @@
 from zing_product_backend.core.product_containment.containment_constants import *
+from zing_product_backend.core import common
+from . import containment_structure, result_structure
 
 
-def check_base_rule(base_rule_name: BaseRuleName,
-                    base_rule_data: dict) -> ContainmentStatus:
+def parse_main(rule_object, containment_object: product_structure.Product) -> result_structure.ContainmentResult:
     pass
+
+

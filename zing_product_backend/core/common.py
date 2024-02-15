@@ -30,7 +30,7 @@ class ErrorMessages(str, Enum):
 class ResponseModel(BaseModel):
     success: bool
     error_message: Union[ErrorMessages, None] = ''
-    success_message: str = ''
+    success_message: str = 'request success'
     data: Union[None, Any] = None
     detail: Optional[str] = None
 
@@ -78,13 +78,19 @@ class MatBaseType(str, Enum):
 # ---------------------------------TP AUTO ASSIGN---------------------------------
 
 
-class TpFrequencyType(str, Enum):
+class TpSampleType(str, Enum):
     # segment_seed_tail/frequency/custom/ingot_tail/ingot_seed
     SEGMENT_SEED_TAIL = 'segment_seed_tail'
     FREQUENCY = 'frequency'
-    CUSTOM = 'custom'
     INGOT_TAIL = 'ingot_tail'
     INGOT_SEED = 'ingot_seed'
+    WAFER_DIRECT = 'wafer_direct'
+
+
+class TpFrequencyType(str, Enum):
+    FIX_COUNT = 'fix_count'
+    FIX_INTERVAL_MM = 'fix_interval_mm'
+    EVERY_n_LOT = 'every_n_lot'
 
 
 # ------------------------------- RESPONSE ---------------------------------

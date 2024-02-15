@@ -19,6 +19,7 @@ class ContainmentBaseRuleInfo(BaseModel):
     rule_name: str
     rule_class: ContainmentBaseRuleClass  # DATA_OOS, DATA_OOC, PULLER_ID, END_TIME, HC_REDUCE_RULE ...
     rule_data: dict
+    description: str
     rule_sql: str
     containment_object_type: ProductObjectType
     changeable: bool
@@ -36,6 +37,7 @@ class UpdateContainmentBaseRuleInfo(BaseModel):
     rule_name: str
     rule_data: dict
     rule_sql: str
+    description: str
     changeable: bool
     containment_object_type: ProductObjectType
     virtual_factory: common.VirtualFactory
@@ -50,6 +52,7 @@ class InsertContainmentBaseRule(BaseModel):
     rule_class: ContainmentBaseRuleClass
     rule_data: dict
     containment_object_type: ProductObjectType
+    description: str
     rule_sql: str
     virtual_factory: common.VirtualFactory
     changeable: bool = True
@@ -59,6 +62,7 @@ class ContainmentRuleInfo(BaseModel):
     id: int
     rule_name: str
     included_base_rule_id_list: List[int]
+    containment_object_type: ProductObjectType
     rule_data: dict
     changeable: bool
     rule_description: str
@@ -79,6 +83,7 @@ class InsertContainmentRule(BaseModel):
     rule_data: dict
     rule_sql: str
     rule_description: str
+    containment_object_type: ProductObjectType
     changeable: bool = True
 
 
@@ -87,5 +92,6 @@ class UpdateContainmentRule(BaseModel):
     rule_name: str
     rule_data: dict
     rule_sql: str
+    containment_object_type: ProductObjectType
     changeable: bool = True
     rule_description: str

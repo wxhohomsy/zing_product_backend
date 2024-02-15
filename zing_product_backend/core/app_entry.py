@@ -4,7 +4,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi import Request, FastAPI
 from fastapi.responses import JSONResponse
 from zing_product_backend.core import exceptions, common
+from zing_product_backend.core.middlewares import RequestRecordMiddleware
 app = FastAPI()
+
+
+app.add_middleware(RequestRecordMiddleware)
 
 
 @app.exception_handler(exceptions.PredefinedException)

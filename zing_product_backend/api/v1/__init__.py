@@ -4,14 +4,11 @@ from zing_product_backend.core.security import security_api
 from zing_product_backend.services.general_settings import general_setting_api
 from zing_product_backend.services.containment_rules import containment_rule_api
 from zing_product_backend.services.tp_auto_sample import tp_auto_sample_api
-# from zing_product_backend.services.tp_auto_sample import tp_au
 
 
 router_v1 = APIRouter()
 router_v1.include_router(auth.router)
-router_v1.include_router(security_api.privilege_router,
-                            prefix="/privilege", tags=["privilege"]
-                         )
+
 router_v1.include_router(general_setting_api.general_settings_router,
                          prefix="/generalSettings", tags=["general_settings"])
 router_v1.include_router(containment_rule_api.containment_rule_router,

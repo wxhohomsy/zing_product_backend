@@ -20,7 +20,7 @@ class SettingsDataBase:
     async def get_all_mat_info_restrict_by_group_type(self, group_type: common.MatGroupType
                                                       ) -> List[schemas.MatGroupInfo]:
         stmt = select(general_settings.MatDef).where(general_settings.MatDef.delete_flag == False)
-        mat_info_list: List[schemas.MatGroupInfo] = []
+        mat_info_list: List[schemas.MatInfoByGroupType] = []
         mat_orm_list: List[general_settings.MatDef] = (await self.session.execute(stmt)).scalars().all()
         for mat_orm in mat_orm_list:
             group_name = None

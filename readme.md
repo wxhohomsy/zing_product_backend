@@ -1,0 +1,1 @@
+\[ A = B \Leftrightarrow (\forall x (x \in A \Rightarrow x \in B) \land \forall x (x \in B \Rightarrow x \in A)) \]

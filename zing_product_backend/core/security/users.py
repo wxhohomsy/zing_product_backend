@@ -12,6 +12,7 @@ from zing_product_backend.core.security import crud
 from zing_product_backend.core.security.security_utils import get_rules_from_user
 from zing_product_backend.core.common import RuleName
 from zing_product_backend.core.common import ErrorMessages
+from zing_product_backend.core import exceptions
 SECRET = "SECRET12EDASDSFDAS%JFDS.DFSFs^%21"
 
 
@@ -130,6 +131,5 @@ async def current_admin_user(user=Depends(current_active_user)) -> auth.User:
     user_rules = get_rules_from_user(user)
     if any([RuleName.ADMIN in user_rules, RuleName.IMS_DEV in user_rules]):
         return user
-
     else:
-        raise HTTPException(status_code=403, detail=ErrorMessages.INSUFFICIENT_PRIVILEGE)
+        raise exceptions.InsufficientPrivilegeError(detail='insufficient privilege for admin operation')

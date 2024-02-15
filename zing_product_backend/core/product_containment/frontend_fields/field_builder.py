@@ -39,7 +39,22 @@ async def build_fields_from_sql_rule(db_table: Union[Table, Type[DeclarativeBase
     return to_return_field_list
 
 
-async def build_spc_fields(base_rule_class: ContainmentBaseRuleClass, virtual_factory: common.VirtualFactory):
+async def build_custom_sql_fields() -> List[fields_schema.Field]:
+    to_return_field_list: List[fields_schema.Field] = []
+    operators = [fields_schema.RuleOperator(name=operator.value, label=operator.value, arity=2)  \
+                 for operator in CustomSqlOperator]
+    for field_name in CustomSqlField:
+        to_return_field_list.append(fields_schema.Field(
+            name=field_name,
+            inputType=RuleInputType.TEXT,
+            valueEditorType=RuleValueEditor.TEXT,
+            operators=operators,
+        ))
+    return to_return_field_list
+
+
+async def build_spc_fields(base_rule_class: ContainmentBaseRuleClass,
+                           virtual_factory: common.VirtualFactory)-> List[fields_schema.Field]:
     operator_list = []
     if base_rule_class in [ContainmentBaseRuleClass.SPC_OOC, ContainmentBaseRuleClass.SPC_OOS]:
         for operator_name in SpcOosOperators:
@@ -50,9 +65,9 @@ async def build_spc_fields(base_rule_class: ContainmentBaseRuleClass, virtual_fa
     elif base_rule_class == ContainmentBaseRuleClass.SPC_VALUE:
         for operator in SPC_VALUE_OPERATOR_NAMES:
             if operator in (RuleOperatorName.BETWEEN, RuleOperatorName.NOT_BETWEEN):
-                arity = 2
+                arity = 3
             else:
-                arity = 1
+                arity = 2
             operator_list.append(
                 fields_schema.RuleOperator(name=operator, label=operator, arity=arity)
             )
@@ -75,7 +90,7 @@ async def build_spc_fields(base_rule_class: ContainmentBaseRuleClass, virtual_fa
     return field_list
 
 
-async def build_time_related_field():
+async def build_time_related_field()-> List[fields_schema.Field]:
     field_list: List[fields_schema.Field] = []
     operator_list = []
     for operator in CrystalEquipOperator:
@@ -94,7 +109,7 @@ async def build_time_related_field():
     return field_list
 
 
-async def build_crystal_equip_field():
+async def build_crystal_equip_field() -> List[fields_schema.Field]:
     to_return_field_list = []
     puller_info_list: List['general_settings.PullerInfo'] = await crud.get_available_puller_info_list()
     puller_name_list = [puller_info.puller_name for puller_info in puller_info_list]
@@ -149,7 +164,7 @@ async def build_crystal_equip_field():
     return to_return_field_list
 
 
-async def build_ingot_fdc_field():
+async def build_ingot_fdc_field()-> List[fields_schema.Field]:
     to_return_field_list = []
     operator_list = []
     for operator in IngotFdcOperator:
@@ -166,28 +181,51 @@ async def build_ingot_fdc_field():
     return to_return_field_list
 
 
-async def build_mat_group_field():
-    to_return_field_list = []
-    operator_list = []
+async def build_mat_group_field() -> List[fields_schema.Field]:
+    to_return_field_list: List[fields_schema.Field] = []
+    operator_list: List[fields_schema.RuleOperator] = []
     for operator in MatGroupOperator:
         operator_list.append(fields_schema.RuleOperator(name=operator.value, label=operator.value, arity=2))
 
     for field_name in MatGroupField:
         if field_name == MatGroupField.YIELD_MAT_GROUP:
             mat_yield_group_names = await crud.get_mat_yield_group_names()
-
+            mat_yield_group_values: fields_schema.RuleValues = [
+                fields_schema.RuleValues(name=mat_yield_group_name, label=mat_yield_group_name) for
+                mat_yield_group_name in mat_yield_group_names
+            ]
             field = fields_schema.Field(
                 name=field_name,
                 label=field_name,
                 valueEditorType=RuleValueEditor.MULTISELECT,
                 inputType=RuleInputType.TEXT,
-                values=mat_yield_group_names,
+                values=mat_yield_group_values,
                 valueSources=['value'],
                 operators=operator_list,
             )
             to_return_field_list.append(field)
         else:
             raise exceptions.NotImplementError(f'Unknown field name {field_name} for mat_group class')
+    return to_return_field_list
+
+
+async def build_crystal_defect_field() -> List[fields_schema.Field]:
+    to_return_field_list: List[fields_schema.Field] = []
+    operator_list: List[fields_schema.RuleOperator] = []
+    for operator in CrystalDefectOperator:
+        operator_list.append(fields_schema.RuleOperator(name=operator.value, label=operator.value, arity=2))
+
+    for field_name in CrystalDefectField:
+        to_return_field_list.append(
+            fields_schema.Field(
+                name=field_name,
+                label=field_name,
+                valueEditorType=RuleValueEditor.TEXT,
+                inputType=RuleInputType.NUMBER,
+                operators=operator_list,
+            )
+        )
+    return to_return_field_list
 
 
 async def build_fields_from_custom_rule(base_rule_class: ContainmentBaseRuleClass,
@@ -207,7 +245,14 @@ async def build_fields_from_custom_rule(base_rule_class: ContainmentBaseRuleClas
     elif base_rule_class == ContainmentBaseRuleClass.MAT_GROUP:
         return await build_mat_group_field()
 
+    elif base_rule_class == ContainmentBaseRuleClass.CRYSTAL_DEFECT:
+        return await build_crystal_defect_field()
+
+    elif base_rule_class == ContainmentBaseRuleClass.MESDB_CUSTOM_SQL:
+        return await build_custom_sql_fields()
+
     else:
         warnings.warn(f'Unknown rule class {base_rule_class}')
         return []
+
 

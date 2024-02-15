@@ -1,7 +1,9 @@
 DEBUG = True
+OFFLINE = False
 MES_STS_CACHE_TIME = 30   # seconds
 SPC_DATA_CACHE_TIME = 60  # SECONDS
 SPEC_DATA_CACHE_TIME = 1800  # SECONDS
+MES_QUERY_CACHE_SIZE = 10000
 
 # -----------------MES TABLE SETTING -----------------------------------------------------
 USE_GROUP_OPERATIONS = ['2900']

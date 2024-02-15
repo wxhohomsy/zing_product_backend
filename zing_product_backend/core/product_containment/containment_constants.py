@@ -20,7 +20,7 @@ class RuleGroupType(Enum):
 class ContainmentStatus(Enum):
     PASS = 'pass'
     CATCH = 'catch'
-    ERROR = 'error'
+    UNKNOWN = 'unknown'
 
 
 class BaseRuleType(str, Enum):
@@ -97,7 +97,7 @@ class ContainmentBaseRuleClass(str, Enum):
     SPC_VALUE = 'spc_value'
     CRYSTAL_EQUIP = 'crystal_equip'
     TIME_RELATED = 'time_related'
-    HC_REDUCE_RULE = 'hc_reduce_rule'
+    CRYSTAL_DEFECT = 'crystal_defect'
     INGOT_FDC = 'ingot_fdc'
     MAT_GROUP = 'mat_group'
     MESDB_CUSTOM_SQL = 'mesdb_custom_sql'
@@ -113,7 +113,7 @@ RULE_IS_SQL_DICT = {
     ContainmentBaseRuleClass.SPC_VALUE: False,
     ContainmentBaseRuleClass.CRYSTAL_EQUIP: False,
     ContainmentBaseRuleClass.TIME_RELATED: False,
-    ContainmentBaseRuleClass.HC_REDUCE_RULE: False,
+    ContainmentBaseRuleClass.CRYSTAL_DEFECT: False,
     ContainmentBaseRuleClass.INGOT_FDC: False,
     ContainmentBaseRuleClass.MAT_GROUP: False,
     ContainmentBaseRuleClass.MESDB_CUSTOM_SQL: False,
@@ -128,7 +128,7 @@ RULE_IS_SPC_DICT = {
     ContainmentBaseRuleClass.SPC_VALUE: True,
     ContainmentBaseRuleClass.CRYSTAL_EQUIP: False,
     ContainmentBaseRuleClass.TIME_RELATED: False,
-    ContainmentBaseRuleClass.HC_REDUCE_RULE: False,
+    ContainmentBaseRuleClass.CRYSTAL_DEFECT: False,
     ContainmentBaseRuleClass.INGOT_FDC: False,
     ContainmentBaseRuleClass.MAT_GROUP: False,
     ContainmentBaseRuleClass.MESDB_CUSTOM_SQL: False,
@@ -174,7 +174,9 @@ class TimeRelatedOperator(Enum):
     BETWEEN = RuleOperatorName.BETWEEN
     NOT_BETWEEN = RuleOperatorName.NOT_BETWEEN
     GT = RuleOperatorName.GT
+    GTE = RuleOperatorName.GTE
     LT = RuleOperatorName.LT
+    LTE = RuleOperatorName.LTE
 
 
 # -------------------------- ingot fdc --------------------------------------------------------
@@ -189,8 +191,9 @@ class IngotFdcOperator(Enum):
     BETWEEN = RuleOperatorName.BETWEEN
     NOT_BETWEEN = RuleOperatorName.NOT_BETWEEN
     GT = RuleOperatorName.GT
+    GTE = RuleOperatorName.GTE
     LT = RuleOperatorName.LT
-
+    LTE = RuleOperatorName.LTE
 # -------------------------- crystal_equip  --------------------------------------------------------
 
 
@@ -215,3 +218,52 @@ class MatGroupField(Enum):
 class MatGroupOperator(Enum):
     IN = RuleOperatorName.IN
     NOT_IN = RuleOperatorName.NOT_IN
+
+
+# -------------------------------------- crystal defect -----------------------------------------------------
+class CrystalDefectOperator(Enum):
+    BETWEEN = RuleOperatorName.BETWEEN
+    NOT_BETWEEN = RuleOperatorName.NOT_BETWEEN
+    GT = RuleOperatorName.GT
+    GTE = RuleOperatorName.GTE
+    LT = RuleOperatorName.LT
+    LTE = RuleOperatorName.LTE
+    EQUAL = RuleOperatorName.EQUAL
+
+
+class CrystalDefectField(Enum):
+    LINEAR_PV = 'linear_pv'
+    LINEAR_A_DEFECT = 'linear_a_defect'
+    LINEAR_A_DENSITY = 'linear_a_density'
+    LINEAR_COP19 = 'linear_cop19'
+    LINEAR_COP26 = 'linear_cop26'
+    LINEAR_COP37 = 'linear_cop37'
+    LINEAR_DWO_ALL = 'linear_dwo_all'
+    LINEAR_DWO_CENTER = 'linear_dwo_center'
+    LINEAR_DWO_EDGE = 'linear_dwo_edge'
+    LEFT_TP_PV = 'left_pv'
+    LEFT_TP_A_DEFECT = 'left_a_defect'
+    LEFT_TP_COP19 = 'left_cop19'
+    LEFT_TP_COP26 = 'left_cop26'
+    LEFT_TP_COP37 = 'left_cop37'
+    LEFT_TP_DWO_ALL = 'left_dwo_all'
+    LEFT_TP_DWO_CENTER = 'left_dwo_center'
+    LEFT_TP_DWO_EDGE = 'left_dwo_edge'
+    RIGHT_TP_PV = 'right_pv'
+    RIGHT_TP_A_DEFECT = 'right_a_defect'
+    RIGHT_TP_COP19 = 'right_cop19'
+    RIGHT_TP_COP26 = 'right_cop26'
+    RIGHT_TP_COP37 = 'right_cop37'
+    RIGHT_TP_DWO_ALL = 'right_dwo_all'
+    RIGHT_TP_DWO_CENTER = 'right_dwo_center'
+    RIGHT_TP_DWO_EDGE = 'right_dwo_edge'
+
+
+# -------------------------------------- custom sql -----------------------------------------------------
+class CustomSqlField(Enum):
+    MESDB_SQL = 'mesdb_sql'
+    MESETL_DB_SQL = 'mesetl_db_sql'
+
+
+class CustomSqlOperator(Enum):
+    EQUAL = RuleOperatorName.EQUAL

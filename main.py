@@ -10,26 +10,6 @@ from zing_product_backend.models import auth
 app.include_router(router_v1)
 
 
-@app.get("/test/getTime")
-async def get_model():
-    time.sleep(3)
-    return {'current_time': datetime.datetime.now()}
-
-
-@app.get("/test/nothing")
-async def get_model():
-    return {'data': 'nothing'}
-
-
-@app.middleware("http")
-async def log_request_time(request: Request, call_next):
-    start_time = time.time()
-    response = await call_next(request)
-    process_time = time.time() - start_time
-    print(f"{request.client.host} Request: {request.method} {request.url.path} - Handled in {process_time:.4f} secs")
-    return response
-
-
 if __name__ == "__main__":
     from zing_product_backend.app_db import mes_db_query
     from zing_product_backend.core import common

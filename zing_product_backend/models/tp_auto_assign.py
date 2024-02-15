@@ -1,27 +1,34 @@
 import datetime
 from typing import List, Dict, Set, Literal, Union
 from sqlalchemy.orm import DeclarativeBase, mapped_column, Mapped, declared_attr, relationship
-from sqlalchemy import VARCHAR, ForeignKey, DateTime, Boolean, Integer, String, Table
-from sqlalchemy import Column, VARCHAR, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, and_, \
+    or_, INT, VARCHAR, UniqueConstraint, Boolean, Numeric, BigInteger, ForeignKey, func, Table, Index
 from sqlalchemy.orm import relationship
 from zing_product_backend.app_db.connections import Base
 from zing_product_backend.core import common
+from zing_product_backend.models import containment_model, auth
+from sqlalchemy.dialects.postgresql import UUID, BIGINT
 
 
 class SamplePlan(Base):
     __tablename__ = "sample_plan"
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     sample_plan_name: Mapped[str] = mapped_column(String(50), nullable=False, index=True, unique=True)
+    containment_rule_id: Mapped[int] = mapped_column(Integer, ForeignKey(containment_model.ContainmentRule.id))
     key_1: Mapped[str] = mapped_column(VARCHAR(), nullable=False, index=True)
     key_2: Mapped[str] = mapped_column(VARCHAR(), nullable=False, index=True)
     key_3: Mapped[str] = mapped_column(VARCHAR(), nullable=False, index=True)
-    frequency_type: Mapped[common.TpFrequencyType] = mapped_column(
-        String(),
-        comment='by_ingot/by_segment/every_fixed_mm/wafer_direct',
-        nullable=True)
+    sample_type: Mapped[common.TpSampleType] = mapped_column(
+        nullable=False)
+    frequency_type: Mapped[common.TpFrequencyType] = mapped_column(nullable=True)
     frequency_value: Mapped[int] = mapped_column(Integer, nullable=True)
     must_include_seed_tail: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     plan_priority: Mapped[int] = mapped_column(Integer, nullable=False, comment='0 is the highest priority')
+
+    updated_time: Mapped[datetime.datetime] = mapped_column(DateTime, default=func.now())
+    updated_by = Column(UUID(as_uuid=True), ForeignKey(auth.User.id), nullable=False, index=True)
+    updated_user_name: Mapped[str] = mapped_column(String(50), nullable=False)
+    containment_rule = relationship(containment_model.ContainmentRule)
     sample_tp_list: Mapped[List['AutoSampleTpStats']] = relationship('AutoSampleTpStats',
                                                                         back_populates='sample_plan')
 

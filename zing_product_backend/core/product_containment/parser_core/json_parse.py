@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING, Dict, Set
 from zing_product_backend.core.product_containment.containment_constants import *
 from zing_product_backend.core.product_containment.parser_core.result_structure import *
 if TYPE_CHECKING:
-    from zing_product_backend.core.product_containment.parser_core.product_structure import *
+    from zing_product_backend.core.product_containment.parser_core.containment_structure import *
     from zing_product_backend.core.product_containment.parser_core.containment_structure import *
 
 
@@ -25,10 +25,10 @@ def combine_results(results: List[ContainmentResult], combinator):
 
     combined_data_record_list = []
     result_statuses = [r.result_status for r in results]
-    error_exists = ContainmentStatus.ERROR in result_statuses
+    error_exists = ContainmentStatus.UNKNOWN in result_statuses
 
     if error_exists:
-        final_status = ContainmentStatus.ERROR
+        final_status = ContainmentStatus.UNKNOWN
     elif combinator == 'or':
         final_status = ContainmentStatus.CATCH if ContainmentStatus.CATCH in result_statuses else ContainmentStatus.PASS
     elif combinator == 'and':
@@ -93,7 +93,7 @@ def parse_rule(rule_dict: dict) -> 'ContainmentRule':
         results = [parse_rule(sub_rule) for sub_rule in rule_dict['rules']]
         combined_result = combine_results(results, combinator)
     else:
-        result = 123
+        result = True
         combined_result = ContainmentResult(result, {rule_dict['rule_name']: rule_dict})
 
     return combined_result.invert() if not_flag else combined_result
