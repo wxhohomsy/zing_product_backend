@@ -7,7 +7,7 @@ from sqlalchemy import Enum
 from zing_product_backend.app_db.connections import Base
 from zing_product_backend.core.product_containment import containment_constants
 from zing_product_backend.core import common
-from zing_product_backend.models import auth
+from zing_product_backend.models import auth_model
 from sqlalchemy.dialects.postgresql import UUID, BIGINT
 
 
@@ -39,9 +39,9 @@ class ContainmentBaseRule(Base):
     containment_object_type: common.ProductObjectType = Column(VARCHAR(), nullable=False)
     description = Column(VARCHAR(), nullable=False)
     changeable = Column(Boolean(), default=True)
-    created_by = Column(UUID(as_uuid=True), ForeignKey(auth.User.id), nullable=False, default='admin', index=True)
+    created_by = Column(UUID(as_uuid=True), ForeignKey(auth_model.User.id), nullable=False, default='admin', index=True)
     created_time = Column(DateTime(), nullable=False, default=func.now())
-    updated_by = Column(UUID(as_uuid=True), ForeignKey(auth.User.id), nullable=False, default='admin', index=True)
+    updated_by = Column(UUID(as_uuid=True), ForeignKey(auth_model.User.id), nullable=False, default='admin', index=True)
     updated_time = Column(DateTime(), nullable=False, default=func.now(), onupdate=func.now())
     rules = relationship('ContainmentRule', secondary=containment_rule_base_rule_table,
                          back_populates='base_rules', lazy='selectin'
@@ -69,9 +69,9 @@ class ContainmentRule(Base):
     changeable = Column(Boolean(), default=True)
     rule_data = Column(JSONB(), nullable=False)
     containment_object_type: common.ProductObjectType = Column(VARCHAR(), nullable=False)
-    created_by = Column(UUID(as_uuid=True), ForeignKey(auth.User.id), nullable=False, default='admin')
+    created_by = Column(UUID(as_uuid=True), ForeignKey(auth_model.User.id), nullable=False, default='admin')
     created_time = Column(DateTime(), nullable=False, default=func.now())
-    updated_by = Column(UUID(as_uuid=True), ForeignKey(auth.User.id), nullable=False, default='admin')
+    updated_by = Column(UUID(as_uuid=True), ForeignKey(auth_model.User.id), nullable=False, default='admin')
     updated_time = Column(DateTime(), nullable=False, default=func.now(), onupdate=func.now())
 
     base_rules = relationship('ContainmentBaseRule', secondary=containment_rule_base_rule_table,

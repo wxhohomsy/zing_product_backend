@@ -1,4 +1,4 @@
-from .request_record import RequestRecordMiddleware
+from .request_record import request_record_middleware
 
 
-__all__ = [RequestRecordMiddleware]
+__all__ = [request_record_middleware]

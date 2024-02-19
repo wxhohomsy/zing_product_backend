@@ -11,7 +11,7 @@ from sqlalchemy import VARCHAR, ForeignKey, DateTime, Boolean, Integer, String, 
 from zing_product_backend.app_db.connections import Base
 from sqlalchemy import Column, VARCHAR, ForeignKey
 from sqlalchemy.orm import relationship
-from sqlalchemy.dialects.postgresql import UUID, BIGINT
+from sqlalchemy.dialects.postgresql import UUID, BIGINT, JSONB
 
 if TYPE_CHECKING:
     from zing_product_backend.models.containment_model import ContainmentBaseRule, ContainmentRule
@@ -52,6 +52,7 @@ class User(Base):
     hashed_password: Mapped[str] = mapped_column(
         String(length=1024), nullable=False
     )
+    user_settings: Mapped[dict] = mapped_column(JSONB(), nullable=False, default={})
 
 
 class PrivilegeGroup(Base):

@@ -6,7 +6,7 @@ from sqlalchemy import Column, Integer, String, DateTime, and_, \
 from sqlalchemy.orm import relationship
 from zing_product_backend.app_db.connections import Base
 from zing_product_backend.core import common
-from zing_product_backend.models import containment_model, auth
+from zing_product_backend.models import containment_model, auth_model
 from sqlalchemy.dialects.postgresql import UUID, BIGINT
 
 
@@ -26,7 +26,7 @@ class SamplePlan(Base):
     plan_priority: Mapped[int] = mapped_column(Integer, nullable=False, comment='0 is the highest priority')
 
     updated_time: Mapped[datetime.datetime] = mapped_column(DateTime, default=func.now())
-    updated_by = Column(UUID(as_uuid=True), ForeignKey(auth.User.id), nullable=False, index=True)
+    updated_by = Column(UUID(as_uuid=True), ForeignKey(auth_model.User.id), nullable=False, index=True)
     updated_user_name: Mapped[str] = mapped_column(String(50), nullable=False)
     containment_rule = relationship(containment_model.ContainmentRule)
     sample_tp_list: Mapped[List['AutoSampleTpStats']] = relationship('AutoSampleTpStats',

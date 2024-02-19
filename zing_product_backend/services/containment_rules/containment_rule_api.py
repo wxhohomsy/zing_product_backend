@@ -2,7 +2,7 @@ import typing
 from typing import Union, Tuple, List
 from fastapi import APIRouter, Depends
 from zing_product_backend.reporting import system_log
-from zing_product_backend.models import auth
+from zing_product_backend.models import auth_model
 from zing_product_backend.core.security.users import current_active_user
 from zing_product_backend.core.security.schema import UserInfo
 from zing_product_backend.app_db.connections import get_async_session
@@ -128,16 +128,17 @@ async def insert_containment_base_rule(insert_info: schemas.InsertContainmentBas
                               response_model=UpdateContainmentBaseRuleResponse,
                               responses=GENERAL_RESPONSE)
 async def update_containment_base_rule(update_info: schemas.UpdateContainmentBaseRuleInfo,
-                                       usr: auth.User = Depends(current_active_user)):
+                                       usr: auth_model.User = Depends(current_active_user)):
     async for s in get_async_session():
         containment_db = crud.ContainmentRuleDataBase(s)
         sql_result = await containment_db.update_base_rule(update_info, user=usr)
         return UpdateContainmentBaseRuleResponse(data=sql_result, success=True)
 
 
+from fastapi import Request
 @containment_rule_router.post("/containmentBaseRule/deleteBaseRule",)
-async def delete_containment_base_rule(delete_base_rule: schemas.DeleteContainmentBaseRule,
-                                       usr: auth.User = Depends(current_active_user)):
+async def delete_containment_base_rule(r: Request, delete_base_rule: schemas.DeleteContainmentBaseRule,
+                                       usr: auth_model.User = Depends(current_active_user)):
     async for s in get_async_session():
         containment_db = crud.ContainmentRuleDataBase(s)
         sql_result = await containment_db.delete_base_rule(delete_base_rule.id, user=usr)
@@ -148,7 +149,7 @@ async def delete_containment_base_rule(delete_base_rule: schemas.DeleteContainme
 @containment_rule_router.post("/containmentRule/insertRule", response_model=InsertContainmentRuleResponse,
                               responses=GENERAL_RESPONSE)
 async def insert_containment_rule(insert_info: schemas.InsertContainmentRule,
-                                  usr: auth.User = Depends(current_active_user)):
+                                  usr: auth_model.User = Depends(current_active_user)):
     async for s in get_async_session():
         containment_db = crud.ContainmentRuleDataBase(s)
         result = await containment_db.insert_rule_info(insert_info, usr=usr)
@@ -158,7 +159,7 @@ async def insert_containment_rule(insert_info: schemas.InsertContainmentRule,
 @containment_rule_router.post("/containmentRule/updateRule", response_model=UpdateContainmentRuleResponse,
                               responses=GENERAL_RESPONSE)
 async def update_containment_rule(update_info: schemas.UpdateContainmentRule,
-                                  usr: auth.User = Depends(current_active_user)):
+                                  usr: auth_model.User = Depends(current_active_user)):
     async for s in get_async_session():
         containment_db = crud.ContainmentRuleDataBase(s)
         result = await containment_db.update_rule_info(update_info, usr=usr)

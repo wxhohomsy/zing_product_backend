@@ -6,7 +6,7 @@ from fastapi import Depends, FastAPI, Request, HTTPException
 from zing_product_backend.api.v1 import router_v1
 from zing_product_backend.core import app
 from enum import Enum
-from zing_product_backend.models import auth
+from zing_product_backend.models import auth_model
 app.include_router(router_v1)
 
 
@@ -19,7 +19,7 @@ if __name__ == "__main__":
 #     df = mes_db_query.get_wafering_spec_by_material_and_operation(
 # '3T38XPR331D', ('2920', '6700', '6200'), common.VirtualFactory.L1W)
 #     df.to_excel(r'p:\e00963\test_3.xlsx')
-    from zing_product_backend.models import auth, general_settings
+    from zing_product_backend.models import auth_model, general_settings
     from sqlalchemy.orm import DeclarativeBase
     from sqlalchemy import inspect
     from sqlalchemy.orm import IdentityMap

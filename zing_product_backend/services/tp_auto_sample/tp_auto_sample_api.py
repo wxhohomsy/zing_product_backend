@@ -9,7 +9,7 @@ from zing_product_backend.app_db import mes_db_query
 from zing_product_backend.core.security.users import current_active_user
 from zing_product_backend.core.common import GENERAL_RESPONSE, ResponseModel, ErrorMessages, MatGroupType
 from zing_product_backend.core import common
-from zing_product_backend.models import auth
+from zing_product_backend.models import auth_model
 from zing_product_backend.app_db import AsyncAppSession, mes_db_query
 from zing_product_backend.core.security import security_utils
 from zing_product_backend.services.containment_rules.crud import ContainmentRuleDataBase
@@ -53,8 +53,7 @@ async def get_available_oper_id_list():
     oper_id_list = mes_db_query.get_available_oper_id_list('2205', '3000',
                                                            common.VirtualFactory.L2W)
     return AvailableOperIdListResponse(data=oper_id_list,
-                                       success=True,
-                                       )
+                                       success=True,)
 
 
 @to_auto_sample_router.get("/tpLotInfoList/{virtual_factory}/{oper_id}", response_model=LotInfoListResponse,

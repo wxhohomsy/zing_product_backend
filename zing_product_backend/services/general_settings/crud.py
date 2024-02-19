@@ -7,7 +7,7 @@ from zing_product_backend.services.general_settings import schemas
 from zing_product_backend.models import general_settings
 from zing_product_backend.core import common
 from zing_product_backend.services.general_settings import util_functions
-from zing_product_backend.models.auth import User
+from zing_product_backend.models.auth_model import User
 
 class DatabaseError(Exception):
     pass

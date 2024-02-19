@@ -6,7 +6,7 @@ from sqlalchemy import select, func, and_, or_
 from sqlalchemy.orm import lazyload, selectinload
 from zing_product_backend.core import common, exceptions
 from zing_product_backend.core.product_containment.parser_core.json_parse import extract_field_names_set
-from zing_product_backend.models import containment_model, auth
+from zing_product_backend.models import containment_model, auth_model
 from . import schemas, utils
 
 
@@ -66,7 +66,7 @@ class ContainmentRuleDataBase:
         return base_rule_name_list
 
     async def insert_base_rule(self, base_rule_info: schemas.InsertContainmentBaseRule,
-                               user: auth.User) -> schemas.ContainmentBaseRuleInfo:
+                               user: auth_model.User) -> schemas.ContainmentBaseRuleInfo:
         """
         Insert a new base rule
         :param base_rule_info: schemas.InsertContainmentBaseRule
@@ -117,7 +117,7 @@ class ContainmentRuleDataBase:
         )
 
     async def update_base_rule(self,
-                               base_rule_info: schemas.UpdateContainmentBaseRuleInfo, user: auth.User
+                               base_rule_info: schemas.UpdateContainmentBaseRuleInfo, user: auth_model.User
                                ) -> schemas.ContainmentBaseRuleInfo:
         exist_rule = await self.session.get(containment_model.ContainmentBaseRule, base_rule_info.id)
         if exist_rule is None:
@@ -162,7 +162,7 @@ class ContainmentRuleDataBase:
                 description=exist_rule.description,
             )
 
-    async def delete_base_rule(self, base_rule_id: int, user: auth.User) -> schemas.ContainmentBaseRuleInfo:
+    async def delete_base_rule(self, base_rule_id: int, user: auth_model.User) -> schemas.ContainmentBaseRuleInfo:
         exist_rule = await self.session.get(containment_model.ContainmentBaseRule, base_rule_id)
         if exist_rule is None:
             raise exceptions.NotFoundError(rf"not found rule id: {base_rule_id} for delete")
@@ -226,7 +226,7 @@ class ContainmentRuleDataBase:
             rule_info_list.append(rule_info)
         return rule_info_list
 
-    async def insert_rule_info(self, insert_rule_data: schemas.InsertContainmentRule, usr: auth.User
+    async def insert_rule_info(self, insert_rule_data: schemas.InsertContainmentRule, usr: auth_model.User
                                ) -> schemas.ContainmentRuleInfo:
         affect_base_rule_name_set = extract_field_names_set(insert_rule_data.rule_data)
 
@@ -274,7 +274,7 @@ class ContainmentRuleDataBase:
             containment_object_type=new_rule.containment_object_type,
         )
 
-    async def update_rule_info(self, update_rule_data: schemas.UpdateContainmentRule, usr: auth.User):
+    async def update_rule_info(self, update_rule_data: schemas.UpdateContainmentRule, usr: auth_model.User):
         exist_rule = await self.session.get(containment_model.ContainmentRule, update_rule_data.id)
         if exist_rule is None:
             raise exceptions.NotFoundError(rf"not found rule id: {update_rule_data.id} for update")
@@ -327,7 +327,7 @@ class ContainmentRuleDataBase:
                 containment_object_type=exist_rule.containment_object_type,
             )
 
-    async def delete_rule(self, rule_id: int, usr: auth.User) -> schemas.ContainmentRuleInfo:
+    async def delete_rule(self, rule_id: int, usr: auth_model.User) -> schemas.ContainmentRuleInfo:
         exist_rule = await self.session.get(containment_model.ContainmentRule, rule_id)
         if exist_rule is None:
             raise exceptions.NotFoundError(rf"not found rule id: {rule_id} for delete")

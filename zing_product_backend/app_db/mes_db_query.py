@@ -1,11 +1,12 @@
 import pandas as pd
-from typing import Dict, Union, Tuple
+from typing import Dict, Tuple
 from sqlalchemy import text
 from sqlalchemy.engine.row import RowMapping
 from cachetools import cached, TTLCache
 from zing_product_backend.app_db.connections import l1w_db_engine, l2w_db_engine
 from zing_product_backend.core.common_type import *
-from zing_product_backend.core import common, settings
+from zing_product_backend.core import common
+from zing_product_backend import settings
 from zing_product_backend.global_utils import mes_db_utils
 
 

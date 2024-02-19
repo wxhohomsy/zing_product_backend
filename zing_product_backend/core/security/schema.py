@@ -105,18 +105,5 @@ class PrivilegeRuleAssign(BaseModel):
     rule_id_list: List[int]
 
 
-# class User(UserBase):
-#     privilege_groups: List[PrivilegeGroupBase]
-#
-#
-# class PrivilegeGroup(PrivilegeGroupBase):
-#     privilege_rules:  List[PrivilegeRuleBase]
-#     users: List[UserBase]
-#
-#
-# class PrivilegeRule(PrivilegeRuleBase):
-#     privilege_groups: List[PrivilegeGroupBase]
-
-
 class UserUpdate(schemas.BaseUserUpdate):
     pass

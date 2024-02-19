@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, DateTime, and_, \
     or_, INT, VARCHAR, UniqueConstraint, Boolean, Numeric, BigInteger, ForeignKey, Table,  func, Float, Index, UUID
 from sqlalchemy.orm import relationship
-from zing_product_backend.models.auth import User
+from zing_product_backend.models.auth_model import User
 from zing_product_backend.app_db.connections import Base
 from zing_product_backend.core import common
 db_schema = Base.__table_args__['schema']

@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, and_, or_
 from sqlalchemy.orm import lazyload, selectinload
 from zing_product_backend.core import exceptions
-from zing_product_backend.models import auth, tp_auto_assign
+from zing_product_backend.models import auth_model, tp_auto_assign
 from zing_product_backend.services.tp_auto_sample import schemas
 
 
@@ -20,8 +20,8 @@ class TPautoSampleDataBase:
         result = await self.session.execute(stmt)
         sample_info_list: List[schemas.TpSamplePlanInfo] = []
         for row in result.scalars():
-            updated_user_name = (await self.session.execute(select(auth.User).filter(
-                auth.User.id == row.updated_by))).scalar_one_or_none().user_name
+            updated_user_name = (await self.session.execute(select(auth_model.User).filter(
+                auth_model.User.id == row.updated_by))).scalar_one_or_none().user_name
 
             sample_info_list.append(schemas.TpSamplePlanInfo(
                 id=row.id,
@@ -49,8 +49,8 @@ class TPautoSampleDataBase:
         if exist_orm is None:
             raise exceptions.NotFoundError(rf"not found rule id: {plan_id}")
         else:
-            updated_user_name = (await self.session.execute(select(auth.User).filter(
-                auth.User.id == exist_orm.updated_by))).scalar_one_or_none().user_name
+            updated_user_name = (await self.session.execute(select(auth_model.User).filter(
+                auth_model.User.id == exist_orm.updated_by))).scalar_one_or_none().user_name
             return schemas.TpSamplePlanInfo(
                 id=exist_orm.id,
                 sample_plan_name=exist_orm.sample_plan_name,
@@ -69,7 +69,7 @@ class TPautoSampleDataBase:
                 updated_time=exist_orm.updated_time,
             )
 
-    async def insert_sample_plan(self, plan_info: schemas.InsertTpSamplePlan, user: auth.User
+    async def insert_sample_plan(self, plan_info: schemas.InsertTpSamplePlan, user: auth_model.User
                                  ) -> int:
         exist_orm = (await self.session.execute(
             select(tp_auto_assign.SamplePlan).filter(
@@ -78,8 +78,8 @@ class TPautoSampleDataBase:
         )).scalar_one_or_none()
 
         if exist_orm is not None:
-            updated_user_name = (await self.session.execute(select(auth.User).filter(
-                auth.User.id == exist_orm.updated_by))).scalar_one_or_none().user_name
+            updated_user_name = (await self.session.execute(select(auth_model.User).filter(
+                auth_model.User.id == exist_orm.updated_by))).scalar_one_or_none().user_name
 
 
             raise exceptions.DuplicateError(rf"already exist rule name: "
@@ -106,7 +106,7 @@ class TPautoSampleDataBase:
             return new_sample_plan.id
 
 
-    async def update_sample_plan(self, plan_info: schemas.UpdateTpSampleRuleInfo, user: auth.User) \
+    async def update_sample_plan(self, plan_info: schemas.UpdateTpSampleRuleInfo, user: auth_model.User) \
             -> schemas.TpSamplePlanInfo:
         exist_orm = (await self.session.execute(
             select(tp_auto_assign.SamplePlan).filter(

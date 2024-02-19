@@ -6,7 +6,7 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config, create_async_engine
 from alembic import context
 import dotenv
-from zing_product_backend.models.auth import *
+from zing_product_backend.models.auth_model import *
 from zing_product_backend.models.containment_model import *
 from zing_product_backend.models.general_settings import *
 from zing_product_backend.models.tp_auto_assign import *
