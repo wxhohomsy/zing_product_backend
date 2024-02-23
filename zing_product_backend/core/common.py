@@ -54,16 +54,44 @@ class PullerType(str, Enum):
     STECH = 'stech'
 
 
-class ProductStatus(str, Enum):
-    NORMAL = 'NORMAL'
-    HOLD = 'HOLD'
-    START = 'START'
+# ------------------------------ product auto allocation ---------------------------------
 
 
-class ProductionTransaction(str, Enum):
-    HOLD = 'HOLD'
-    RELEASE = 'RELEASE'
-    BYPASS = 'BYPASS'
+class ProductAllocationState(str, Enum):
+    NORMAL = 'normal'
+    HOLD = 'hold'
+    START_ALLOCATING = 'start_allocating'
+    WAIT_ALLOCATION_CONFIRM = 'waiting_allocation_confirm'
+
+
+class ProductAllocationTransaction(str, Enum):
+    UPDATE = 'update'
+    HOLD = 'hold'
+    RELEASE = 'release'
+    ADAPT = 'adapt'
+    BYPASS = 'bypass'
+    ALLOCATION_CONFIRM = 'allocation_confirm'
+
+
+PRODUCT_STATE_PERMIT_DICT = {
+    ProductAllocationState.NORMAL: {
+        ProductAllocationTransaction.HOLD, ProductAllocationTransaction.RELEASE, ProductAllocationTransaction.ADAPT,
+        ProductAllocationTransaction.BYPASS, ProductAllocationTransaction.ALLOCATION_CONFIRM,
+        ProductAllocationTransaction.UPDATE
+    },
+    ProductAllocationState.HOLD: {
+        ProductAllocationTransaction.RELEASE, ProductAllocationTransaction.HOLD,
+        ProductAllocationTransaction.UPDATE
+    },
+    ProductAllocationState.START_ALLOCATING: {
+    },
+    ProductAllocationState.WAIT_ALLOCATION_CONFIRM: {
+        ProductAllocationTransaction.HOLD, ProductAllocationTransaction.RELEASE,
+        ProductAllocationTransaction.ALLOCATION_CONFIRM,
+        ProductAllocationTransaction.UPDATE
+    }
+
+}
 
 
 class MatGroupType(str, Enum):
@@ -74,6 +102,7 @@ class MatGroupType(str, Enum):
 class MatBaseType(str, Enum):
     GROWING = 'growing'
     WAFERING = 'wafering'
+
 
 # ---------------------------------TP AUTO ASSIGN---------------------------------
 

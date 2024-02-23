@@ -53,6 +53,8 @@ class TpSamplePlanInfo(BaseModel):
     plan_priority: int
     containment_rule_id: int
     containment_rule_name: str
+    consider_unslicing_block: bool
+    consider_unreached_block: bool
     updated_time: datetime.datetime
     updated_by: UUID
     updated_user_name: str
@@ -66,6 +68,8 @@ class InsertTpSamplePlan(BaseModel):
     sample_type: common.TpSampleType
     frequency_type: Union[common.TpFrequencyType, None]
     frequency_value: Union[int, None]
+    consider_unslicing_block: bool
+    consider_unreached_block: bool
     must_include_seed_tail: bool
     plan_priority: int
     containment_rule_id: int
@@ -80,6 +84,8 @@ class UpdateTpSampleRuleInfo(BaseModel):
     sample_type: common.TpSampleType
     frequency_type: Union[common.TpFrequencyType, None]
     frequency_value: Union[int, None]
+    consider_unslicing_block: bool
+    consider_unreached_block: bool
     must_include_seed_tail: bool
     plan_priority: int
     containment_rule_id: int

@@ -1,6 +1,5 @@
 from typing import List, Dict, Tuple, Sequence, Union
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, and_, or_
 from sqlalchemy.orm import lazyload, selectinload
 from zing_product_backend.core import exceptions
@@ -18,6 +17,7 @@ class TPautoSampleDataBase:
             tp_auto_assign.SamplePlan.containment_rule)).order_by(
             tp_auto_assign.SamplePlan.plan_priority))
         result = await self.session.execute(stmt)
+
         sample_info_list: List[schemas.TpSamplePlanInfo] = []
         for row in result.scalars():
             updated_user_name = (await self.session.execute(select(auth_model.User).filter(
@@ -36,6 +36,8 @@ class TPautoSampleDataBase:
                 plan_priority=row.plan_priority,
                 containment_rule_id=row.containment_rule.id,
                 containment_rule_name=row.containment_rule.rule_name,
+                consider_unreached_block=row.consider_unreached_block,
+                consider_unslicing_block=row.consider_unslicing_block,
                 updated_by=row.updated_by,
                 updated_user_name=updated_user_name,
                 updated_time=row.updated_time,
@@ -64,6 +66,8 @@ class TPautoSampleDataBase:
                 plan_priority=exist_orm.plan_priority,
                 containment_rule_id=exist_orm.containment_rule.id,
                 containment_rule_name=exist_orm.containment_rule.containment_rule_name,
+                consider_unreached_block=exist_orm.consider_unreached_block,
+                consider_unslicing_block=exist_orm.consider_unslicing_block,
                 updated_by=exist_orm.updated_by,
                 updated_user_name=updated_user_name,
                 updated_time=exist_orm.updated_time,
@@ -81,7 +85,6 @@ class TPautoSampleDataBase:
             updated_user_name = (await self.session.execute(select(auth_model.User).filter(
                 auth_model.User.id == exist_orm.updated_by))).scalar_one_or_none().user_name
 
-
             raise exceptions.DuplicateError(rf"already exist rule name: "
                                             rf"{plan_info.sample_plan_name}, id: {exist_orm.id},"
                                             rf"updated by: {updated_user_name}")
@@ -97,6 +100,8 @@ class TPautoSampleDataBase:
                 must_include_seed_tail=plan_info.must_include_seed_tail,
                 plan_priority=plan_info.plan_priority,
                 containment_rule_id=plan_info.containment_rule_id,
+                consider_unslicing_block=plan_info.consider_unslicing_block,
+                consider_unreached_block=plan_info.consider_unreached_block,
                 updated_by=user.id,
                 updated_user_name=user.user_name,
             )
@@ -104,7 +109,6 @@ class TPautoSampleDataBase:
             await self.session.commit()
             await self.session.refresh(new_sample_plan)
             return new_sample_plan.id
-
 
     async def update_sample_plan(self, plan_info: schemas.UpdateTpSampleRuleInfo, user: auth_model.User) \
             -> schemas.TpSamplePlanInfo:
@@ -143,6 +147,8 @@ class TPautoSampleDataBase:
                 plan_priority=exist_orm.plan_priority,
                 containment_rule_id=exist_orm.containment_rule_id,
                 containment_rule_name=exist_orm.containment_rule.containment_rule_name,
+                consider_unslicing_block=exist_orm.consider_unslicing_block,
+                consider_unreached_block=exist_orm.consider_unreached_block,
                 updated_user_name=user.user_name,
                 updated_by=user.id,
                 updated_time=exist_orm.updated_time,

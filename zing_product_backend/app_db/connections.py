@@ -10,10 +10,10 @@ from zing_product_backend import settings
 
 oracledb.init_oracle_client()
 load_dotenv()
-l1w_db_engine = create_engine(os.environ.get('L1W_MESDB_URL'), pool_size=2, echo=settings.DEBUG)
-l2w_db_engine = create_engine(os.environ.get('L2W_MESDB_URL'), pool_size=2, echo=settings.DEBUG)
+l1w_db_engine = create_engine(os.environ.get('L1W_MESDB_URL'), pool_size=2, pool_pre_ping=True)
+l2w_db_engine = create_engine(os.environ.get('L2W_MESDB_URL'), pool_size=2, pool_pre_ping=True)
 app_db_engine = create_engine(os.environ.get('APP_DATABASE_URL'), pool_size=2)
-app_async_engine = create_async_engine(os.environ.get('APP_ASYNC_DATABASE_URL'), pool_size=2)
+app_async_engine = create_async_engine(os.environ.get('APP_ASYNC_DATABASE_URL'), pool_size=2, pool_pre_ping=True)
 shaiapp02_client = MongoClient(os.environ.get('KLARF_DATABASE_URL'))
 klarf_data_cache_collection = shaiapp02_client.measurement_equipment_db.klarf_data_cache_collection
 

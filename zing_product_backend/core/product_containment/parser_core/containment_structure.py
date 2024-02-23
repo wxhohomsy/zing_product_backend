@@ -1,7 +1,8 @@
 import functools
 from dataclasses import dataclass
+import pydantic
 from abc import ABC, abstractmethod, abstractproperty
-from typing import List
+from typing import List, Dict
 from functools import cached_property
 from zing_product_backend.core import common
 from zing_product_backend.app_db import mes_db_query
@@ -171,10 +172,8 @@ class Ingot(LotLikeProduct):
         return return_list
 
 
-class ProductContainment:
-    def __init__(self, target_object):
+class ContainmentRuleUnit:
+    def __init__(self, dict_from_db: Dict):
         pass
 
-    def get_containment_list(self):
-        pass
 

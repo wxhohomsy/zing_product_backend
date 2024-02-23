@@ -31,6 +31,8 @@ class SamplePlan(Base):
     containment_rule = relationship(containment_model.ContainmentRule)
     sample_tp_list: Mapped[List['AutoSampleTpStats']] = relationship('AutoSampleTpStats',
                                                                         back_populates='sample_plan')
+    consider_unslicing_block: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    consider_unreached_block: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
 
 
 class AutoSampleLotStats(Base):

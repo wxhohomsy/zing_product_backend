@@ -145,6 +145,15 @@ def get_lot_sts(lot_id: str, virtual_factory: common.VirtualFactory) -> RowMappi
 
 
 @cached(cache=TTLCache(maxsize=settings.MES_QUERY_CACHE_SIZE, ttl=settings.MES_STS_CACHE_TIME), info=settings.DEBUG)
+def get_wafer_sts_by_lot_id(lot_id: str, virtual_factory: common.VirtualFactory) -> pd.DataFrame:
+    cdb_engine = get_cdb_engine(virtual_factory)
+    with cdb_engine.connect() as c:
+        sql = text(f"select * from MESMGR.MWIPSLTSTS where LOT_ID = '{lot_id}' and sublot_del_flag != 'Y'")
+        df = pd.read_sql(sql, c)
+    return df
+
+
+@cached(cache=TTLCache(maxsize=settings.MES_QUERY_CACHE_SIZE, ttl=settings.MES_STS_CACHE_TIME), info=settings.DEBUG)
 def get_lot_sts_by_oper_id(oper_id: str, virtual_factory: common.VirtualFactory) -> pd.DataFrame:
     cdb_engine = get_cdb_engine(virtual_factory)
     with cdb_engine.connect() as c:

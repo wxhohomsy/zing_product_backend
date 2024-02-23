@@ -3,7 +3,6 @@ from zing_product_backend.core.product_containment.containment_constants import 
 from zing_product_backend.core.product_containment.parser_core.result_structure import *
 if TYPE_CHECKING:
     from zing_product_backend.core.product_containment.parser_core.containment_structure import *
-    from zing_product_backend.core.product_containment.parser_core.containment_structure import *
 
 
 def extract_field_names_set(d, key='field', nested_key='rules') -> Set[str]:
@@ -41,7 +40,7 @@ def combine_results(results: List[ContainmentResult], combinator):
     return ContainmentResult(result_status=final_status, dealt_base_rule_data_list=combined_data_record_list)
 
 
-def parse_rule(rule_dict: dict) -> 'ContainmentRule':
+def parse_rule(rule_dict: dict, parser_function):
     """
     {
   "id": "f0c1b47d-61ea-4d26-a222-9e927af6712b",
@@ -93,7 +92,7 @@ def parse_rule(rule_dict: dict) -> 'ContainmentRule':
         results = [parse_rule(sub_rule) for sub_rule in rule_dict['rules']]
         combined_result = combine_results(results, combinator)
     else:
-        result = True
+        result = parser_function(rule_dict)
         combined_result = ContainmentResult(result, {rule_dict['rule_name']: rule_dict})
 
     return combined_result.invert() if not_flag else combined_result

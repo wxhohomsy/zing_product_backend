@@ -54,7 +54,7 @@ async def build_custom_sql_fields() -> List[fields_schema.Field]:
 
 
 async def build_spc_fields(base_rule_class: ContainmentBaseRuleClass,
-                           virtual_factory: common.VirtualFactory)-> List[fields_schema.Field]:
+                           virtual_factory: common.VirtualFactory) -> List[fields_schema.Field]:
     operator_list = []
     if base_rule_class in [ContainmentBaseRuleClass.SPC_OOC, ContainmentBaseRuleClass.SPC_OOS]:
         for operator_name in SpcOosOperators:

@@ -81,20 +81,22 @@ async def get_containment_base_rule_class_names():
     return ContainmentBaseRuleClassResponse(data=containment_constants.ContainmentBaseRuleClass, success=True)
 
 
-@containment_rule_router.post("/baseRuleClassInfo/{className}/{virtualFactory}",
+@containment_rule_router.post("/baseRuleClassInfo/{className}/{virtual_factory}",
                               response_model=ContainmentBaseRuleClassInfoResponse, responses=GENERAL_RESPONSE)
 async def get_containment_base_rule_class_info(className: containment_constants.ContainmentBaseRuleClass,
-                                               virtualFactory: VirtualFactory):
-    field_list = await build_field_main.generate_base_rule_fields_main(className, virtualFactory)
+                                               virtual_factory: VirtualFactory):
+    field_list = await build_field_main.generate_base_rule_fields_main(className, virtual_factory)
     is_sql = containment_constants.RULE_IS_SQL_DICT[className]
     is_spc = containment_constants.RULE_IS_SPC_DICT[className]
+    available_object_type = containment_constants.RULE_AVAILABLE_OBJECT_TYPE[className]
     return ContainmentBaseRuleClassInfoResponse(data=schemas.ContainmentBaseRuleClassInfo(
-        is_sql=is_sql, is_spc=is_spc, fields=field_list), success=True)
+        is_sql=is_sql, is_spc=is_spc, available_object_type=available_object_type,
+        fields=field_list), success=True)
 
 
 @containment_rule_router.get("/availableCharId/{oper_id}/{virtual_factory}",
                              responses=GENERAL_RESPONSE)
-async def get_containment_base_rule_class_info(oper_id: str,
+async def get_available_char_id(oper_id: str,
                                                virtual_factory: VirtualFactory):
     char_id_list = []
     for special_char in containment_constants.SpcSpecialSpec:
@@ -135,9 +137,8 @@ async def update_containment_base_rule(update_info: schemas.UpdateContainmentBas
         return UpdateContainmentBaseRuleResponse(data=sql_result, success=True)
 
 
-from fastapi import Request
 @containment_rule_router.post("/containmentBaseRule/deleteBaseRule",)
-async def delete_containment_base_rule(r: Request, delete_base_rule: schemas.DeleteContainmentBaseRule,
+async def delete_containment_base_rule( delete_base_rule: schemas.DeleteContainmentBaseRule,
                                        usr: auth_model.User = Depends(current_active_user)):
     async for s in get_async_session():
         containment_db = crud.ContainmentRuleDataBase(s)

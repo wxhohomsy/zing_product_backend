@@ -10,6 +10,7 @@ from zing_product_backend.core.product_containment.frontend_fields import fields
 class ContainmentBaseRuleClassInfo(BaseModel):
     is_sql: bool
     is_spc: bool
+    available_object_type: List[ProductObjectType]
     fields: List[fields_schema.Field]
 
 

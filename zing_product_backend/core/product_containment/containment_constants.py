@@ -10,6 +10,7 @@ class ProductObjectType(str, Enum):
     WAFERING_SEGMENT = 'wafering_segment'
     GROWING_SEGMENT = 'growing_segment'
     INGOT = 'ingot'
+    NONE = 'none'
 
 
 class RuleGroupType(Enum):
@@ -107,6 +108,25 @@ class ContainmentBaseRuleClass(str, Enum):
 
 
 # -------------------------------- rule config related -------------------------------
+RULE_AVAILABLE_OBJECT_TYPE = {
+    ContainmentBaseRuleClass.SPC_OOS: [ProductObjectType.SUBLOT],
+    ContainmentBaseRuleClass.SPC_OOC: [ProductObjectType.SUBLOT],
+    ContainmentBaseRuleClass.SPC_VALUE: [ProductObjectType.SUBLOT],
+    ContainmentBaseRuleClass.CRYSTAL_EQUIP: [ProductObjectType.INGOT],
+    ContainmentBaseRuleClass.TIME_RELATED: [ProductObjectType.NONE],
+    ContainmentBaseRuleClass.CRYSTAL_DEFECT: [ProductObjectType.SUBLOT],
+    ContainmentBaseRuleClass.INGOT_FDC: [ProductObjectType.SUBLOT],
+    ContainmentBaseRuleClass.MAT_GROUP: [ProductObjectType.SUBLOT,
+                                          ProductObjectType.WAFERING_SEGMENT],
+    ContainmentBaseRuleClass.MESDB_CUSTOM_SQL: [ProductObjectType.SUBLOT, ProductObjectType.WAFERING_SEGMENT,
+                                                ProductObjectType.GROWING_SEGMENT, ProductObjectType.INGOT],
+    ContainmentBaseRuleClass.MWIPSLTSTS: [ProductObjectType.SUBLOT],
+    ContainmentBaseRuleClass.MWIPLOTSTS: [ProductObjectType.LOT, ProductObjectType.GROWING_SEGMENT,
+                                          ProductObjectType.WAFERING_SEGMENT],
+    ContainmentBaseRuleClass.MWIPMATDEF: [ProductObjectType.SUBLOT, ProductObjectType.WAFERING_SEGMENT,
+                                          ProductObjectType.GROWING_SEGMENT, ProductObjectType.INGOT],
+}
+
 RULE_IS_SQL_DICT = {
     ContainmentBaseRuleClass.SPC_OOS: False,
     ContainmentBaseRuleClass.SPC_OOC: False,
