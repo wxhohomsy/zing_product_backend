@@ -13,6 +13,11 @@ class NotFoundError(PredefinedException):
         super().__init__(message=ErrorMessages.DATA_NOT_FOUND, detail=detail, code=400)
 
 
+class OutDatedDataError(PredefinedException):
+    def __init__(self, detail: str = None):
+        super().__init__(message=ErrorMessages.DATA_NOT_FOUND, detail=detail, code=400)
+
+
 class NotImplementError(PredefinedException):
     def __init__(self, detail: str = None):
         super().__init__(message=ErrorMessages.DATA_NOT_FOUND, detail=detail, code=400)

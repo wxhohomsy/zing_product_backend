@@ -23,6 +23,7 @@ class ErrorMessages(str, Enum):
     INSUFFICIENT_PRIVILEGE = "Insufficient privilege"
     NOT_AUTHENTICATED = "Not authenticated"
     DATA_NOT_FOUND = "Data not found"
+    OUTDATED_DATA = "Outdated data"
     DUPLICATE_DATA = "Duplicate data"
     DATABASE_ERROR = "Database error"
 
@@ -65,7 +66,7 @@ class ProductAllocationState(str, Enum):
 
 
 class ProductAllocationTransaction(str, Enum):
-    UPDATE = 'update'
+    INFO_UPDATE = 'info_update'
     HOLD = 'hold'
     RELEASE = 'release'
     ADAPT = 'adapt'
@@ -77,18 +78,18 @@ PRODUCT_STATE_PERMIT_DICT = {
     ProductAllocationState.NORMAL: {
         ProductAllocationTransaction.HOLD, ProductAllocationTransaction.RELEASE, ProductAllocationTransaction.ADAPT,
         ProductAllocationTransaction.BYPASS, ProductAllocationTransaction.ALLOCATION_CONFIRM,
-        ProductAllocationTransaction.UPDATE
+        ProductAllocationTransaction.INFO_UPDATE
     },
     ProductAllocationState.HOLD: {
         ProductAllocationTransaction.RELEASE, ProductAllocationTransaction.HOLD,
-        ProductAllocationTransaction.UPDATE
+        ProductAllocationTransaction.INFO_UPDATE
     },
     ProductAllocationState.START_ALLOCATING: {
     },
     ProductAllocationState.WAIT_ALLOCATION_CONFIRM: {
         ProductAllocationTransaction.HOLD, ProductAllocationTransaction.RELEASE,
         ProductAllocationTransaction.ALLOCATION_CONFIRM,
-        ProductAllocationTransaction.UPDATE
+        ProductAllocationTransaction.INFO_UPDATE
     }
 
 }

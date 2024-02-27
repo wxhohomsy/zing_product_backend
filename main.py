@@ -6,8 +6,16 @@ from fastapi import Depends, FastAPI, Request, HTTPException
 from zing_product_backend.api.v1 import router_v1
 from zing_product_backend.core import app
 from enum import Enum
+import asyncio
+from periodic_process import main as periodic_main
 from zing_product_backend.models import auth_model
 app.include_router(router_v1)
+
+
+@app.on_event("startup")
+async def startup_event():
+    print('reach')
+    task = asyncio.create_task(periodic_main())
 
 
 if __name__ == "__main__":
