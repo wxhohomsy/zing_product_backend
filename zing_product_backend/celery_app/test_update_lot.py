@@ -107,7 +107,6 @@ async def update_lot_main():
                         s.add(wafer_history)
 
                 await s.commit()
-        print(rf"update finished at {current_time}, cost {datetime.datetime.now() - start_time}")
         await asyncio.sleep(800)
 
 

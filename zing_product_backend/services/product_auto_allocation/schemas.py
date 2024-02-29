@@ -27,7 +27,7 @@ class LotStatus(BaseModel):
     wafer_count: int
 
 
-class LotTransaction(BaseModel):
+class LotTransactionHistory(BaseModel):
     lot_id: str
     transaction_seq: int
     transaction_code: common.ProductAllocationTransaction
@@ -38,6 +38,13 @@ class LotTransaction(BaseModel):
     mat_id: str
     target_mat_id: str
     missing_char: str
+
+
+class LotTransaction(BaseModel):
+    lot_id: str
+    current_transaction_seq: int
+    transaction_code: common.ProductAllocationTransaction
+    comment: str
 
 
 class HoldLot(LotTransaction):

@@ -20,6 +20,7 @@ def create_new_non_allocate_transaction(
     new_seq = current_seq + 1
     new_transaction = AllocationTransactionHistory(
         lot_id=lot_orm.lot_id,
+        virtual_factory=lot_orm.virtual_factory,
         mat_id=lot_orm.current_mat_id,
         target_mat_id=lot_orm.target_mat_id,
         missing_char=lot_orm.missing_char,
@@ -158,11 +159,11 @@ class LotAllocationDataBase:
                 current_oper=lot_status_orm.current_oper
             )
 
-    async def get_lot_transaction_history(self, lot_id: str) -> Sequence[schemas.LotTransaction]:
+    async def get_lot_transaction_history(self, lot_id: str) -> Sequence[schemas.LotTransactionHistory]:
         stmt = select(AllocationTransactionHistory).filter(AllocationTransactionHistory.lot_id == lot_id)
         result = await self.session.execute(stmt)
         orm_list: Sequence[AllocationTransactionHistory] = result.scalars().all()
-        return_list: List[schemas.LotTransaction] = []
+        return_list: List[schemas.LotTransactionHistory] = []
         for orm in orm_list:
             if orm.comment is None:
                 comment = ''
@@ -170,7 +171,7 @@ class LotAllocationDataBase:
                 comment = orm.comment
 
             return_list.append(
-                schemas.LotTransaction(
+                schemas.LotTransactionHistory(
                     lot_id=orm.lot_id,
                     transaction_code=orm.transaction_code,
                     transaction_time=orm.transaction_time,
@@ -195,7 +196,6 @@ class LotAllocationDataBase:
             lot_id=lot_orm.lot_id,
             state=common.ProductAllocationState.HOLD,
             state_time=datetime.datetime.now(),
-            state_user_name=user.user_name,
             transaction_seq=new_transaction_seq
         )
         self.session.add(new_state)

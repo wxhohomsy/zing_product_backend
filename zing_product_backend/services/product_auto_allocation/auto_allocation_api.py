@@ -19,7 +19,7 @@ class LotStatsListResponseModel(ResponseModel):
 
 
 class LotHistoryResponse(ResponseModel):
-    data: List[schemas.LotTransaction]
+    data: List[schemas.LotTransactionHistory]
 
 
 @auto_allocation_router.get("/lot_stats/{virtual_factory}", response_model=LotStatsListResponseModel)
@@ -34,8 +34,6 @@ async def get_lot_stats(
         data=lot_stats,
         success=True,
     )
-
-
 
 
 @auto_allocation_router.post("/lot_transaction/hold_lot", response_model=ResponseModel)
