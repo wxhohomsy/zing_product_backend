@@ -36,6 +36,7 @@ async def get_lot_stats(
     )
 
 
+
 @auto_allocation_router.post("/lot_transaction/hold_lot", response_model=ResponseModel)
 async def hold_lot(
         hold_lot_data: schemas.HoldLot,
@@ -75,4 +76,33 @@ async def get_lot_transaction_history(
     return LotHistoryResponse(
         data=history_list,
         success=True,
+    )
+
+
+@auto_allocation_router.post("/lot_transaction/wait_confirm", response_model=ResponseModel)
+async def wait_confirm(
+        wait_confirm_data: schemas.WaitConfirm,
+        user=Depends(dependents.current_product_allocation_state_change_user),
+        session=Depends(get_async_session)
+):
+    db = crud.LotAllocationDataBase(session)
+    await db.wait_confirm(wait_confirm_data, user)
+    return ResponseModel(
+        data=wait_confirm_data,
+        success=True,
+        success_message=f'wait confirm {wait_confirm_data.lot_id} success'
+    )
+
+
+@auto_allocation_router.post("/lot_transaction/allocation_confirm", response_model=ResponseModel)
+async def allocation_confirm(
+        allocation_confirm_data: schemas.AllocationConfirm,
+        user=Depends(dependents.current_product_allocation_state_change_user),
+        session=Depends(get_async_session)
+):
+    db = crud.LotAllocationDataBase(session)
+    await db.allocation_confirm(allocation_confirm_data, user)
+    return ResponseModel(
+        success=True,
+        success_message=f'allocation confirm {allocation_confirm_data.lot_id} success'
     )

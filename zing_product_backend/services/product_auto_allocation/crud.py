@@ -13,6 +13,7 @@ from zing_product_backend.models.auto_allocation_model import (
 from . import schemas, utils
 
 
+
 def create_new_non_allocate_transaction(
         transaction_code: common.ProductAllocationTransaction, lot_orm: AllocationLotStatus, comment: str,
         user: auth_model.User) -> Tuple[AllocationLotState, AllocationTransactionHistory]:
@@ -227,3 +228,44 @@ class LotAllocationDataBase:
 
         self.session.add(new_transaction)
 
+    async def wait_confirm(self, wait_confirm_data: schemas.WaitConfirm, user: auth_model.User):
+        lot_orm = await get_current_lot_orm(wait_confirm_data.lot_id, wait_confirm_data.current_transaction_seq, self.session)
+        new_transaction_seq = wait_confirm_data.current_transaction_seq + 1
+        new_transaction = create_new_non_allocate_transaction(
+            common.ProductAllocationTransaction.WAIT_CONFIRM, lot_orm, wait_confirm_data.comment, user
+        )
+        new_state = AllocationLotState(
+            lot_id=lot_orm.lot_id,
+            state=common.ProductAllocationState.WAIT_ALLOCATION_CONFIRM,
+            state_time=datetime.datetime.now(),
+            transaction_seq=new_transaction_seq
+        )
+        self.session.add(new_state)
+        self.session.add(new_transaction)
+        lot_orm.current_transaction_seq = new_transaction_seq
+        await self.session.merge(lot_orm)
+        await self.session.commit()
+
+    async def allocation_confirm(self, allocation_confirm_data: schemas.AllocationConfirm, user: auth_model.User):
+        lot_orm = await get_current_lot_orm(allocation_confirm_data.lot_id, allocation_confirm_data.current_transaction_seq,
+                                            self.session, use_selectinload=True)
+        new_transaction_seq = allocation_confirm_data.current_transaction_seq + 1
+        new_transaction = create_new_non_allocate_transaction(
+            common.ProductAllocationTransaction.ALLOCATION_CONFIRM, lot_orm, allocation_confirm_data.comment, user
+        )
+        exist_confirm_state_stmt = select(AllocationLotState).filter(
+            and_(AllocationLotState.id == allocation_confirm_data.confirm_id,
+                 AllocationLotState.lot_id == allocation_confirm_data.lot_id,
+                 AllocationLotState.state_delete_flag == False
+                 )
+        )
+
+        lot_orm.current_transaction_seq = new_transaction_seq
+
+        hold_state_orm = (await self.session.execute(exist_confirm_state_stmt)).scalar_one_or_none()
+        if hold_state_orm is None:
+            raise exceptions.NotFoundError(f'allocation confirm not found for {allocation_confirm_data.lot_id}')
+        else:
+            hold_state_orm.state_delete_flag = True
+
+        self.session.add(new_transaction)

@@ -12,10 +12,10 @@ from zing_product_backend.models import auth_model
 app.include_router(router_v1)
 
 
-@app.on_event("startup")
-async def startup_event():
-    print('reach')
-    task = asyncio.create_task(periodic_main())
+# @app.on_event("startup")
+# async def startup_event():
+#     print('reach')
+#     task = asyncio.create_task(periodic_main())
 
 
 if __name__ == "__main__":

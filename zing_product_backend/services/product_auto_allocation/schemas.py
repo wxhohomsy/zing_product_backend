@@ -53,3 +53,11 @@ class HoldLot(LotTransaction):
 
 class ReleaseLot(LotTransaction):
     hold_id: int
+
+
+class WaitConfirm(LotTransaction):
+    pass
+
+
+class AllocationConfirm(LotTransaction):
+    confirm_id: int

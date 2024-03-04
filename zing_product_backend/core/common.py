@@ -71,6 +71,7 @@ class ProductAllocationTransaction(str, Enum):
     RELEASE = 'release'
     ADAPT = 'adapt'
     BYPASS = 'bypass'
+    WAIT_CONFIRM = 'wait_confirm'
     ALLOCATION_CONFIRM = 'allocation_confirm'
 
 
