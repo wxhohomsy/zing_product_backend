@@ -6,6 +6,8 @@ from typing import List, Dict
 from functools import cached_property
 from zing_product_backend.core import common
 from zing_product_backend.app_db import mes_db_query
+from zing_product_backend.models import containment_model
+from . import result_structure
 
 
 class Product:
@@ -172,8 +174,27 @@ class Ingot(LotLikeProduct):
         return return_list
 
 
-class ContainmentRuleUnit:
-    def __init__(self, dict_from_db: Dict):
-        pass
+class ContainmentBaseRule:
+    def __init__(self, rule_orm: containment_model.ContainmentBaseRule):
+        self.containment_base_rule_orm = rule_orm
+        self.rule_name = rule_orm.rule_name
+        self.rule_dict = rule_orm.rule_data
+        self.rule_description = rule_orm.description
 
+    def __repr__(self):
+        return f'{self.__class__.__name__}({self.rule_name})'
+
+    def check_product(self, product: Product) -> result_structure.ContainmentResult:
+        raise NotImplementedError
+
+
+class ContainmentRule:
+    def __init__(self, rule_orm: containment_model.ContainmentRule):
+        self.containment_rule_orm = rule_orm
+        self.rule_name = rule_orm.rule_name
+        self.rule_dict = rule_orm.rule_data
+        self.rule_description = rule_orm.rule_description
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}({self.rule_name})'
 

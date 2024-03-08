@@ -32,7 +32,7 @@ def get_available_operators_and_fields(containment_base_rule_class_name: Contain
         return_operator_field_enum = None
 
     elif containment_base_rule_class_name == ContainmentBaseRuleClass.SPC_VALUE:
-        return_operator_enum = S
+        return_operator_enum = SpcValueOperators
 
     elif containment_base_rule_class_name in [ContainmentBaseRuleClass.MWIPLOTSTS, ContainmentBaseRuleClass.MWIPSLTSTS,
                                               ContainmentBaseRuleClass.MWIPMATDEF,
@@ -40,8 +40,6 @@ def get_available_operators_and_fields(containment_base_rule_class_name: Contain
                                               ]:
         return_operator_enum = None
         return_operator_field_enum = None
-
-
 
 
 

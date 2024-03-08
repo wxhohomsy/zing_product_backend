@@ -29,6 +29,9 @@ def get_cdb_engine(virtual_factory: common.VirtualFactory):
         return l1w_db_engine
     elif virtual_factory == common.VirtualFactory.L2W:
         return l2w_db_engine
+    elif virtual_factory == common.VirtualFactory.ALL:
+        # need improve
+        return l1w_db_engine
     else:
         raise ValueError(f"factory {virtual_factory} is not supported")
 
