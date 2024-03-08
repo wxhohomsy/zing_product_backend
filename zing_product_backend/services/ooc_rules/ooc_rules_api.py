@@ -14,7 +14,7 @@ from . import schemas
 ooc_rules_router = APIRouter()
 
 
-@ooc_rules_router.post("/ooc_rule")
+@ooc_rules_router.post("/creat_ooc_rule")
 async def create_rule(ooc_rule_data: schemas.OOCRuleCreate, user: UserInfo = Depends(current_active_user)):
     async for s in get_async_session():
         ooc_crud = OOCRulesCRUD(s)
@@ -54,7 +54,7 @@ async def get_rule_by_name(ooc_rule_name: str):
         return rule
 
 
-@ooc_rules_router.get("/ooc_rules")
+@ooc_rules_router.get("/get_all_ooc_rules")
 async def get_all_rules():
     async for s in get_async_session():
         ooc_crud = OOCRulesCRUD(s)
