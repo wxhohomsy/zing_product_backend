@@ -11,6 +11,8 @@ from zing_product_backend.reporting import system_log
 from . import schemas
 from . import crud
 from . import dependents
+from zing_product_backend.app_db.connections import get_async_session
+from zing_product_backend.services.general_settings.crud import OOCRulesCRUD
 
 general_settings_router = APIRouter()
 
@@ -37,6 +39,14 @@ class MatGroupInfoListResponse(ResponseModel):
 
 class MatGroupInfoResponse(ResponseModel):
     data: Union[schemas.MatGroupInfo, None]
+
+
+class OocInfoListResponse(ResponseModel):
+    data: List[schemas.OOCRules]
+
+
+class OocInfoResponse(ResponseModel):
+    data: Union[schemas.OOCRules, None]
 
 
 @general_settings_router.get("/matInfo/{group_type}",
@@ -267,3 +277,80 @@ async def delete_mat_group(delete_info_body: schemas.DeleteMatGroup,
                 detail=str(e),
                 error_message=ErrorMessages.DATABASE_ERROR
             )
+
+
+@general_settings_router.post("/create_ooc_rule", response_model=OocInfoResponse,  responses=GENERAL_RESPONSE)
+async def create_ooc_rule(ooc_rule_data: schemas.OOCRuleCreate, user: UserInfo = Depends(current_active_user)):
+    async for s in get_async_session():
+        ooc_crud = OOCRulesCRUD(s)
+        # new_rule = await ooc_crud.create_ooc_rule(ooc_rule_data, user)
+        # return new_rule
+        try:
+            new_rule = await ooc_crud.create_ooc_rule(ooc_rule_data, user)
+            return OocInfoResponse(
+                data=schemas.OOCRules.model_validate(new_rule),
+                success=True,
+                success_message='create ooc rule success'
+            )
+
+        except crud.DatabaseError as e:
+            system_log.server_logger.error(traceback.format_exc())
+            return OocInfoResponse(
+                data=None,
+                success=False,
+                detail=str(e),
+                error_message=ErrorMessages.DATABASE_ERROR
+            )
+
+
+@general_settings_router.post("/ooc_rule/update_rule", responses=GENERAL_RESPONSE)
+async def update_rule(update_data: schemas.OOCRuleUpdate, user: UserInfo = Depends(current_active_user)):
+    async for s in get_async_session():
+        ooc_crud = OOCRulesCRUD(s)
+        await ooc_crud.update_ooc_rule(update_data, user)
+        return {"message": "Rule updated"}
+
+
+@general_settings_router.post("/ooc_rule/delete_rule/{ooc_rule_id}", responses=GENERAL_RESPONSE)
+async def delete_rule(ooc_rule_id: int, user: UserInfo = Depends(current_active_user)):
+    async for s in get_async_session():
+        ooc_crud = OOCRulesCRUD(s)
+        await ooc_crud.delete_ooc_rule(ooc_rule_id, user)
+        return {"message": "Rule deleted"}
+
+
+@general_settings_router.get("/ooc_rule/get_rule_by_id/{ooc_rule_id}",response_model=OocInfoResponse, responses=GENERAL_RESPONSE)
+async def get_rule_by_id(ooc_rule_id: int):
+    async for s in get_async_session():
+        ooc_crud = OOCRulesCRUD(s)
+        try:
+            rule = await ooc_crud.get_ooc_rule_by_id(ooc_rule_id)
+            return OocInfoResponse(
+                data=schemas.OOCRules.model_validate(rule),
+                success=True,
+                success_message='get ooc rule success'
+            )
+        except crud.DatabaseError as e:
+            system_log.server_logger.error(traceback.format_exc())
+            return OocInfoResponse(
+                data=None,
+                success=False,
+                detail=str(e),
+                error_message=ErrorMessages.DATABASE_ERROR
+            )
+
+
+@general_settings_router.get("/ooc_rule/get_rule_by_name/{ooc_rule_name}", responses=GENERAL_RESPONSE)
+async def get_rule_by_name(ooc_rule_name: str):
+    async for s in get_async_session():
+        ooc_crud = OOCRulesCRUD(s)
+        rule = await ooc_crud.get_ooc_rule_by_name(ooc_rule_name)
+        return rule
+
+
+@general_settings_router.get("/get_all_ooc_rules", responses=GENERAL_RESPONSE)
+async def get_all_rules():
+    async for s in get_async_session():
+        ooc_crud = OOCRulesCRUD(s)
+        rules = await ooc_crud.get_all_ooc_rules()
+        return rules
