@@ -279,7 +279,7 @@ async def delete_mat_group(delete_info_body: schemas.DeleteMatGroup,
             )
 
 
-@general_settings_router.post("/create_ooc_rule", response_model=OocInfoResponse,  responses=GENERAL_RESPONSE)
+@general_settings_router.post("/create_ooc_rule", response_model=OocInfoResponse, responses=GENERAL_RESPONSE)
 async def create_ooc_rule(ooc_rule_data: schemas.OOCRuleCreate, user: UserInfo = Depends(current_active_user)):
     async for s in get_async_session():
         ooc_crud = OOCRulesCRUD(s)
@@ -303,23 +303,52 @@ async def create_ooc_rule(ooc_rule_data: schemas.OOCRuleCreate, user: UserInfo =
             )
 
 
-@general_settings_router.post("/ooc_rule/update_rule", responses=GENERAL_RESPONSE)
-async def update_rule(update_data: schemas.OOCRuleUpdate, user: UserInfo = Depends(current_active_user)):
+@general_settings_router.post("/ooc_rule/update_rule", response_model=OocInfoResponse, responses=GENERAL_RESPONSE)
+async def update_ooc_rule(update_data: schemas.OOCRuleUpdate, user: UserInfo = Depends(current_active_user)):
     async for s in get_async_session():
         ooc_crud = OOCRulesCRUD(s)
-        await ooc_crud.update_ooc_rule(update_data, user)
-        return {"message": "Rule updated"}
+        try:
+            await ooc_crud.update_ooc_rule(update_data, user)
+            rule = await ooc_crud.get_ooc_rule_by_id(update_data.id)
+            return OocInfoResponse(
+                data=schemas.OOCRules.model_validate(rule),
+                success=True,
+                success_message='update ooc rule success'
+            )
+        except crud.DatabaseError as e:
+            system_log.server_logger.error(traceback.format_exc())
+            return OocInfoResponse(
+                data=None,
+                success=False,
+                detail=str(e),
+                error_message=ErrorMessages.DATABASE_ERROR
+            )
 
 
-@general_settings_router.post("/ooc_rule/delete_rule/{ooc_rule_id}", responses=GENERAL_RESPONSE)
-async def delete_rule(ooc_rule_id: int, user: UserInfo = Depends(current_active_user)):
+@general_settings_router.post("/ooc_rule/delete_rule/{ooc_rule_id}", response_model=OocInfoResponse,
+                              responses=GENERAL_RESPONSE)
+async def delete_ooc_rule(ooc_rule_id: int, user: UserInfo = Depends(current_active_user)):
     async for s in get_async_session():
         ooc_crud = OOCRulesCRUD(s)
-        await ooc_crud.delete_ooc_rule(ooc_rule_id, user)
-        return {"message": "Rule deleted"}
+        try:
+            await ooc_crud.delete_ooc_rule(ooc_rule_id, user)
+            return OocInfoResponse(
+                data=None,
+                success=True,
+                success_message='delete ooc rule success'
+            )
+        except crud.DatabaseError as e:
+            system_log.server_logger.error(traceback.format_exc())
+            return OocInfoResponse(
+                data=None,
+                success=False,
+                detail=str(e),
+                error_message=ErrorMessages.DATABASE_ERROR
+            )
 
 
-@general_settings_router.get("/ooc_rule/get_rule_by_id/{ooc_rule_id}",response_model=OocInfoResponse, responses=GENERAL_RESPONSE)
+@general_settings_router.get("/ooc_rule/get_rule_by_id/{ooc_rule_id}", response_model=OocInfoResponse,
+                             responses=GENERAL_RESPONSE)
 async def get_rule_by_id(ooc_rule_id: int):
     async for s in get_async_session():
         ooc_crud = OOCRulesCRUD(s)
@@ -340,17 +369,44 @@ async def get_rule_by_id(ooc_rule_id: int):
             )
 
 
-@general_settings_router.get("/ooc_rule/get_rule_by_name/{ooc_rule_name}", responses=GENERAL_RESPONSE)
+@general_settings_router.get("/ooc_rule/get_rule_by_name/{ooc_rule_name}", response_model=OocInfoListResponse,
+                             responses=GENERAL_RESPONSE)
 async def get_rule_by_name(ooc_rule_name: str):
     async for s in get_async_session():
         ooc_crud = OOCRulesCRUD(s)
-        rule = await ooc_crud.get_ooc_rule_by_name(ooc_rule_name)
-        return rule
+        try:
+            rules = await ooc_crud.get_ooc_rule_by_name(ooc_rule_name)
+            return OocInfoListResponse(
+                data=rules,
+                success=True,
+                success_message='get ooc rule success'
+            )
+        except crud.DatabaseError as e:
+            system_log.server_logger.error(traceback.format_exc())
+            return OocInfoListResponse(
+                data=[],
+                success=False,
+                detail=str(e),
+                error_message=ErrorMessages.DATABASE_ERROR
+            )
 
 
-@general_settings_router.get("/get_all_ooc_rules", responses=GENERAL_RESPONSE)
+@general_settings_router.get("/get_all_ooc_rules", response_model=OocInfoListResponse, responses=GENERAL_RESPONSE)
 async def get_all_rules():
     async for s in get_async_session():
         ooc_crud = OOCRulesCRUD(s)
-        rules = await ooc_crud.get_all_ooc_rules()
-        return rules
+        try:
+            rules = await ooc_crud.get_all_ooc_rules()
+            return OocInfoListResponse(
+                data=rules,
+                success=True,
+                success_message='get ooc rule success'
+            )
+        except crud.DatabaseError as e:
+            system_log.server_logger.error(traceback.format_exc())
+            return OocInfoListResponse(
+                data=[],
+                success=False,
+                detail=str(e),
+                error_message=ErrorMessages.DATABASE_ERROR
+            )

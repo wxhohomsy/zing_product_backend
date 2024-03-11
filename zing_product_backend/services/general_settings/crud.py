@@ -348,6 +348,12 @@ class OOCRulesCRUD:
         self.session = session
 
     async def create_ooc_rule(self, ooc_rule_data: schemas.OOCRuleCreate, user: UserInfo) -> OOCRules:
+        select_stmt = select(OOCRules).where(and_(OOCRules.containment_rule_id == ooc_rule_data.containment_rule_id,
+                                                  OOCRules.spec_id == ooc_rule_data.spec_id,
+                                                  OOCRules.rule_delete_flag == False))
+        if (await self.session.execute(select_stmt)).scalars().first() is not None:
+            info = select(ContainmentRule.rule_name).where(ContainmentRule.id == ooc_rule_data.containment_rule_id)
+            raise DatabaseError(f'ooc rule: {ooc_rule_data.spec_id} for {info} already exists')
         new_ooc_rule = OOCRules(
             containment_rule_id=ooc_rule_data.containment_rule_id,
             spec_id=ooc_rule_data.spec_id,
@@ -365,6 +371,9 @@ class OOCRulesCRUD:
         return new_ooc_rule
 
     async def update_ooc_rule(self, update_data: schemas.OOCRuleUpdate, user: UserInfo) -> None:
+        result = self.get_ooc_rule_by_id(update_data.id)
+        if result is None:
+            raise DatabaseError(f'ooc rule id: {update_data.id} not found')
         update_stmt = update(OOCRules).where(OOCRules.id == update_data.id).values(
             lower_limit=update_data.lower_limit,
             upper_limit=update_data.upper_limit,
@@ -375,10 +384,9 @@ class OOCRulesCRUD:
         await self.session.commit()
 
     async def delete_ooc_rule(self, ooc_rule_id: int, user: UserInfo) -> None:
-        stmt = select(OOCRules).where(OOCRules.id == ooc_rule_id)
-        ooc_orm = (await self.session.execute(stmt)).scalars().first()
-        if ooc_orm is None:
-            raise DatabaseError(f'mat_id: {ooc_rule_id} not found')
+        result = self.get_ooc_rule_by_id(ooc_rule_id)
+        if result is None:
+            raise DatabaseError(f'ooc rule id: {ooc_rule_id} not found')
         delete_stmt = update(OOCRules).where(OOCRules.id == ooc_rule_id).values(
             rule_delete_flag=True,
             updated_time=datetime.now(),
@@ -390,16 +398,46 @@ class OOCRulesCRUD:
     async def get_ooc_rule_by_id(self, ooc_rule_id: int) -> OOCRules:
         select_stmt = select(OOCRules).where(and_(OOCRules.id == ooc_rule_id, OOCRules.rule_delete_flag == False))
         result = (await self.session.execute(select_stmt)).scalars().first()
+        if result is None:
+            raise DatabaseError(f'ooc rule id: {ooc_rule_id} not found')
         return result
 
     async def get_all_ooc_rules(self) -> list[OOCRules]:
         select_stmt = select(OOCRules).where(OOCRules.rule_delete_flag == False)
-        result = await self.session.execute(select_stmt)
-        return result.scalars().all()
+        ooc_info_list: List[schemas.OOCRules] = []
+        ooc_orm_list: List[general_settings.OOCRules] = (await self.session.execute(select_stmt)).scalars().all()
+        for ooc_orm in ooc_orm_list:
+            ooc_info_list.append(schemas.OOCRules(
+                id=ooc_orm.id,
+                containment_rule_id=ooc_orm.containment_rule_id,
+                spec_id=ooc_orm.spec_id,
+                lower_limit=ooc_orm.lower_limit,
+                upper_limit=ooc_orm.upper_limit,
+                create_time=ooc_orm.create_time,
+                create_user_name=ooc_orm.create_user_name,
+                updated_time=ooc_orm.updated_time,
+                updated_user_name=ooc_orm.updated_user_name,
+                rule_delete_flag=ooc_orm.rule_delete_flag
+            ))
+        return ooc_info_list
 
-    async def get_ooc_rule_by_name(self, ooc_rule_name: str) -> OOCRules:
+    async def get_ooc_rule_by_name(self, ooc_rule_name: str) -> list[OOCRules]:
         info = select(ContainmentRule.id).where(ContainmentRule.rule_name == ooc_rule_name)
-        select_stmt = select(OOCRules).where(and_(OOCRules.containment_rule_id == info, OOCRules.rule_delete_flag == False))
-        print(select_stmt)
-        result = await self.session.execute(select_stmt)
-        return result.scalars().all()
+        select_stmt = select(OOCRules).where(
+            and_(OOCRules.containment_rule_id == info, OOCRules.rule_delete_flag == False))
+        ooc_info_list: List[schemas.OOCRules] = []
+        ooc_orm_list: List[general_settings.OOCRules] = (await self.session.execute(select_stmt)).scalars().all()
+        for ooc_orm in ooc_orm_list:
+            ooc_info_list.append(schemas.OOCRules(
+                id=ooc_orm.id,
+                containment_rule_id=ooc_orm.containment_rule_id,
+                spec_id=ooc_orm.spec_id,
+                lower_limit=ooc_orm.lower_limit,
+                upper_limit=ooc_orm.upper_limit,
+                create_time=ooc_orm.create_time,
+                create_user_name=ooc_orm.create_user_name,
+                updated_time=ooc_orm.updated_time,
+                updated_user_name=ooc_orm.updated_user_name,
+                rule_delete_flag=ooc_orm.rule_delete_flag
+            ))
+        return ooc_info_list
