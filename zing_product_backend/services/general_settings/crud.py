@@ -335,3 +335,4 @@ class SettingsDataBase:
             await self.session.delete(group_orm)
         await self.session.commit()
         return deleted_group_orm
+
