@@ -287,8 +287,9 @@ async def create_ooc_rule(ooc_rule_data: schemas.OOCRuleCreate, user: UserInfo =
         # return new_rule
         try:
             new_rule = await ooc_crud.create_ooc_rule(ooc_rule_data, user)
+            rule = await ooc_crud.get_ooc_rule_by_id(new_rule.id)
             return OocInfoResponse(
-                data=schemas.OOCRules.model_validate(new_rule),
+                data=rule,
                 success=True,
                 success_message='create ooc rule success'
             )
@@ -311,7 +312,7 @@ async def update_ooc_rule(update_data: schemas.OOCRuleUpdate, user: UserInfo = D
             await ooc_crud.update_ooc_rule(update_data, user)
             rule = await ooc_crud.get_ooc_rule_by_id(update_data.id)
             return OocInfoResponse(
-                data=schemas.OOCRules.model_validate(rule),
+                data=rule,
                 success=True,
                 success_message='update ooc rule success'
             )
@@ -355,7 +356,7 @@ async def get_rule_by_id(ooc_rule_id: int):
         try:
             rule = await ooc_crud.get_ooc_rule_by_id(ooc_rule_id)
             return OocInfoResponse(
-                data=schemas.OOCRules.model_validate(rule),
+                data=rule,
                 success=True,
                 success_message='get ooc rule success'
             )
