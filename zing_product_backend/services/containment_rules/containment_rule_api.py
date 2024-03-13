@@ -11,6 +11,7 @@ from zing_product_backend.core.product_containment import containment_constants,
 from zing_product_backend.core.product_containment.frontend_fields import build_field_main, fields_schema
 from zing_product_backend.services.containment_rules import schemas
 from zing_product_backend.app_db import mes_db_query
+from zing_product_backend.core import common
 from . import crud
 
 
@@ -64,6 +65,10 @@ class UpdateContainmentRuleResponse(ResponseModel):
 
 class DeleteContainmentRuleResponse(ResponseModel):
     data: schemas.ContainmentRuleInfo
+
+
+class AvailableOperIdListResponse(ResponseModel):
+    data: List[str]
 
 
 @containment_rule_router.get("/containmentObjectType", response_model=ContainmentBaseRuleObjectType,
@@ -196,3 +201,13 @@ async def delete_containment_rule(delete_rule: schemas.DeleteContainmentRule,
         containment_db = crud.ContainmentRuleDataBase(s)
         sql_result = await containment_db.delete_rule(delete_rule.id, usr=usr)
         return DeleteContainmentRuleResponse(data=sql_result, success=True, success_message='delete rule success')
+
+
+@containment_rule_router.get("/containmentRule/getOper", response_model=AvailableOperIdListResponse,
+                           responses=GENERAL_RESPONSE)
+async def get_available_oper_id_list():
+    # assume L2W has same oper as L1W
+    oper_id_list = mes_db_query.get_available_oper_id_list('2100', '6898',
+                                                           common.VirtualFactory.L1W)
+    return AvailableOperIdListResponse(data=oper_id_list,
+                                       success=True, )

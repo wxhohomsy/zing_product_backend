@@ -9,7 +9,7 @@ from zing_product_backend.core.product_containment import containment_constants
 from zing_product_backend.core import common
 from zing_product_backend.models import auth_model
 from sqlalchemy.dialects.postgresql import UUID, BIGINT
-import datetime
+
 
 
 db_schema = Base.__table_args__['schema']
@@ -102,16 +102,3 @@ class ContainmentRuleStats(Base):
     containment_time = Column(DateTime(), nullable=False, default=func.now())
     time_cost = Column(Numeric(), nullable=False)
 
-
-class OOCRules(Base):
-    __tablename__ = 'ooc_rules'
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    containment_rule_id = Column(Integer, ForeignKey(ContainmentRule.id), nullable=False, index=True)
-    spec_id: Mapped[str] = Column(VARCHAR(), nullable=False, index=True)
-    lower_limit = Column(Float)
-    upper_limit = Column(Float)
-    create_time: Mapped[datetime.datetime] = Column(DateTime, default=func.now(), nullable=False)
-    create_user_name = Column(VARCHAR(), ForeignKey(auth_model.User.user_name), nullable=False)
-    updated_time = Column(DateTime(), nullable=False, default=func.now(), onupdate=func.now())
-    updated_user_name = Column(VARCHAR(), ForeignKey(auth_model.User.user_name), nullable=False)
-    rule_delete_flag: Mapped[str] = Column(Boolean(), default=False)

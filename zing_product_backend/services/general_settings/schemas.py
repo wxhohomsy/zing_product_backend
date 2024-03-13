@@ -3,6 +3,7 @@ import uuid
 from typing import Union, List, Set, Dict
 from pydantic import BaseModel
 from zing_product_backend.core import common
+from typing import Optional
 
 
 class MatInfoByGroupType(BaseModel):
@@ -64,3 +65,31 @@ class UpdateMatGroup(BaseModel):
 class DeleteMatGroup(BaseModel):
     group_id: int
 
+
+class OOCRuleCreate(BaseModel):
+    containment_rule_id: int
+    spec_id: str
+    lower_limit: Union[float, None]
+    upper_limit: Union[float, None]
+
+
+class OOCRuleUpdate(BaseModel):
+    id: int
+    lower_limit: Union[float, None]
+    upper_limit: Union[float, None]
+
+
+class OOCRules(BaseModel):
+    id: int
+    containment_rule_id: int
+    spec_id: str
+    lower_limit: Union[float, None]
+    upper_limit: Union[float, None]
+    create_time: datetime.datetime
+    create_user_name: str
+    updated_time: datetime.datetime
+    updated_user_name: str
+    rule_delete_flag: bool
+
+    class Config:
+        from_attributes = True

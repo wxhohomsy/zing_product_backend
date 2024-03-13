@@ -5,7 +5,7 @@ from zing_product_backend.services.general_settings import general_setting_api
 from zing_product_backend.services.containment_rules import containment_rule_api
 from zing_product_backend.services.tp_auto_sample import tp_auto_sample_api
 from zing_product_backend.services.product_auto_allocation import auto_allocation_api
-from zing_product_backend.services.ooc_rules import ooc_rules_api
+# from zing_product_backend.services.general_settings import ooc_rules_api
 
 
 router_v1 = APIRouter()
@@ -19,5 +19,5 @@ router_v1.include_router(tp_auto_sample_api.to_auto_sample_router,
                             prefix="/tpAutoSample", tags=["tp_auto_sample"])
 router_v1.include_router(auto_allocation_api.auto_allocation_router,
                             prefix="/autoAllocation", tags=["auto_allocation"])
-router_v1.include_router(ooc_rules_api.ooc_rules_router,
-                            prefix="/oocRules", tags=["ooc_rules"])
+# router_v1.include_router(general_setting_api.ooc_rules_router,
+#                             prefix="/generalSettings", tags=["general_settings"])

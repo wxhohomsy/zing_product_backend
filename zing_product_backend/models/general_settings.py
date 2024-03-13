@@ -1,9 +1,13 @@
 from sqlalchemy import Column, Integer, String, DateTime, and_, \
     or_, INT, VARCHAR, UniqueConstraint, Boolean, Numeric, BigInteger, ForeignKey, Table,  func, Float, Index, UUID
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship,Mapped
 from zing_product_backend.models.auth_model import User
 from zing_product_backend.app_db.connections import Base
 from zing_product_backend.core import common
+import datetime
+from .containment_model import ContainmentRule
+from zing_product_backend.models import auth_model
+
 db_schema = Base.__table_args__['schema']
 
 
@@ -76,3 +80,17 @@ class PullerInfo(Base):
         "User",  # Replace "User" with the actual class name of the User model
         lazy='selectin'
     )
+
+
+class OOCRules(Base):
+    __tablename__ = 'ooc_rules'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    containment_rule_id = Column(Integer, ForeignKey(ContainmentRule.id), nullable=False, index=True)
+    spec_id: Mapped[str] = Column(VARCHAR(), nullable=False, index=True)
+    lower_limit = Column(Float)
+    upper_limit = Column(Float)
+    create_time: Mapped[datetime.datetime] = Column(DateTime, default=func.now(), nullable=False)
+    create_user_name = Column(VARCHAR(), ForeignKey(auth_model.User.user_name), nullable=False)
+    updated_time = Column(DateTime(), nullable=False, default=func.now(), onupdate=func.now())
+    updated_user_name = Column(VARCHAR(), ForeignKey(auth_model.User.user_name), nullable=False)
+    rule_delete_flag: Mapped[str] = Column(Boolean(), default=False)
