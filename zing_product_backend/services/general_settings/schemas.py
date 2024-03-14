@@ -82,6 +82,7 @@ class OOCRuleUpdate(BaseModel):
 class OOCRules(BaseModel):
     id: int
     containment_rule_id: int
+    containment_rule_name: Union[str, None]
     spec_id: str
     lower_limit: Union[float, None]
     upper_limit: Union[float, None]
