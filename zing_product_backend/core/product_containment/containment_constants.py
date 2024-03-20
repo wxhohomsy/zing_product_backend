@@ -180,8 +180,13 @@ class SpcSpecialSpec(Enum):
     ANY_SPEC = 'any_spec'
 
 
-SPC_VALUE_OPERATOR_NAMES = [RuleOperatorName.BETWEEN, RuleOperatorName.NOT_BETWEEN, RuleOperatorName.GT,
-                            RuleOperatorName.GTE, RuleOperatorName.LT, RuleOperatorName.LTE]
+class SpcValueOperators(Enum):
+    BETWEEN = RuleOperatorName.BETWEEN
+    NOT_BETWEEN = RuleOperatorName.NOT_BETWEEN
+    GT = RuleOperatorName.GT
+    GTE = RuleOperatorName.GTE
+    LT = RuleOperatorName.LT
+    LTE = RuleOperatorName.LTE
 
 
 # ------------------------- time related -----------------------------------------------------

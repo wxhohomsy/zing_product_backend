@@ -3,12 +3,10 @@ from typing import Dict, Tuple, List, Union
 from zing_product_backend.core.product_containment.containment_constants import *
 from zing_product_backend.core import common
 from . import containment_structure, result_structure
-from zing_product_backend.core.product_containment.containment_base_rules import m1_fdc_catch
+from zing_product_backend.core.product_containment.containment_base_rules import m1_fdc
 
 
 def get_available_operators_and_fields(containment_base_rule_class_name: ContainmentBaseRuleClass) -> Tuple[Enum, Enum]:
-    return_operator_enum = 'undefined'
-    return_operator_field_enum = 'undefined'
     if containment_base_rule_class_name == ContainmentBaseRuleClass.INGOT_FDC:
         return_operator_enum = IngotFdcOperator
         return_operator_field_enum = IngotFdcField
@@ -33,6 +31,7 @@ def get_available_operators_and_fields(containment_base_rule_class_name: Contain
 
     elif containment_base_rule_class_name == ContainmentBaseRuleClass.SPC_VALUE:
         return_operator_enum = SpcValueOperators
+        return_operator_field_enum = None
 
     elif containment_base_rule_class_name in [ContainmentBaseRuleClass.MWIPLOTSTS, ContainmentBaseRuleClass.MWIPSLTSTS,
                                               ContainmentBaseRuleClass.MWIPMATDEF,
@@ -41,11 +40,20 @@ def get_available_operators_and_fields(containment_base_rule_class_name: Contain
         return_operator_enum = None
         return_operator_field_enum = None
 
+    else:
+        raise ValueError(f"Unknown containment base rule class: {containment_base_rule_class_name}")
+
+    return return_operator_enum, return_operator_field_enum
+
+
+def parser_function(rule_name):
+    sw
+    pass
 
 
 def parse_base_rule_main(target_object, rule_data: Dict, rule_class: ContainmentBaseRuleClass, rule_object) -> \
         result_structure.ContainmentResult:
-    pass
 
+    pass
 
 

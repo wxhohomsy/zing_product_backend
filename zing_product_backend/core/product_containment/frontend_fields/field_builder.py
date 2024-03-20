@@ -63,7 +63,7 @@ async def build_spc_fields(base_rule_class: ContainmentBaseRuleClass,
         value_editor_type = RuleValueEditor.CHECKBOX
 
     elif base_rule_class == ContainmentBaseRuleClass.SPC_VALUE:
-        for operator in SPC_VALUE_OPERATOR_NAMES:
+        for operator in SpcValueOperators:
             if operator in (RuleOperatorName.BETWEEN, RuleOperatorName.NOT_BETWEEN):
                 arity = 3
             else:
