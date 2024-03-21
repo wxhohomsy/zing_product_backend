@@ -1,7 +1,7 @@
 from typing import List, Tuple, Dict, Union, Optional, TYPE_CHECKING
 from zing_product_backend.core.product_containment.containment_constants import *
-if TYPE_CHECKING:
-    from zing_product_backend.models.containment_model import ContainmentBaseRule, ContainmentRule
+from zing_product_backend.models.containment_model import ContainmentBaseRule, ContainmentRule
+from .containment_structure import Product
 
 
 __all__ = [
@@ -9,9 +9,22 @@ __all__ = [
 ]
 
 
+class ContainmentDetailData:
+    def __init__(self, base_rule: ContainmentBaseRule, target_object: 'Product',
+                 result_status: ContainmentStatus, actual_value: Optional[Union[str, float, bool, List[str]]] = None,
+                 additional_info: Optional[Dict] = None):
+        self.base_rule = base_rule
+        self.target_object = target_object
+        self.result_status = result_status
+        self.actual_value = actual_value
+        self.additional_info = additional_info
+
+
 class ContainmentResult:
-    def __init__(self, result_status: ContainmentStatus, dealt_base_rule_data_list: List['ContainmentBaseRule']):
-        self.dealt_base_rule_data_list = dealt_base_rule_data_list
+    def __init__(self, result_status: ContainmentStatus, target_object: 'Product',
+                 detail_data_list: List[ContainmentDetailData]):
+        self.detail_data_list = detail_data_list
+        self.target_object = target_object
         if type(result_status) is not ContainmentStatus:
             raise TypeError("result_status must be ContainmentStatus")
         else:

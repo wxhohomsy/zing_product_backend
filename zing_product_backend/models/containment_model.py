@@ -11,7 +11,6 @@ from zing_product_backend.models import auth_model
 from sqlalchemy.dialects.postgresql import UUID, BIGINT
 
 
-
 db_schema = Base.__table_args__['schema']
 
 containment_rule_base_rule_table = Table(
@@ -102,3 +101,15 @@ class ContainmentRuleStats(Base):
     containment_time = Column(DateTime(), nullable=False, default=func.now())
     time_cost = Column(Numeric(), nullable=False)
 
+
+class ContainmentRuleDetail(Base):
+    __tablename__ = "containment_rule_detail"
+    id: Mapped[int] = Column(BigInteger, primary_key=True, autoincrement=True)
+    base_rule_id: Mapped[int] = Column(Integer, ForeignKey(ContainmentRule.id), nullable=False)
+    rule_id: Mapped[int] = Column(Integer, ForeignKey(ContainmentRule.id), nullable=False)
+    field: Mapped[int] = Column(VARCHAR(), nullable=False)
+    operator: Mapped[str] = Column(VARCHAR(), nullable=False)
+    value: Mapped[str] = Column(VARCHAR(), nullable=False)
+    tran_time = Column(DateTime(), nullable=False, default=func.now())
+    target_object_id = Column(VARCHAR(), nullable=False)
+    target_object_last_hist_seq = Column(Integer, nullable=False)

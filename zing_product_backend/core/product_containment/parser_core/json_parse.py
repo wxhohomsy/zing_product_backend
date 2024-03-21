@@ -20,7 +20,7 @@ def extract_field_names_set(d, key='field', nested_key='rules') -> Set[str]:
 
 def combine_results(results: List[ContainmentResult], combinator):
     if not results:
-        return ContainmentResult(result_status=ContainmentStatus.PASS, dealt_base_rule_data_list=[])
+        return ContainmentResult(result_status=ContainmentStatus.PASS, detail_data_list=[])
 
     combined_data_record_list = []
     result_statuses = [r.result_status for r in results]
@@ -35,12 +35,12 @@ def combine_results(results: List[ContainmentResult], combinator):
     else:
         raise ValueError("combinator must be 'or' or 'and'")
     for result in results:
-        combined_data_record_list.extend(result.dealt_base_rule_data_list)
+        combined_data_record_list.extend(result.detail_data_list)
 
-    return ContainmentResult(result_status=final_status, dealt_base_rule_data_list=combined_data_record_list)
+    return ContainmentResult(result_status=final_status, detail_data_list=combined_data_record_list)
 
 
-def parse_rule(rule_dict: dict, parser_function):
+def parse_rule(rule_dict: dict, parser_function, target_object: 'Product' = None):
     """
     {
   "id": "f0c1b47d-61ea-4d26-a222-9e927af6712b",
@@ -89,11 +89,11 @@ def parse_rule(rule_dict: dict, parser_function):
 
     combinator = rule_dict.get('combinator')
     if combinator:
-        results = [parse_rule(sub_rule) for sub_rule in rule_dict['rules']]
+        results = [parse_rule(sub_rule, target_object) for sub_rule in rule_dict['rules']]
         combined_result = combine_results(results, combinator)
     else:
         result = parser_function(rule_dict)
-        combined_result = ContainmentResult(result, {rule_dict['rule_name']: rule_dict})
+        combined_result = ContainmentResult(result, target_object, [])
 
     return combined_result.invert() if not_flag else combined_result
 

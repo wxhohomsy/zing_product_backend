@@ -16,15 +16,19 @@ class Product:
         self.fetched_data = fetched_data
         self.id = _id
         self.virtual_factory = virtual_factory
+        if fetched_data is None:
+            self.last_hist_seq = None
+        else:
+            self.last_hist_seq = fetched_data['last_hist_seq']
 
     def __repr__(self):
         return f'{self.__class__.__name__}({self.id})'
 
     def __eq__(self, other):
-        if not type(self) == type(other):
+        if not type(self) is type(other):
             return False
         else:
-            return self.id == other.id
+            return self.id == other.id and self.last_hist_seq == other.last_hist_seq
 
 
 class SublotProduct(Product):
@@ -59,10 +63,11 @@ class Sublot(SublotProduct):
     pass
 
 
-class LotLikeProduct (Product):
+class LotLikeProduct(Product):
     """
     Ingot -> GrowingSegment -> WaferingSegment -> Lot -> Sublot
     """
+
     # ingot lot segment
     @abstractmethod
     def sublot_list(self) -> List[Sublot]:
@@ -142,7 +147,7 @@ class GrowingSegment(LotLikeProduct):
         return_list = []
         for wafering_segment_id in wafering_segment_id_list:
             return_list.append(WaferingSegment(wafering_segment_id,
-                                              self.virtual_factory))
+                                               self.virtual_factory))
         return return_list
 
     def ingot(self) -> 'Ingot':
@@ -178,14 +183,14 @@ class ContainmentBaseRule:
     def __init__(self, rule_orm: containment_model.ContainmentBaseRule):
         self.containment_base_rule_orm = rule_orm
         self.rule_name = rule_orm.rule_name
+        self.rule_class = rule_orm.rule_class
         self.rule_dict = rule_orm.rule_data
         self.rule_description = rule_orm.description
+        self.virtual_factory = rule_orm.virtual_factory
+        self.rule_sql = rule_orm.rule_sql
 
     def __repr__(self):
         return f'{self.__class__.__name__}({self.rule_name})'
-
-    def check_product(self, product: Product) -> result_structure.ContainmentResult:
-        raise NotImplementedError
 
 
 class ContainmentRule:
@@ -197,4 +202,3 @@ class ContainmentRule:
 
     def __repr__(self):
         return f'{self.__class__.__name__}({self.rule_name})'
-

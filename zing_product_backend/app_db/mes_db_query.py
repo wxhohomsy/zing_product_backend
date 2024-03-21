@@ -49,6 +49,18 @@ def get_available_oper_id_list(start_oper: str, end_oper_str: str, virtual_facto
 
 
 @cached(cache=TTLCache(maxsize=settings.MES_QUERY_CACHE_SIZE, ttl=settings.MES_STS_CACHE_TIME), info=settings.DEBUG)
+def get_sublot_sts(sublot_id: str, virtual_factory: common.VirtualFactory) -> RowMapping:
+    cdb_engine = get_cdb_engine(virtual_factory)
+    with cdb_engine.connect() as c:
+        sql = text(f"select * from MESMGR.MWIPSLTSTS where SUBLOT_ID = '{sublot_id}'")
+        data = c.execute(sql).fetchone()
+        if data is None:
+            raise NotFindInDBError(sql)
+        else:
+            return data._mapping
+
+
+@cached(cache=TTLCache(maxsize=settings.MES_QUERY_CACHE_SIZE, ttl=settings.MES_STS_CACHE_TIME), info=settings.DEBUG)
 def get_sublot_sts_cross_factory(sublot_id: str) -> RowMapping:
     return_data = None
     virtual_factory = None

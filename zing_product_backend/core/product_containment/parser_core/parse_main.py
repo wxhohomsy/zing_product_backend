@@ -47,7 +47,6 @@ def get_available_operators_and_fields(containment_base_rule_class_name: Contain
 
 
 def parser_function(rule_name):
-    sw
     pass
 
 
