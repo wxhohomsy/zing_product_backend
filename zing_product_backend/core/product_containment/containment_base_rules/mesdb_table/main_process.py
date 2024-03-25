@@ -1,14 +1,11 @@
-from typing import TYPE_CHECKING, Callable, Dict, Union
+from typing import TYPE_CHECKING
 from sqlalchemy import text
 from zing_product_backend.core.product_containment.containment_constants import ContainmentBaseRuleClass
-from zing_product_backend.core import exceptions
-from zing_product_backend.app_db import external_tables
 from zing_product_backend.reporting import system_log
-from .sql_utils import *
+from zing_product_backend.core.product_containment.containment_base_rules.mesdb_query import *
 from ...parser_core.result_structure import ContainmentResult, ContainmentStatus, ContainmentDetailData
 if TYPE_CHECKING:
     from ...parser_core.containment_structure import ContainmentBaseRule, Product
-    from zing_product_backend.core import common
 
 
 def mesdb_table_main(base_rule: 'ContainmentBaseRule', target_product: 'Product') -> ContainmentResult:

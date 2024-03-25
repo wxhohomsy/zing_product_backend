@@ -337,20 +337,20 @@ def get_mat_info(mat_id: str) -> Dict:
 
 # ---------------------------------mat & spec -------------------------
 @cached(cache=TTLCache(maxsize=settings.MES_QUERY_CACHE_SIZE, ttl=settings.SPEC_DATA_CACHE_TIME), info=settings.DEBUG)
-def get_wafering_spec_by_material_and_operation(mat_id: str, operation_id_tuple: Tuple[str],
-                                                virtual_factory: common.VirtualFactory) -> pd.DataFrame:
+def get_spec_by_material_and_operation(mat_id: str, oper_id: str,
+                                       virtual_factory: common.VirtualFactory) -> pd.DataFrame:
+    # 'mat_cmf_1', 'mat_id', 'mat_ver', 'flow', 'oper', 'spec_rel_id',
+    # 'spec_rel_ver', 'char_id', 'lower_spec_limit', 'target_value',
+    # 'upper_spec_limit', 'qa_audit_flag', 'ie2_audit_flag'
     cdb_engine = get_cdb_engine(virtual_factory)
-    if virtual_factory == common.VirtualFactory.L1W:
-        factory = 'WE1'
-    else:
-        factory = 'L2W'
+
     sql = text(f"""
 WITH MAT_LIST AS
  (SELECT A.MAT_CMF_1, A.MAT_ID, A.MAT_VER, B.FLOW, C.OPER
     FROM MESMGR.MWIPMATDEF A, MESMGR.MWIPMATFLW B, MESMGR.MWIPFLWOPR C
-   WHERE A.FACTORY = '{factory}'
+   WHERE 1 = 1
      AND A.MAT_ID = '{mat_id}'
-     AND C.OPER IN {operation_id_tuple}
+     AND C.OPER = '{oper_id}'
 --      AND A.DEACTIVE_FLAG <> 'Y'
      AND A.DELETE_FLAG <> 'Y'
      AND A.MAT_ID = B.MAT_ID(+)
@@ -440,6 +440,7 @@ def get_spec_id_list_by_oper_id(oper_id, virtual_factory: common.VirtualFactory)
     on a.SPEC_REL_ID = b.SPEC_REL_ID
     where 1 = 1
     and oper = '{oper_id}'
+    and substr(a.char_id, 0, 4) = '{oper_id}'
     """)
     if virtual_factory != common.VirtualFactory.ALL:
         with get_cdb_engine(virtual_factory).connect() as c:

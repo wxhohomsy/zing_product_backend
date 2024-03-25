@@ -107,6 +107,7 @@ async def get_available_char_id(oper_id: str,
     for special_char in containment_constants.SpcSpecialSpec:
         char_id_list.append(special_char.value)
     char_id_list.extend(mes_db_query.get_spec_id_list_by_oper_id(oper_id, virtual_factory))
+    # print(oper_id,virtual_factory, char_id_list)
     return ResponseModel(data=char_id_list, success=True)
 
 

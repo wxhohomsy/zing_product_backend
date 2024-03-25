@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from zing_product_backend.core import common
 
 
-def predefined_group_main(base_rule: 'ContainmentBaseRule', target_product: 'Product') -> ContainmentResult:
+def mat_group_main(base_rule: 'ContainmentBaseRule', target_product: 'Product') -> ContainmentResult:
     assert base_rule.rule_class in [ContainmentBaseRuleClass.MAT_GROUP], rf"Invalid rule class: {base_rule.rule_class}"
 
 

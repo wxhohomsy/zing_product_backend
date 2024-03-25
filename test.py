@@ -4,18 +4,13 @@ from zing_product_backend.app_db import external_tables
 from sqlalchemy import select, text
 from zing_product_backend.app_db.mes_db_query import get_cdb_engine
 from zing_product_backend.app_db.connections import l2w_db_engine
-
-
-def test_sql():
-    dd = "(mat_id like '%246%')"
-    sql = text(rf"""
-    SELECT 1 FROM MESMGR.mwipmatdef 
-    WHERE 1 = 1 
-    AND {dd}
-    """)
-    with l2w_db_engine.connect() as c:
-        print(c.execute(sql).fetchall())
-
+# from zing_product_backend.core.product_containment.containment_base_rules import mesdb_query, local_db_query
+from zing_product_backend.app_db.mes_db_query import get_spec_by_material_and_operation
+from zing_product_backend.core.common import VirtualFactory
+import time
 
 if __name__ == "__main__":
-    test_sql()
+    s = time.time()
+    virtual_factory = VirtualFactory.L2W
+    print(get_spec_by_material_and_operation('3PBCXPE188A', '2920', virtual_factory).columns)
+    print(rf'Execution time: {time.time() - s} seconds')

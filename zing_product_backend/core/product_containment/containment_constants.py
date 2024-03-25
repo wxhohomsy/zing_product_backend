@@ -56,6 +56,22 @@ class RuleOperatorName(Enum):
     NOT_IN = 'not_in'
 
 
+class NumericOperator(Enum):
+    BETWEEN = 'between'
+    NOT_BETWEEN = 'not_between'
+    GT = '>'
+    LT = '<'
+    GTE = '>='
+    LTE = '<='
+    EQUAL = '='
+    NOT_EQUAL = '!='
+
+
+class MultiFieldOperator(Enum):
+    IN = 'in'
+    NOT_IN = 'not_in'
+
+
 class RuleInputType(Enum):
     BUTTON = 'button'
     CHECKBOX = 'checkbox'
@@ -163,10 +179,6 @@ RULE_SQL_TABLE_MAPPING = {
     ContainmentBaseRuleClass.MWIPLOTSTS: mwiplotsts_l1w,
     ContainmentBaseRuleClass.MWIPMATDEF: mwipmatdef_l1w,
 }
-
-
-# ------------------ SPC related -----------------------------------------
-ALL_SPEC = 'all_spec'
 
 
 class SpcOosOperators(Enum):

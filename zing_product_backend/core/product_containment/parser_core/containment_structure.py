@@ -184,7 +184,7 @@ class ContainmentBaseRule:
         self.containment_base_rule_orm = rule_orm
         self.rule_name = rule_orm.rule_name
         self.rule_class = rule_orm.rule_class
-        self.rule_dict = rule_orm.rule_data
+        self.rule_data = rule_orm.rule_data
         self.rule_description = rule_orm.description
         self.virtual_factory = rule_orm.virtual_factory
         self.rule_sql = rule_orm.rule_sql
