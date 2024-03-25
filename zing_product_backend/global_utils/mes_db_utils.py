@@ -1,5 +1,5 @@
-from typing import Tuple, List, Literal
-from zing_product_backend.core.settings import CHAR_DATA_VIRTUAL_LIMIT
+from typing import Literal
+from zing_product_backend.settings import CHAR_DATA_VIRTUAL_LIMIT
 
 
 def change_limit_to_float(raw_value, type_name: Literal['lower', 'upper']):

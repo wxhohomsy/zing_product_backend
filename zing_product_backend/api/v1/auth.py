@@ -3,7 +3,7 @@ from fastapi import APIRouter
 from zing_product_backend.core.security.users import fastapi_users
 from zing_product_backend.core.security.auth_backend import auth_backend
 from zing_product_backend.core.security import schema,  users, security_api
-from zing_product_backend.models.auth import User
+
 router = APIRouter(
     prefix="/auth",
     tags=["auth"],

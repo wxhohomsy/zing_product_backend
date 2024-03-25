@@ -1,9 +1,9 @@
 from typing import Set, List
-from zing_product_backend.models import auth
+from zing_product_backend.models import auth_model
 from zing_product_backend.core.security import schema
 
 
-def get_rules_from_user(user_orm: auth.User) -> Set[str]:
+def get_rules_from_user(user_orm: auth_model.User) -> Set[str]:
     rule_set = set()
     for group in user_orm.privilege_groups:
         for rule in group.privilege_rules:
@@ -12,7 +12,7 @@ def get_rules_from_user(user_orm: auth.User) -> Set[str]:
     return rule_set
 
 
-def get_user_info_from_user(user: auth.User) -> schema.UserInfo:
+def get_user_info_from_user(user: auth_model.User) -> schema.UserInfo:
     privilege_group_info_list: List[schema.PrivilegeGroupInfo] = []
     privilege_rule_info_list: List[schema.PrivilegeRuleInfo] = []
     for privilege_group in user.privilege_groups:

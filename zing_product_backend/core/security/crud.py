@@ -1,30 +1,23 @@
 import uuid
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, and_, or_
-from fastapi_users.db import SQLAlchemyUserDatabase
+from fastapi_users_db_sqlalchemy import SQLAlchemyUserDatabase
 from fastapi_users.password import PasswordHelper
 from typing import Optional, Dict, Any, Union, List, Sequence
-from zing_product_backend.models import auth
+from zing_product_backend.models import auth_model
 from zing_product_backend.reporting import system_log
 from zing_product_backend.core.security import schema
 from zing_product_backend.core.security import user_init
+from zing_product_backend.core.exceptions import NotFoundError, DuplicateError
 import db_init
 
 
-class DuplicateError(Exception):
-    pass
-
-
-class NotFoundError(Exception):
-    pass
-
-
 class ZingUserDatabase(SQLAlchemyUserDatabase):
-    user_table: type[auth.User]
+    user_table: type[auth_model.User]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.privilege_group_table = auth.PrivilegeGroup
+        self.privilege_group_table = auth_model.PrivilegeGroup
         # print(*args)
         # print(dict(**kwargs))
 
@@ -34,7 +27,7 @@ class ZingUserDatabase(SQLAlchemyUserDatabase):
         )
         return await self._get_user(statement)
 
-    async def create(self, create_dict: Dict[str, Any]) -> auth.User:
+    async def create(self, create_dict: Dict[str, Any]) -> auth_model.User:
         # Create a new user
         user = self.user_table(**create_dict)
         self.session.add(user)
@@ -46,9 +39,9 @@ class ZingUserDatabase(SQLAlchemyUserDatabase):
 
         # If no group exists, create an admin group and add this user to it
         if len(data) == 0:
-            admin_group = auth.PrivilegeGroup(group_name='admin', created_by=user.id, created_time=func.now())
+            admin_group = auth_model.PrivilegeGroup(group_name='admin', created_by=user.id, created_time=func.now())
             user.privilege_groups.append(admin_group)
-            admin_rule = auth.PrivilegeRules(rule_name='admin', rule_description='admin')
+            admin_rule = auth_model.PrivilegeRules(rule_name='admin', rule_description='admin')
             admin_group.privilege_rules.append(admin_rule)
             system_log.server_logger.info(f'init admin group for user {user.user_name}')
             await self.session.commit()
@@ -62,26 +55,26 @@ class PrivilegeDataBase:
     def __init__(self, async_session: AsyncSession):
         self.session = async_session
 
-    async def get_privilege_rules(self) -> Sequence[auth.PrivilegeRules]:
-        stmt = select(auth.PrivilegeRules)
+    async def get_privilege_rules(self) -> Sequence[auth_model.PrivilegeRules]:
+        stmt = select(auth_model.PrivilegeRules)
         data = await self.session.execute(stmt)
         return data.scalars().all()
 
-    async def get_privilege_groups(self) -> Sequence[auth.PrivilegeGroup]:
-        stmt = select(auth.PrivilegeGroup)
+    async def get_privilege_groups(self) -> Sequence[auth_model.PrivilegeGroup]:
+        stmt = select(auth_model.PrivilegeGroup)
         data = await self.session.execute(stmt)
         return data.scalars().all()
 
-    async def get_active_privilege_group_by_name(self, group_name: str) -> Union[auth.PrivilegeGroup, None]:
-        stmt = select(auth.PrivilegeGroup).where(and_(auth.PrivilegeGroup.group_name == group_name,
-                                                      auth.PrivilegeGroup.group_deleted == False))
+    async def get_active_privilege_group_by_name(self, group_name: str) -> Union[auth_model.PrivilegeGroup, None]:
+        stmt = select(auth_model.PrivilegeGroup).where(and_(auth_model.PrivilegeGroup.group_name == group_name,
+                                                            auth_model.PrivilegeGroup.group_deleted == False))
         data = await self.session.execute(stmt)
         return data.scalar()
 
-    async def get_privilege_group_by_id(self, group_id: int, need_active=False) -> auth.PrivilegeGroup:
-        stmt = select(auth.PrivilegeGroup).where(auth.PrivilegeGroup.id == group_id)
+    async def get_privilege_group_by_id(self, group_id: int, need_active=False) -> auth_model.PrivilegeGroup:
+        stmt = select(auth_model.PrivilegeGroup).where(auth_model.PrivilegeGroup.id == group_id)
         if need_active is True:
-            stmt = stmt.where(auth.PrivilegeGroup.group_deleted == False)
+            stmt = stmt.where(auth_model.PrivilegeGroup.group_deleted == False)
         data = await self.session.execute(stmt)
         group_orm = data.scalar()
         if group_orm is None:
@@ -89,17 +82,17 @@ class PrivilegeDataBase:
         await self.session.refresh(group_orm)
         return group_orm
 
-    async def get_privilege_rule_by_id(self, rule_id: uuid.UUID, need_active=False) -> auth.PrivilegeRules:
-        stmt = select(auth.PrivilegeRules).where(auth.PrivilegeRules.id == rule_id)
+    async def get_privilege_rule_by_id(self, rule_id: uuid.UUID, need_active=False) -> auth_model.PrivilegeRules:
+        stmt = select(auth_model.PrivilegeRules).where(auth_model.PrivilegeRules.id == rule_id)
         if need_active is True:
-            stmt = stmt.where(auth.PrivilegeRules.is_active == False)
+            stmt = stmt.where(auth_model.PrivilegeRules.is_active == False)
         data = await self.session.execute(stmt)
         rule_orm = data.scalar()
         await self.session.refresh(rule_orm)
         return rule_orm
 
-    async def get_user_by_user_id(self, user_id: uuid.UUID) -> Union[auth.User, None]:
-        user_result = await self.session.execute(select(auth.User).where(auth.User.id == user_id))
+    async def get_user_by_user_id(self, user_id: uuid.UUID) -> Union[auth_model.User, None]:
+        user_result = await self.session.execute(select(auth_model.User).where(auth_model.User.id == user_id))
         data = user_result.scalar()
         if data is None:
             raise NotFoundError(rf'User not found for user id {user_id}')
@@ -107,14 +100,14 @@ class PrivilegeDataBase:
             await self.session.refresh(data)
             return data
 
-    async def get_all_user(self) -> List[auth.User]:
-        user_result = await self.session.execute(select(auth.User))
+    async def get_all_user(self) -> List[auth_model.User]:
+        user_result = await self.session.execute(select(auth_model.User))
         data = user_result.scalars().all()
         return data
 
     async def create_privilege_group(self, privilege_group: schema.PrivilegeGroup,
-                                     user: auth.User) -> auth.PrivilegeGroup:
-        privilege_group_orm = auth.PrivilegeGroup(
+                                     user: auth_model.User) -> auth_model.PrivilegeGroup:
+        privilege_group_orm = auth_model.PrivilegeGroup(
             group_name=privilege_group.group_name,
             group_description=privilege_group.group_description,
             created_by=user.id,
@@ -129,7 +122,7 @@ class PrivilegeDataBase:
         await self.session.refresh(privilege_group_orm)
         return privilege_group_orm
 
-    async def assign_privilege_group(self, privilege_group_assign: schema.PrivilegeGroupAssign) -> auth.User:
+    async def assign_privilege_group(self, privilege_group_assign: schema.PrivilegeGroupAssign) -> auth_model.User:
         user_id = privilege_group_assign.user_id
         user_orm = await self.get_user_by_user_id(user_id)
         if user_orm is None:
@@ -148,25 +141,25 @@ class PrivilegeDataBase:
         await self.session.refresh(user_orm)
         return user_orm
 
-    async def assign_privilege_rule(self, privilege_rule_assign: schema.PrivilegeRuleAssign) -> auth.PrivilegeGroup:
+    async def assign_privilege_rule(self, privilege_rule_assign: schema.PrivilegeRuleAssign) -> auth_model.PrivilegeGroup:
         group_id = privilege_rule_assign.group_id
         group_orm = await self.get_privilege_group_by_id(group_id)
         if group_orm is None:
-            raise NotFoundError('group not found')
+            raise NotFoundError(rf'group not found for group id {group_id}')
         rule_orm_list = []
         for rule_id in privilege_rule_assign.rule_id_list:
             rule_orm = await self.get_privilege_rule_by_id(rule_id)
             if group_orm is None:
-                raise NotFoundError('Group not found')
+                raise NotFoundError(rf'Rule not found for rule id {rule_id}')
             rule_orm_list.append(rule_orm)
         group_orm.privilege_rules = rule_orm_list
         await self.session.commit()
         await self.session.refresh(group_orm)
         return group_orm
 
-    async def create_privilege_rule(self, privilege_rule: schema.PrivilegeRuleCreate, user: auth.User) -> \
-            auth.PrivilegeRules:
-        privilege_rule_orm = auth.PrivilegeRules(
+    async def create_privilege_rule(self, privilege_rule: schema.PrivilegeRuleCreate, user: auth_model.User) -> \
+            auth_model.PrivilegeRules:
+        privilege_rule_orm = auth_model.PrivilegeRules(
             rule_name=privilege_rule.rule_name,
             rule_description=privilege_rule.rule_description,
             rule_active=True,
@@ -176,8 +169,8 @@ class PrivilegeDataBase:
         await self.session.refresh(privilege_rule_orm)
         return privilege_rule_orm
 
-    async def update_privilege_rule(self, privilege_rule: schema.PrivilegeRuleUpdate, user: auth.User) -> \
-            auth.PrivilegeRules:
+    async def update_privilege_rule(self, privilege_rule: schema.PrivilegeRuleUpdate, user: auth_model.User) -> \
+            auth_model.PrivilegeRules:
         privilege_rule_orm = await self.get_privilege_rule_by_id(privilege_rule.id)
         privilege_rule_orm.rule_name = privilege_rule.rule_name
         privilege_rule_orm.rule_description = privilege_rule.rule_description
@@ -186,7 +179,7 @@ class PrivilegeDataBase:
         await self.session.refresh(privilege_rule_orm)
         return privilege_rule_orm
 
-    async def update_user_info(self, user: auth.User, user_info_update: schema.UserInfoUpdate):
+    async def update_user_info(self, user: auth_model.User, user_info_update: schema.UserInfoUpdate):
         user = await self.get_user_by_user_id(user.id)
         password_helper = PasswordHelper()
         if user_info_update.email is not None:

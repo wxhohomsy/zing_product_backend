@@ -1,10 +1,10 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 from fastapi_users.password import PasswordHelper
-from zing_product_backend.models import auth
+from zing_product_backend.models import auth_model
 from zing_product_backend.app_db.connections import AsyncSession
 from zing_product_backend.core.common import RuleName
-from zing_product_backend.models.auth import PrivilegeGroup, User, PrivilegeRules
+from zing_product_backend.models.auth_model import PrivilegeGroup, User, PrivilegeRules
 from zing_product_backend.reporting import system_log
 from zing_product_backend.core.security import schema
 

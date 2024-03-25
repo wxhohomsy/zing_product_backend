@@ -1,2 +1,2 @@
 from fastapi import APIRouter
-from zing_product_backend.services.product_settings import product_setting_api
+from zing_product_backend.services.general_settings import general_setting_api

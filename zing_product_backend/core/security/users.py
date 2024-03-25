@@ -5,13 +5,14 @@ from fastapi import Depends, Request, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_users import BaseUserManager, FastAPIUsers, UUIDIDMixin, exceptions, models
 from zing_product_backend.core.security import schema
-from zing_product_backend.models import auth
+from zing_product_backend.models import auth_model
 from zing_product_backend.core.security import auth_backend
 from zing_product_backend.app_db.connections import Base, get_async_session
 from zing_product_backend.core.security import crud
 from zing_product_backend.core.security.security_utils import get_rules_from_user
 from zing_product_backend.core.common import RuleName
 from zing_product_backend.core.common import ErrorMessages
+from zing_product_backend.core import exceptions
 SECRET = "SECRET12EDASDSFDAS%JFDS.DFSFs^%21"
 
 
@@ -115,7 +116,7 @@ class UserManager(UUIDIDMixin, BaseUserManager[schema.User, uuid.UUID]):
 
 
 async def get_user_db(session: AsyncSession = Depends(get_async_session)):
-    yield crud.ZingUserDatabase(session, user_table=auth.User)
+    yield crud.ZingUserDatabase(session, user_table=auth_model.User)
 
 
 async def get_user_manager(user_db: crud.ZingUserDatabase = Depends(get_user_db)):
@@ -126,10 +127,9 @@ fastapi_users = FastAPIUsers[schema.User, uuid.UUID](get_user_manager, [auth_bac
 current_active_user = fastapi_users.current_user(active=True)
 
 
-async def current_admin_user(user=Depends(current_active_user)) -> auth.User:
+async def current_admin_user(user=Depends(current_active_user)) -> auth_model.User:
     user_rules = get_rules_from_user(user)
     if any([RuleName.ADMIN in user_rules, RuleName.IMS_DEV in user_rules]):
         return user
-
     else:
-        raise HTTPException(status_code=403, detail=ErrorMessages.INSUFFICIENT_PRIVILEGE)
+        raise exceptions.InsufficientPrivilegeError(detail='insufficient privilege for admin operation')

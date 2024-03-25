@@ -1,7 +1,7 @@
 from fastapi import Depends, HTTPException
 from zing_product_backend.core.security.users import current_active_user
 from zing_product_backend.core.common import RuleName, ErrorMessages
-from zing_product_backend.models import auth
+from zing_product_backend.models import auth_model
 from zing_product_backend.core.security.security_utils import get_rules_from_user
 
 

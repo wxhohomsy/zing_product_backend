@@ -1,6 +1,6 @@
 import logging
 import sys
-from zing_product_backend.core import settings
+from zing_product_backend import settings
 
 stdout_handler = logging.StreamHandler(sys.stdout)
 server_logger = logging.getLogger('debug_logger')
