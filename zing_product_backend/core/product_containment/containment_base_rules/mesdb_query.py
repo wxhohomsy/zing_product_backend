@@ -1,7 +1,7 @@
 import typing
 from zing_product_backend.app_db.mes_db_query import get_cdb_engine, get_lot_sts,  get_sublot_sts
 if typing.TYPE_CHECKING:
-    from ...parser_core.containment_structure import Product, LotLikeProduct, SublotProduct
+    from zing_product_backend.core.product_containment.parser_core.containment_structure import Product, LotLikeProduct, SublotProduct
 
 
 def get_material_from_product(target_product: 'Product') -> str:
