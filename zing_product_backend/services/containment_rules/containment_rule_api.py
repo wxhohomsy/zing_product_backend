@@ -111,6 +111,17 @@ async def get_available_char_id(oper_id: str,
     return ResponseModel(data=char_id_list, success=True)
 
 
+@containment_rule_router.get("/availableCharIdPure/{oper_id}/{virtual_factory}",
+                             responses=GENERAL_RESPONSE)
+async def get_available_char_id_pure(oper_id: str,
+                                               virtual_factory: VirtualFactory):
+    # for OOC char id, remove all_spec or any_spec
+    char_id_list = []
+    char_id_list.extend(mes_db_query.get_spec_id_list_by_oper_id(oper_id, virtual_factory))
+    # print(oper_id,virtual_factory, char_id_list)
+    return ResponseModel(data=char_id_list, success=True)
+
+
 @containment_rule_router.get("/containmentBaseRule/allInfo", response_model=AllContainmentBaseRuleInfoResponse,
                              responses=GENERAL_RESPONSE)
 async def get_all_base_containment_rule_info():

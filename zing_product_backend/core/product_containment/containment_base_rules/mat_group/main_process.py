@@ -1,5 +1,7 @@
 from typing import TYPE_CHECKING, Callable, Dict, Union
 from sqlalchemy import text
+
+import zing_product_backend.core.product_containment.crud
 from zing_product_backend.core.product_containment.containment_constants import ContainmentBaseRuleClass
 from zing_product_backend.core import exceptions
 from zing_product_backend.app_db import external_tables
@@ -18,7 +20,7 @@ def mat_group_main(base_rule: 'ContainmentBaseRule', target_product: 'Product') 
 
 def mat_yield_group_main(base_rule: 'ContainmentBaseRule', target_product: 'Product') -> ContainmentResult:
     target_product_mat = mesdb_query.get_material_from_product(target_product)
-    target_product_mat_group = local_db_query.get_yield_groups_by_mat_id(target_product_mat)
+    target_product_mat_group = zing_product_backend.core.product_containment.crud.get_yield_groups_by_mat_id(target_product_mat)
     field_operator = base_rule.rule_data['operator']
     field_value = base_rule.rule_data['value']
     compared_result = field_utils.compute_numeric_field_result(field_operator, field_value,

@@ -202,3 +202,6 @@ class ContainmentRule:
 
     def __repr__(self):
         return f'{self.__class__.__name__}({self.rule_name})'
+
+    def parse_rule_class(self):
+        pass

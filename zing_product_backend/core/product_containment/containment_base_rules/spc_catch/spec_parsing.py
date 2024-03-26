@@ -1,4 +1,6 @@
 from typing import Union
+
+import zing_product_backend.core.product_containment.crud
 from zing_product_backend.app_db import mes_db_query
 from zing_product_backend.core.product_containment.containment_constants import (ContainmentBaseRuleClass,
                                                                                  SpcSpecialSpec, SpcOosOperators,
@@ -9,6 +11,7 @@ from zing_product_backend.core.product_containment.parser_core.containment_struc
 from zing_product_backend.core.product_containment.parser_core.result_structure import (
     ContainmentResult, ContainmentStatus, ContainmentDetailData
 )
+from .. import local_db_query
 
 
 def parse_spec(operator: SpcOosOperators, field_list: list[str],
@@ -40,8 +43,18 @@ def parse_spec(operator: SpcOosOperators, field_list: list[str],
 
 def get_ooc_spec(target_product):
     # laze import
-    from ...containment_rules.containment_rule_main import parse_main
-    containment
+    from ...containment_rules.containment_rule_main import containment_rule_parse_main
+    spec_df = zing_product_backend.core.product_containment.crud.get_ooc_spec_with_containment_id()
+    for _, spec_data in spec_df.iterrows():
+        containment_id = spec_data['containment_id']
+        containment_orm = zing_product_backend.core.product_containment.crud.get_ooc_spec_with_containment_id()
+        containment_result = containment_rule_parse_main(containment_id, target_product)
+        if containment_result.result_status == ContainmentStatus.CATCH:
+            return containment_result  # return first catch
+
+
+
+
 
 
 
