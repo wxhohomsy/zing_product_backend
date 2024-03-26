@@ -27,7 +27,7 @@ def parse_spec(operator: SpcOosOperators, field_list: list[str],
             # 'spec_rel_ver', 'char_id', 'lower_spec_limit', 'target_value',
             # 'upper_spec_limit', 'qa_audit_flag', 'ie2_audit_flag'
         else:
-            spec_df = 123
+            spec_list
 
         spec_list = [SpcSpecialSpec.ALL_SPEC]
 
@@ -36,5 +36,12 @@ def parse_spec(operator: SpcOosOperators, field_list: list[str],
 
     if len(spec_list) == 1 and spec_list[0] == SpcSpecialSpec.ALL_SPEC:
         spec_df = mes_db_query.get_spec_by_material_and_operation(target_product_mat_id)
+
+
+def get_ooc_spec(target_product):
+    # laze import
+    from ...containment_rules.containment_rule_main import parse_main
+    containment
+
 
 
