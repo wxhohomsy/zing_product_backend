@@ -4,6 +4,7 @@ import pydantic
 from abc import ABC, abstractmethod, abstractproperty
 from typing import List, Dict
 from functools import cached_property
+from zing_product_backend.global_utils import function_utils
 from zing_product_backend.core import common
 from zing_product_backend.app_db import mes_db_query
 from zing_product_backend.models import containment_model
@@ -203,5 +204,6 @@ class ContainmentRule:
     def __repr__(self):
         return f'{self.__class__.__name__}({self.rule_name})'
 
-    def parse_rule_class(self):
+    @cached_property
+    def all_base_classes(self):
         pass
