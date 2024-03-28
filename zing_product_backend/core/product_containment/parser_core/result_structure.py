@@ -1,7 +1,8 @@
 from typing import List, Tuple, Dict, Union, Optional, TYPE_CHECKING
 from zing_product_backend.core.product_containment.containment_constants import *
 from zing_product_backend.models.containment_model import ContainmentBaseRule, ContainmentRule
-from .containment_structure import Product
+if TYPE_CHECKING:
+    from .containment_structure import Product
 
 
 __all__ = [

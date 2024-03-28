@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 from sqlalchemy import text
 from zing_product_backend.core.product_containment.containment_constants import ContainmentBaseRuleClass
 from zing_product_backend.reporting import system_log
-from zing_product_backend.core.product_containment.containment_base_rules.mesdb_query import *
+from zing_product_backend.core.product_containment.containment_base_rules.containment_mesdb_query import *
 from ...parser_core.result_structure import ContainmentResult, ContainmentStatus, ContainmentDetailData
 if TYPE_CHECKING:
     from ...parser_core.containment_structure import ContainmentBaseRule, Product

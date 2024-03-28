@@ -1,3 +1,5 @@
+import time
+import traceback
 import typing
 from typing import Union, Tuple, List
 from fastapi import APIRouter, Depends
@@ -12,6 +14,9 @@ from zing_product_backend.core.product_containment.frontend_fields import build_
 from zing_product_backend.services.containment_rules import schemas
 from zing_product_backend.app_db import mes_db_query
 from zing_product_backend.core import common
+from zing_product_backend.global_utils import function_utils
+from zing_product_backend.core.product_containment.containment_constants import ContainmentBaseRuleClass
+from zing_product_backend.core.exceptions import NotFoundError
 from . import crud
 
 
@@ -106,6 +111,7 @@ async def get_available_char_id(oper_id: str,
     char_id_list = []
     for special_char in containment_constants.SpcSpecialSpec:
         char_id_list.append(special_char.value)
+    s = time.time()
     char_id_list.extend(mes_db_query.get_spec_id_list_by_oper_id(oper_id, virtual_factory))
     # print(oper_id,virtual_factory, char_id_list)
     return ResponseModel(data=char_id_list, success=True)
@@ -189,8 +195,8 @@ async def update_containment_rule(update_info: schemas.UpdateContainmentRule,
 async def get_containment_rule_field_info():
     async for s in get_async_session():
         containment_db = crud.ContainmentRuleDataBase(s)
-        rule_name_list = await containment_db.get_all_base_rule_name()
-        field_list = await build_field_main.generate_rule_fields_main(rule_name_list)
+        rule_info_list = await containment_db.get_all_base_rule_info()
+        field_list = await build_field_main.generate_rule_fields_main(rule_info_list)
         return ContainmentRuleFieldsResponse(data=field_list,
                                              success=True)
 
@@ -203,6 +209,29 @@ async def get_all_containment_rule_info():
         sql_result = await containment_db.get_all_rule_info()
 
         return AllContainmentRuleInfoResponse(data=sql_result, success=True)
+
+
+@containment_rule_router.get("/containmentRule/allInfoExcludeOOC", response_model=AllContainmentRuleInfoResponse,
+                             responses=GENERAL_RESPONSE)
+async def get_all_containment_rule_info_exclude_ooc():
+    async for s in get_async_session():
+        filtered_result_list = []
+        containment_db = crud.ContainmentRuleDataBase(s)
+        sql_result_list = await containment_db.get_all_rule_info()
+        for sql_result in sql_result_list:
+            data_dict = sql_result.rule_data
+            try:
+                all_include_rule_class = [
+                    ContainmentBaseRuleClass(x) for x in function_utils.find_values_by_key(data_dict, 'cmf_1')]
+            except ValueError:
+                system_log.server_logger.error(traceback.format_exc())
+                raise (NotFoundError
+                       (rf'invalid rule class in {function_utils.find_values_by_key(data_dict, "cmf_1")}'))
+
+            if ContainmentBaseRuleClass.SPC_OOC not in all_include_rule_class:
+                filtered_result_list.append(sql_result)
+
+        return AllContainmentRuleInfoResponse(data=filtered_result_list, success=True)
 
 
 @containment_rule_router.post("/containmentRule/deleteRule", response_model=DeleteContainmentRuleResponse,

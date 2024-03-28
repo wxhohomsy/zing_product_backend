@@ -1,3 +1,5 @@
+import time
+
 import pandas as pd
 from typing import Dict, Tuple
 from sqlalchemy import text
@@ -8,7 +10,6 @@ from zing_product_backend.core.common_type import *
 from zing_product_backend.core import common
 from zing_product_backend import settings
 from zing_product_backend.global_utils import mes_db_utils
-
 
 t_mapping_or_none = Union[RowMapping, None]
 t_float_or_none = Union[float, None]
@@ -180,8 +181,8 @@ def get_lot_sts_by_oper_id(oper_id: str, virtual_factory: common.VirtualFactory)
 
 
 @cached(cache=TTLCache(maxsize=settings.MES_QUERY_CACHE_SIZE, ttl=settings.MES_STS_CACHE_TIME), info=settings.DEBUG)
-def get_lot_sts_by_oper_range(start_oper_id: str,  end_oper_id: str, virtual_factory: common.VirtualFactory
-                               ) -> pd.DataFrame:
+def get_lot_sts_by_oper_range(start_oper_id: str, end_oper_id: str, virtual_factory: common.VirtualFactory
+                              ) -> pd.DataFrame:
     cdb_engine = get_cdb_engine(virtual_factory)
     with cdb_engine.connect() as c:
         sql = text(f"select lot_id, oper, qty_1, mat_id, flow, oper_in_time, last_tran_time"
@@ -245,81 +246,62 @@ def get_growing_segment_id_list_by_ingot_id_cross_factory(ingot_id: str) -> List
 
 
 @cached(cache=TTLCache(maxsize=settings.MES_QUERY_CACHE_SIZE, ttl=settings.MES_STS_CACHE_TIME), info=settings.DEBUG)
-def get_segment_sample_data_by_operation_id_list(segment_id: str, oper_id_tuple: List[str],
-                                                 virtual_factory: common.VirtualFactory) -> pd.DataFrame:
-    assert len(segment_id) in settings.SEGMENT_ID_PERMIT_LENGTH, \
-        (f"segment_like_id  {segment_id}'s length"
-            f" is not in {settings.SEGMENT_ID_PERMIT_LENGTH}")
+def get_csamspcdat_data(sample_id: str,  sample_type: str, spec_id: str,
+                        virtual_factory: common.VirtualFactory,
+                        oper_id: None|str = None,) -> pd.DataFrame:
+    assert len(sample_id) > 6, f"sample_id {sample_id} is not valid"
     cdb_engine = get_cdb_engine(virtual_factory)
+    assert sample_type in ['WAFER', 'SEGMENT', 'INGOT']
+    assert bool(oper_id) ^ bool(spec_id), "oper_id and sample_type should be exclusive"
+    if sample_type == 'WAFER':
+        sql_key = 'WAFER_ID'
+    elif sample_type == 'SEGMENT':
+        sql_key = 'SEGMENT_LOT_ID'
+    elif sample_id == 'INGOT':
+        sql_key = 'LOT_ID'
+
+    if spec_id:
+        filter_sql = rf"AND A.CHAR_ID = '{spec_id}'"
+    else:
+        filter_sql = rf"AND A.OPER = '{oper_id}'"
+
     with cdb_engine.connect() as c:
         sql = text(f"""
-        SELECT AVG_DATA, CHAR_ID, CMF_20  FROM MESMGR.CSAMSPCDAT A
+        SELECT AVG_DATA, CHAR_ID, CMF_20, {sql_key} as sample_id  FROM MESMGR.CSAMSPCDAT A
           WHERE 1 = 1
-          AND {generate_spec_like_query('A.CHAR_ID', oper_id_tuple)}
-          AND A.SEGMENT_LOT_ID = '{segment_id}'
+          AND A.{sql_key} = '{sample_id}'
+          {filter_sql}
           order by CMF_20 desc
         """)
+        print(sql)
         df = pd.read_sql(sql, c)
         df = df.drop_duplicates(subset=['char_id'], keep='first')
         return df
 
 
 @cached(cache=TTLCache(maxsize=settings.MES_QUERY_CACHE_SIZE, ttl=settings.MES_STS_CACHE_TIME), info=settings.DEBUG)
-def get_unit_latest_spc_data_by_spec_id(unit_id: str, spec_id: str, virtual_factory: common.VirtualFactory) \
+def get_tqs_summary_data(unit_id: str, spec_id: str|None, oper_id: str|None, virtual_factory: common.VirtualFactory) \
         -> t_float_or_none:
     # spc data means data from tqs_summary_data
+    assert bool(spec_id) ^ bool(oper_id), "spec_id and oper_id should be exclusive"
+    if spec_id:
+        filter_sql = rf"and spec_id = '{spec_id}'"
+    else:
+        assert '0' <= oper_id[0] <= '9', rf"oper_id {oper_id} is not valid"
+        filter_sql = rf"and spec_id like '{oper_id}-%'"
+
     sql = text(f"""
-      SELECT ext_mv from spcmgr.tqs_summary_data
+      SELECT ext_mv as data, sys_time as tran_time, spec_id, usr_cmf_07 as sample_id from spcmgr.tqs_summary_data
       where 1 = 1
       and usr_cmf_07 = '{unit_id}'
-      and spec_id = '{spec_id}'
+      {filter_sql}
       order by sys_time desc
     """)
     with get_cdb_engine(virtual_factory).connect() as c:
-        data = c.execute(sql).fetchone()
-        if data is None:
-            return None
-        else:
-            return data[0]
-
-
-@cached(cache=TTLCache(maxsize=settings.MES_QUERY_CACHE_SIZE, ttl=settings.SPC_DATA_CACHE_TIME), info=settings.DEBUG)
-def get_segment_sample_data_by_char_id(segment_like_id: str, char_id: str,
-                                       virtual_factory: common.VirtualFactory) -> (
-        t_mapping_or_none):
-    assert len(segment_like_id) in settings.SEGMENT_ID_PERMIT_LENGTH, \
-        (f"segment_like_id  {segment_like_id}'s length"
-            f" is not in {settings.SEGMENT_ID_PERMIT_LENGTH}")
-    cdb_engine = get_cdb_engine(virtual_factory)
-    with cdb_engine.connect() as c:
-        sql = text(f"""
-        SELECT AVG_DATA, CMF_20  FROM MESMGR.CSAMSPCDAT A
-          WHERE A.CHAR_ID = '{char_id}'
-          AND A.SEGMENT_LOT_ID = '{segment_like_id}'
-          order by CMF_20 desc
-        """)
-        data = c.execute(sql).fetchone()
-        if data is None:
-            return None
-        else:
-            return data._mapping
-
-
-@cached(cache=TTLCache(maxsize=settings.MES_QUERY_CACHE_SIZE, ttl=settings.SPC_DATA_CACHE_TIME), info=settings.DEBUG)
-def get_unit_latest_spc_data_by_operation_id_tuple(unit_id, operation_id_tuple: Tuple[str],
-                                                   virtual_factory: common.VirtualFactory) -> pd.DataFrame:
-    sql = text(f"""
-        SELECT usr_cmf_07, ext_mv, spec_id, sys_time, tran_time from spcmgr.tqs_summary_data
-        where 1 = 1
-        and usr_cmf_07 = '{unit_id}'
-        and ({generate_spec_like_query('spec_id', operation_id_tuple)})
-        order by sys_time desc
-    """)
-
-    with get_cdb_engine(virtual_factory).connect() as c:
-        df = pd.read_sql(sql, c)
+        df = pd.read_sql(sql, c).sort_values(by=['tran_time'], ascending=False)
         df = df.drop_duplicates(subset=['spec_id'], keep='first')
-        return df
+
+    return df
 
 
 def get_mat_info(mat_id: str) -> Dict:
@@ -450,6 +432,20 @@ def get_spec_id_list_by_oper_id(oper_id, virtual_factory: common.VirtualFactory)
         l1w_set = get_spec_id_list_by_oper_id(oper_id, common.VirtualFactory.L1W)
         l2w_set = get_spec_id_list_by_oper_id(oper_id, common.VirtualFactory.L2W)
         return l1w_set | l2w_set
+
+
+@cached(cache=TTLCache(maxsize=settings.MES_QUERY_CACHE_SIZE, ttl=settings.SPEC_DATA_CACHE_TIME), info=settings.DEBUG)
+def get_spec_info(spec_id: str, virtual_factory: common.VirtualFactory):
+    sql = text(rf"""
+    SELECT FACTORY, CHAR_ID, CHAR_DESC, VALUE_TYPE,  UPDATE_TIME, CHAR_CMF_3 AS SAMPLE_TYPE
+    FROM MESMGR.MEDCCHRDEF 
+    WHERE 1 = 1
+    AND char_id = '{spec_id}'
+    """)
+    with get_cdb_engine(virtual_factory).connect() as c:
+        data_df = pd.read_sql(sql, c).sort_values(by=['update_time'], ascending=False)
+        data_df = data_df.drop_duplicates(subset=['char_id'], keep='first')
+    return data_df.iloc[0, :].to_dict()
 
 
 @cached(cache=TTLCache(maxsize=settings.MES_QUERY_CACHE_SIZE, ttl=settings.SPEC_DATA_CACHE_TIME), info=settings.DEBUG)

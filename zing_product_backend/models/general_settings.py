@@ -84,6 +84,7 @@ class PullerInfo(Base):
 
 class OOCRules(Base):
     __tablename__ = 'ooc_rules'
+
     id = Column(Integer, primary_key=True, autoincrement=True)
     containment_rule_id = Column(Integer, ForeignKey(ContainmentRule.id), nullable=False, index=True)
     spec_id: Mapped[str] = Column(VARCHAR(), nullable=False, index=True)

@@ -1,13 +1,17 @@
 import functools
+import traceback
 from dataclasses import dataclass
 import pydantic
 from abc import ABC, abstractmethod, abstractproperty
 from typing import List, Dict
 from functools import cached_property
 from zing_product_backend.global_utils import function_utils
-from zing_product_backend.core import common
+from zing_product_backend.core import common, exceptions
+from zing_product_backend.core.product_containment import containment_constants
 from zing_product_backend.app_db import mes_db_query
 from zing_product_backend.models import containment_model
+from zing_product_backend.reporting import system_log
+
 from . import result_structure
 
 
@@ -34,11 +38,11 @@ class Product:
 
 class SublotProduct(Product):
     def get_sts_data(self, column_name: str):
-        if column_name in self.fetched_data:
+        if self.fetched_data and column_name in self.fetched_data:
             return self.fetched_data[column_name]
         else:
             # Assuming this method should fetch data if not found in fetched_data.
-            fetched_data_dict = mes_db_query.get_sublot_sts_cross_factory(self.id)
+            fetched_data_dict = mes_db_query.get_sublot_sts(self.id, self.virtual_factory)
             self.fetched_data = fetched_data_dict
             return self.fetched_data[column_name]
 
@@ -206,4 +210,9 @@ class ContainmentRule:
 
     @cached_property
     def all_base_classes(self):
-        pass
+        class_names = function_utils.find_values_by_key(self.rule_dict, 'cmf_1')
+        try:
+            return [containment_constants.ContainmentBaseRuleClass(class_name) for class_name in class_names]
+        except ValueError:
+            system_log.server_logger.log(traceback.format_exc(), level='ERROR')
+            raise exceptions.NotFoundError(f'Invalid base rule class name in rule {self.rule_name} (in cmf_1 field)')

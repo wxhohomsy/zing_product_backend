@@ -18,6 +18,7 @@ class ContainmentBaseRuleClassInfo(BaseModel):
 class ContainmentBaseRuleInfo(BaseModel):
     id: int
     affected_rule_id_list: List[int]
+    affected_rule_info_list: List['ContainmentRuleInfo']
     rule_name: str
     rule_class: ContainmentBaseRuleClass  # DATA_OOS, DATA_OOC, PULLER_ID, END_TIME, HC_REDUCE_RULE ...
     rule_data: dict
@@ -63,7 +64,6 @@ class InsertContainmentBaseRule(BaseModel):
 class ContainmentRuleInfo(BaseModel):
     id: int
     rule_name: str
-    included_base_rule_id_list: List[int]
     containment_object_type: ProductObjectType
     rule_data: dict
     changeable: bool

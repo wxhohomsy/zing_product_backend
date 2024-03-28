@@ -15,19 +15,22 @@ async def generate_base_rule_fields_main(
         return await field_builder.build_fields_from_custom_rule(containment_base_rule_class, virtual_factory)
 
 
-async def generate_rule_fields_main(containment_rule_name_list: Sequence[str]) -> List[fields_schema.Field]:
+async def generate_rule_fields_main(containment_rule_info_list) -> List[fields_schema.Field]:
     to_return_list = []
     operators = []
     for operator_name in ContainmentStatus:
         operators.append(fields_schema.RuleOperator(name=operator_name.value, label=operator_name.value, arity=0))
 
-    for containment_rule_name in containment_rule_name_list:
+    for containment_rule_info in containment_rule_info_list:
+        containment_rule_name = containment_rule_info.rule_name
         to_return_list.append(
             fields_schema.Field(
                 name=containment_rule_name,
                 label=containment_rule_name,
                 inputType=RuleInputType.HIDDEN,
                 operators=operators,
+                cmf_1=containment_rule_info.rule_class,
+                cmf_2=containment_rule_info.updated_user_name
             )
         )
     return to_return_list

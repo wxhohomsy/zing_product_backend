@@ -50,7 +50,9 @@ def get_yield_groups_by_mat_id(mat_id: str) -> str:
 
 
 def get_ooc_spec_with_containment_id() -> pd.DataFrame:
+    # columns: ['id', 'containment_rule_id', 'spec_id', 'lower_limit', 'upper_limit', 'create_time', 'create_user_name',
+    #           'updated_time', 'updated_user_name', 'rule_delete_flag']
     with AppSession() as s:
-        stmt = select(general_settings.OOCRules)
+        stmt = select(general_settings.OOCRules).where(general_settings.OOCRules.rule_delete_flag == False)
         ooc_spec_df = pd.read_sql(stmt, s.bind)
         return ooc_spec_df

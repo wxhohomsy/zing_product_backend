@@ -6,7 +6,7 @@ from zing_product_backend.core.product_containment.containment_constants import 
 from zing_product_backend.core import exceptions
 from zing_product_backend.app_db import external_tables
 from zing_product_backend.reporting import system_log
-from .. import mesdb_query, local_db_query, field_utils
+from .. import containment_mesdb_query, local_db_query, field_utils
 from ...parser_core.result_structure import ContainmentResult, ContainmentStatus, ContainmentDetailData
 
 if TYPE_CHECKING:

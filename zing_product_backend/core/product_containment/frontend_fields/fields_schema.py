@@ -27,3 +27,5 @@ class Field(BaseModel):
     valueEditorType: Union[RuleValueEditor, None] = None
     inputType: Union[RuleInputType, None] = None
     defaultValue: Union[str, None] = None
+    cmf_1: Union[str, None] = None
+    cmf_2: Union[str, None] = None
